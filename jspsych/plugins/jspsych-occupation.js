@@ -78,7 +78,7 @@ jsPsych.plugins["occupation"] = (function() {
       var short_heading = shortName(heading);
       var option_heading = '<div class="option-heading-container"><div id="occupation-heading-'+short_heading+'" class="option-heading">'+heading+'</div></div>';
       var option_string;
-      var subfield_string = '<div id="occupation-option-container-'+short_heading+'" class="demographics options container hidden">';
+      var subfield_string = '<div id="occupation-option-container-'+short_heading+'" class="demographics options container collapse">';
       if(short_heading=='other'){
         var other_input_string = '<div class="indent">'+
         '<input type="text" name="occupation-text" class="jspsych-demographics answer text inline" placeholder="Please specify [max. 100 words]" size="100"></div>';
@@ -120,7 +120,13 @@ jsPsych.plugins["occupation"] = (function() {
     $('.option-heading').on('click', function(e){
       var heading_id = e.target.id;
       var heading_name = heading_id.match('occupation-heading-([a-z]+)')[1];
-      $('#occupation-option-container-'+heading_name).toggleClass('hidden');
+      var target_div = $('#occupation-option-container-'+heading_name);
+      if(target_div.hasClass('collapse')){
+        target_div.slideDown(400).removeClass('collapse');
+      } else {
+        target_div.addClass('collapse').slideUp(200);
+      }
+      // $('#occupation-option-container-'+heading_name).toggleClass('hidden');
     });
 
     $('input[type=checkbox]').on('change', function(e){
@@ -147,22 +153,6 @@ jsPsych.plugins["occupation"] = (function() {
       if(validated){
         endTrial(responses);
       } else {
-        // var alert_string = '';
-        // var error_string;
-        // // handle alerts depending on trial parameters
-        // if(trial.force_response){
-        //   error_messages.force.show = true;
-        //   error_string = formatErrors(error_messages);
-        //   alert_string += error_string;
-        //   alert(alert_string);
-        // } else if (trial.force_response == 'invite') {
-        //   error_messages.invite.show = true;
-        //   error_string = formatErrors(error_messages);
-        //   alert_string += error_string;
-        //   alert(alert_string);
-        // } else {
-        //   endTrial(responses);
-        // }
       }
     });
 
@@ -178,15 +168,20 @@ jsPsych.plugins["occupation"] = (function() {
             parent_class = 'unknown';
           }
           // store response in trial_data
-          if(!trial_data[parent_class]){
-            trial_data[parent_class] = [];
+          if(!responses[parent_class]){
+            responses[parent_class] = [];
           }
           var checked = div_obj.val();
-          if(trial_data[parent_class].indexOf(checked)==-1){
-            trial_data[parent_class].push(checked);
+          if(responses[parent_class].indexOf(checked)==-1){
+            responses[parent_class].push(checked);
           }
         }
+        if(div_obj.hasClass('text')){
+          var response = div_obj.val().trim();
+          responses['other'] = response;
+        }
       });
+      console.log(responses)
       return responses;
     }
 

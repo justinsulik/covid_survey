@@ -53,7 +53,7 @@ jsPsych.plugins["demographics"] = (function() {
                 'Age:'+
                 '<div class="demographics response">'+
                 '<input type="text" name="age" class="jspsych-demographics answer text numeric-only" placeholder="number only">'+
-                '<div class="specify numeric-only age hidden">(number only)</div>'+
+                '<div class="specify numeric-only age hidden inline">(number only)</div>'+
               '</div></div>';
 
     var gender = '<div id="gender" class="demographics">'+
@@ -154,21 +154,28 @@ jsPsych.plugins["demographics"] = (function() {
                     '<input type="text" name="location_old-city" class="jspsych-demographics answer text optional" placeholder="City (optional)">'+
                     '</div></div>';
 
+    var household_total_options = numericOptions('household-total');
+    var household_children_options = numericOptions('household_children');
+    var household_elderly_options = numericOptions('household_elderly');
+
     var household = '<div id="household" class="demographics">'+
                       'Number of people in your household (except for yourself):'+
                       '<div class="demographics response">'+
-                      '<input type="text" name="household-total" class="jspsych-demographics answer text numeric-only" placeholder="number only">'+
-                      '<div class="specify numeric-only age hidden">(number only)</div>'+
-                      '</div><br>'+
-                      '<div class="demographics followup">Number of children (< 18 years)?:</div>'+
-                      '<div class="demographics response">'+
-                      '<input type="text" name="household-children" class="jspsych-demographics answer text numeric-only" placeholder="number only">'+
-                      '<div class="specify numeric-only age hidden">(number only)</div>'+
-                      '</div><br>'+
-                      '<div class="demographics followup">Number of elderly (> 60 years)?:</div>'+
-                      '<div class="demographics response">'+
-                      '<input type="text" name="household-elderly" class="jspsych-demographics answer text numeric-only" placeholder="number only">'+
-                      '<div class="specify numeric-only age hidden">(number only)</div>'+
+                      '<select id="household-total-selection" class="jspsych-survey-likert-select">'+
+                      household_total_options+
+                      '</select>'+
+                      '</div>'+
+                      '<div id="household_children" class="hidden">'+
+                      '<div class="demographics followup optional">Number of children (< 18 years)?</div>'+
+                      '<select id="household-children-selection" class="jspsych-survey-likert-select">'+
+                      household_children_options+
+                      '</select>'+
+                      '</div>'+
+                      '<div id="household_elderly" class="hidden">'+
+                      '<div class="demographics followup optional">Number of elderly (> 60 years)?</div>'+
+                      '<select id="household-elderly-selection" class="jspsych-survey-likert-select">'+
+                      household_elderly_options+
+                      '</select>'+
                       '</div>'+
                       '</div>';
 
@@ -225,10 +232,19 @@ jsPsych.plugins["demographics"] = (function() {
       var optionSelected = $("option:selected", this);
       var valueSelected = this.value;
       if(valueSelected=="self"){
-        $("#gender-self").addClass('inline').removeClass('hidden');
+        $("#gender-self").addClass('inline').removeClass('optional hidden');
       }
       if(valueSelected!="self" && e.target.id=='gender-selection'){
-        $("#gender-self").removeClass('inline').addClass('hidden');
+        $("#gender-self").removeClass('inline').addClass('optional hidden');
+      }
+      if(e.target.id=='household-total-selection'){
+        if(parseInt(valueSelected)>0){
+          $("#household_elderly").show(400).removeClass('optional');
+          $("#household_children").show(400);
+        } else {
+          $("#household_elderly").hide(200);
+          $("#household_children").hide(200);
+        }
       }
     });
 
@@ -307,7 +323,7 @@ jsPsych.plugins["demographics"] = (function() {
     }
 
     function validateResponses(responses){
-      var validated = {ok: false, problems: {}};
+      var validated = {ok: true, problems: {}};
       Object.keys(responses).forEach(function(tag){
         var parent = tag.match(/[a-zA-Z_]+/)[0];
         response = responses[tag];
@@ -336,15 +352,15 @@ jsPsych.plugins["demographics"] = (function() {
     function highlightProblems(problems){
       Object.keys(problems).forEach(function(tag){
         var parent = tag.match(/[a-zA-Z_]+/)[0];
-        // console.log('--')
-        // console.log(tag)
-        // console.log(parent)
-        // console.log(problems[tag])
         if(problems[tag].length>0){
-          // console.log(tag, problems[tag])
           $('#'+parent).addClass('problem')
         } else {
           $('#'+parent).removeClass('problem')
+        }
+        if(problems[tag].indexOf('not numeric') != -1){
+          $('.'+parent+'.specify').removeClass('hidden');
+        } else {
+          $('.'+parent+'.specify').addClass('hidden');
         }
 
       });
@@ -386,8 +402,19 @@ jsPsych.plugins["demographics"] = (function() {
 
       jsPsych.finishTrial(trial_data);
       console.log(trial_data);
-
     }
+
+    function numericOptions(tag){
+      return _.reduce(_.range(0,11), function(acc, i){
+        var display_string = i;
+        if(i==10){
+          display_string+='+';
+        }
+        acc += '<option name="'+tag+'" value="'+i+'" class="jspsych-demographics answer select">'+display_string+'</option>';
+        return acc;
+      }, '<option disabled selected value> -- select an option -- </option>');
+    }
+
 
     $( document ).ready(function() {
       start_time = Date.now();

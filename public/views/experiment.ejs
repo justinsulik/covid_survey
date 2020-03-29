@@ -86,7 +86,7 @@
         on_finish: function(){
           console.log('Experiment completed...')
           var data = helper.prepareData(experiment_start_time);
-          helper.save(data, dataUrl);
+          helper.save(data, dataUrl, trial_id);
         }
     });
 

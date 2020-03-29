@@ -14,11 +14,10 @@ function prepareData(experiment_start_time){
                               });
   data.responses = jsPsych.data.get().json();
   data.trial_id = trial_id;
-  data.completionCode = completionCode;
   return data;
 }
 
-function save(data, dataUrl){
+function save(data, dataUrl, trial_id){
   console.log('    About to post survey output data...', data);
   var save_attempts = 0;
   var save_timeout = 1000;
@@ -31,7 +30,7 @@ function save(data, dataUrl){
      contentType: "application/json",
      timeout: save_timeout,
      success: function(request, status, error){
-       finish(completionCodeEnd+'_'+save_attempts);
+       finish(trial_id);
      },
      error: function(request, status){
        $('#jspsych-content').html("Please wait a few seconds while we save your responses...");
@@ -44,7 +43,7 @@ function save(data, dataUrl){
             save();
           }, save_timeout);
        } else {
-         finish(completionCodeEnd+'_'+save_attempts);
+         finish(trialId+'sZs');
        }
      }
    });
