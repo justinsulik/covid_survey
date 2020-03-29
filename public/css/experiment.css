@@ -16,6 +16,10 @@ select {
 
 h2 {text-align: left}
 
+.left {
+  text-align: left;
+}
+
 .demographics {
   text-align: left;
   margin-bottom: 10px;

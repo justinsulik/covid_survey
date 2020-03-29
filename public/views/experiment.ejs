@@ -8,6 +8,7 @@
         <script language="javascript" src="jspsych/jspsych.js"></script>
         <script language="javascript" src="jspsych/plugins/jspsych-instructions.js"></script>
         <script language="javascript" src="jspsych/plugins/jspsych-demographics.js"></script>
+        <script language="javascript" src="jspsych/plugins/jspsych-occupation.js"></script>
         <link href="jspsych/css/jspsych.css" rel="stylesheet" type="text/css"></link>
         <link href="css/experiment.css" rel="stylesheet" type="text/css"></link>
     </head>
@@ -51,10 +52,12 @@
       show_clickable_nav: true,
     }
 
-    // example text entry
-
     var demographics = {
       type: 'demographics',
+    }
+
+    var occupation = {
+      type: 'occupation'
     }
 
     /*
@@ -62,7 +65,8 @@
     */
 
     // timeline.push(instructions);
-    timeline.push(demographics);
+    // timeline.push(demographics);
+    timeline.push(occupation);
 
     /*
     Have jsPsych display the experiment timeline
