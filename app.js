@@ -1,15 +1,14 @@
 /*jshint esversion: 6 */
 
 /*
-Useful tips:
-- Once you've created a heroku app, make a note of its name here:
-    e.g. shielded-mountain-2347
-- Use 'npm install' to install all modules required below under LOAD MODULES
+morning-gorge-91524
 */
 
 /*
-LOAD MODULES
-- Use 'npm install' to install all modules required below under LOAD MODULES
+Todo:
+- get ip; look up country; display appropriate language
+- hide demo questions on subsequent visit
+- check demo saving all (e.g. select)
 */
 const express = require('express'),
   url = require('url'),
@@ -23,9 +22,6 @@ const express = require('express'),
 
 /*
 INSTANTIATE THE APP
-- Use a custom study_name variable to help track whether you're testing, piloting, running 'study1' etc.
-- process.env.PORT will retrieve the relevant port # from Heroku if deployed,
-  otherwise use port 5000 locally, which you can visit by entering 'localhost:5000' in a browser IF the app is running
 */
 const study_name = 'test';
 const app = express();
@@ -33,9 +29,6 @@ const PORT = process.env.PORT || 5000;
 
 /*
 DATABASE SETUP
-- Uncomment this when you've added a database
-- process.env.MONGODB_URI will retrieve the relevant connection info from Heroku when deployed,
-  otherwise it will look in a local hidden file .env for a key called MONGODB_URI
 */
 // db.connect(process.env.MONGODB_URI);
 

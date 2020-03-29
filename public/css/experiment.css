@@ -1,10 +1,68 @@
 /* You can add your own styling here
  */
- 
+
 #jspsych-content {
   width: 900px;
 }
 
 .jspsych-survey-multi-choice-text {
   text-align: left !important;
+}
+
+select {
+  font-size: 14px;
+  margin-left: 10px;
+}
+
+h2 {text-align: left}
+
+.demographics {
+  text-align: left;
+  margin-bottom: 10px;
+}
+
+.hidden {
+  display: none;
+}
+
+.inline {
+  display: inline-block;
+}
+
+.demographics.response {
+  display: inline-block;
+  margin-left: 10px;
+}
+
+.demographics.followup {
+  display: inline-block;
+  margin-left: 60px;
+}
+
+.option-label {
+  font-size: 12px;
+}
+
+.option-heading-container {
+  display: flex;
+  justify-content: flex-start;
+}
+
+.option-heading {
+  padding: 2px 4px;
+  font-size: 13px;
+  cursor: pointer;
+}
+
+.option-heading:hover {
+  background-color: #e6f2ff
+}
+
+.option-heading.active {
+  color: #008000;
+  font-weight: 600;
+}
+
+.indent {
+  margin-left: 24px;
 }
