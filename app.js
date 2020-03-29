@@ -77,12 +77,12 @@ app.get('/', (req, res, next) => {
 
     // Check device not mobile
     let browserOk = true;
-    if (browser) {
-      console.log(trial_id, 'Detected browser...', browser);
-      if (browser.mobile==true){
-        browserOk = false;
-      }
-    }
+    // if (browser) {
+    //   console.log(trial_id, 'Detected browser...', browser);
+    //   if (browser.mobile==true){
+    //     browserOk = false;
+    //   }
+    // }
 
     if(browserOk){
       // render the experiment script, along with some data (here, just the trial_id);
