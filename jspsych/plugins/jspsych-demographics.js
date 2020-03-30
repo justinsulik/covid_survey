@@ -46,7 +46,7 @@ jsPsych.plugins["demographics"] = (function() {
 
     var html = '';
     if(trial.preamble){
-      html += '<h2 id="preamble">'+trial.preamble+'</h2>';
+      html += '<div class="preamble">'+trial.preamble+'</div>';
     }
 
     var age = '<div id="age" class="demographics">'+

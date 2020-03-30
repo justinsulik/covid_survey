@@ -9,7 +9,10 @@ Todo:
 - get ip; look up country; display appropriate language
 - hide demo questions on subsequent visit
 - check demo saving all (e.g. select)
+- clear all listeners after each trial
+- stringify responses
 */
+
 const express = require('express'),
   url = require('url'),
   body_parser = require('body-parser'),

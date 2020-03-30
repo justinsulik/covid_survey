@@ -37,10 +37,10 @@ jsPsych.plugins["occupation"] = (function() {
 
     var html = '';
     if(trial.preamble1){
-      html += '<h2 id="preamble1">'+trial.preamble1+'</h2>';
+      html += '<div class="preamble">'+trial.preamble1+'</div>';
     }
     if(trial.preamble2){
-      html += '<p id="preamble2" class="left">'+trial.preamble2+'</p>';
+      html += '<p class="preamble_minor">'+trial.preamble2+'</p>';
     }
 
     var occupations = {

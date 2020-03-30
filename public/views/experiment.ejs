@@ -9,6 +9,7 @@
         <script language="javascript" src="jspsych/plugins/jspsych-instructions.js"></script>
         <script language="javascript" src="jspsych/plugins/jspsych-demographics.js"></script>
         <script language="javascript" src="jspsych/plugins/jspsych-occupation.js"></script>
+        <script language="javascript" src="jspsych/plugins/jspsych-table-completion.js"></script>
         <link href="jspsych/css/jspsych.css" rel="stylesheet" type="text/css"></link>
         <link href="css/experiment.css" rel="stylesheet" type="text/css"></link>
     </head>
@@ -30,6 +31,7 @@
     var experiment_start_time;
     var data_not_processed = true;
     var dataUrl = '/data?trial_id=' + trial_id;
+    var close_network = [];
 
     // Consent form
 
@@ -61,7 +63,48 @@
     }
 
     var social_network = {
-      type: 'table-completion'
+      type: 'table-completion',
+      add_new: true,
+      column_headers: ['Write down first names. Add new rows with "+"', 'face to face', 'video chat', 'phone', 'email', 'text message', 'letter', 'other'],
+      column_icons: true,
+      preamble: "Please write down the first names of all the people with whom you "+
+      "had a conversation in the <b>past 7 days</b>, and <b>how</b> you interacted with them. "+
+      "Please do not include casual contacts such as interactions with shop workers "+
+      "or professionals (e.g., doctors, police, etc.).",
+      on_finish: function(data){
+        var responses = JSON.parse(data.responses)
+        Object.keys(responses).forEach(function(id){
+          if(responses[id].name){
+            close_network.push({id: id, row_name: responses[id].name});
+          }
+        })
+      }
+    }
+
+    var social_network_followup = {
+      type: 'table-completion',
+      add_new: false,
+      column_headers: ['Names', 'I live in the same household with this person', 'I would turn to this person for advice or comfort when I have a major personal problem'],
+      column_vars: ['names', 'live', 'comfort'],
+      column_icons: false,
+      preamble: 'Now, look at this list again: which of these people live with you '+
+      'in the same household? Who you would turn to if you wanted to seek advice '+
+      'or comfort in connection with a major personal problem (such as a terminal illness, '+
+      'death of a loved one, or a serious accident)?',
+      row_values: function(){
+        return close_network;
+      }
+    }
+
+    var social_network_followup_if = {
+      timeline: [social_network_followup],
+      conditional_function: function(){
+        if(close_network.length>0){
+          return true;
+        } else {
+          return false;
+        }
+      }
     }
 
     /*
@@ -69,6 +112,8 @@
     */
 
     // timeline.push(instructions);
+    timeline.push(social_network)
+    timeline.push(social_network_followup_if)
     timeline.push(demographics);
     timeline.push(occupation);
 

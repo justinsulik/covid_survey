@@ -84,3 +84,14 @@ h2 {text-align: left}
 .problem {
   color: red;
 }
+
+.preamble {
+  margin-bottom: 15px;
+  text-align: left;
+  font-weight: bold;
+}
+
+.preamble_minor {
+  margin-bottom: 10px;
+  text-align: left;
+}
