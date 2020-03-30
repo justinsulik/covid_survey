@@ -12,12 +12,12 @@ jsPsych.plugins["occupation"] = (function() {
   plugin.info = {
     name: "occupation",
     parameters: {
-      preamble1: {
+      preamble: {
         type: jsPsych.plugins.parameterType.STRING,
         default: "Most recent occupation",
         description: "Preamble for the page"
       },
-      preamble2: {
+      instructions: {
         type: jsPsych.plugins.parameterType.STRING,
         default: "(select all that apply; if you don’t find your own occupation, please select the options you think apply closely)",
         description: "Preamble for the page"
@@ -36,11 +36,11 @@ jsPsych.plugins["occupation"] = (function() {
     var trial_data = {};
 
     var html = '';
-    if(trial.preamble1){
-      html += '<div class="preamble">'+trial.preamble1+'</div>';
+    if(trial.preamble){
+      html += '<div class="preamble">'+trial.preamble+'</div>';
     }
-    if(trial.preamble2){
-      html += '<p class="preamble_minor">'+trial.preamble2+'</p>';
+    if(trial.instructions){
+      html += '<p class="instructions">'+trial.instructions+'</p>';
     }
 
     var occupations = {
@@ -64,6 +64,7 @@ jsPsych.plugins["occupation"] = (function() {
         'Food preparation assistant', 'Package deliverer', 'Other elementary worker'],
       'Armed forces occupations': [],
       'Self-employed': [],
+      'None': ['No occupation'],
       'Other': []
     };
 
@@ -88,14 +89,14 @@ jsPsych.plugins["occupation"] = (function() {
           // if no sub-fields, the top-level field must be selectable
           option_string = '<div class="indent">'+
           '<input type="checkbox" id="occupation-'+short_heading+'" class="demographics answer check" name="occupation" value="'+short_heading+'">'+
-          '<label for="occupation-'+short_heading+'" class="option-label"> '+heading+'</label></div>';
+          '<label for="occupation-'+short_heading+'" class="option label"> '+heading+'</label></div>';
           subfield_string += option_string;
         } else {
           options.forEach(function(option, i){
             short_option = shortName(option);
             option_string = '<div class="indent inline">'+
             '<input type="checkbox" id="occupation-'+short_heading+'-'+short_option+'" name="occupation" class="demographics answer check" value="'+short_option+'">'+
-            '<label for="occupation-'+short_heading+'-'+short_option+'" class="option-label"> '+option+'</label></div>';
+            '<label for="occupation-'+short_heading+'-'+short_option+'" class="option label"> '+option+'</label></div>';
             subfield_string += option_string;
           });
         }

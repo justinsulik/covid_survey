@@ -118,7 +118,7 @@ Table
       var other_cols = '';
       var check_box = '';
       _.range(column_number-1).forEach(function(i){
-        var class_string = 'cell response ';
+        var class_string = 'cell clickable ';
         if(row_id!='final'){
           var id_str;
           if(trial.column_vars.length>0){
@@ -208,7 +208,7 @@ Inputs/interactions
     $('table').on('click', function(e){
       var clicked_on = e.target.id;
       if(!clicked_on){
-        if($(e.target).hasClass('cell response')){
+        if($(e.target).hasClass('cell clickable')){
           $(e.target).children('input').trigger('click');
         }
       }
@@ -230,13 +230,13 @@ data handling + endTrial
           var name = $(d).val();
           var id_str = $(d).attr('id');
           var id = id_str.match('new-name-([0-9]+)')[1];
-          responses[id] = {name: name, interaction: []};
+          responses[id] = {name: name, choices: []};
         });
       } else {
         trial.row_values.forEach(function(d,i){
           var row_id = d.id;
           var row_name = d.row_name;
-          responses[row_id] = {name: row_name, interaction: []};
+          responses[row_id] = {name: row_name, choices: []};
         });
       }
 
@@ -245,7 +245,7 @@ data handling + endTrial
         var data = id_str.match('check-([0-9]+)-([a-z]+)');
         var row_id = data[1];
         var col_id = data[2];
-        responses[row_id].interaction.push(col_id);
+        responses[row_id].choices.push(col_id);
       });
       return responses;
     }

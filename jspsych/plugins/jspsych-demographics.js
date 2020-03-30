@@ -59,7 +59,7 @@ jsPsych.plugins["demographics"] = (function() {
     var gender = '<div id="gender" class="demographics">'+
                     'Gender:'+
                     '<div class="demographics response">'+
-                    '<select id="gender-selection" class="jspsych-survey-likert-select">'+
+                    '<select id="gender-selection" class="jspsych-survey-select">'+
                       '<option disabled selected value> -- select an option -- </option>'+
                       '<option name="gender" value="man" class="jspsych-demographics answer select">Man</option>'+
                       '<option name="gender" value="woman" class="jspsych-demographics answer select">Woman</option>'+
@@ -72,7 +72,7 @@ jsPsych.plugins["demographics"] = (function() {
     var education = '<div id="education" class="demographics">'+
                       'Highest completed education level:'+
                       '<div class="demographics response">'+
-                      '<select class="jspsych-survey-likert-select">'+
+                      '<select class="jspsych-survey-select">'+
                         '<option disabled selected value> -- select an option -- </option>'+
                         '<option name="education" value="0" class="jspsych-demographics answer select">No schooling completed</option>'+
                         '<option name="education" value="1" class="jspsych-demographics answer select">Primary education (age: 5-10)</option>'+
@@ -93,7 +93,7 @@ jsPsych.plugins["demographics"] = (function() {
                       '</label></div>'+
                       '<div id="student_time" class="hidden">'+
                       '<div class="demographics followup">What type?</div>'+
-                      '<select class="jspsych-survey-likert-select">'+
+                      '<select class="jspsych-survey-select">'+
                         '<option disabled selected value> -- select an option -- </option>'+
                         '<option name="student_time" value="full" class="jspsych-demographics answer select">Full-time</option>'+
                         '<option name="student_time" value="part" class="jspsych-demographics answer select">Part-time</option>'+
@@ -101,7 +101,7 @@ jsPsych.plugins["demographics"] = (function() {
                       '</div>'+
                       '<div id="student_place" class="hidden">'+
                       '<div class="demographics followup">Are you studying from home?</div>'+
-                      '<select class="jspsych-survey-likert-select">'+
+                      '<select class="jspsych-survey-select">'+
                         '<option disabled selected value> -- select an option -- </option>'+
                         '<option name="student_place" value="yes" class="jspsych-demographics answer select">Yes</option>'+
                         '<option name="student_place" value="sometimes" class="jspsych-demographics answer select">Sometimes</option>'+
@@ -121,7 +121,7 @@ jsPsych.plugins["demographics"] = (function() {
                       '</label></div>'+
                       '<div id="working_time" class="hidden">'+
                       '<div class="demographics followup">How often?</div>'+
-                      '<select class="jspsych-survey-likert-select">'+
+                      '<select class="jspsych-survey-select">'+
                         '<option disabled selected value> -- select an option -- </option>'+
                         '<option name="working_time" value="full" class="jspsych-demographics answer select">Full-time</option>'+
                         '<option name="working_time" value="half" class="jspsych-demographics answer select">Half-time</option>'+
@@ -130,7 +130,7 @@ jsPsych.plugins["demographics"] = (function() {
                       '</div>'+
                       '<div id="working_place" class="hidden">'+
                       '<div class="demographics followup">Are you working from home?</div>'+
-                      '<select class="jspsych-survey-likert-select">'+
+                      '<select class="jspsych-survey-select">'+
                         '<option disabled selected value> -- select an option -- </option>'+
                         '<option name="working_place" value="yes" class="jspsych-demographics answer select">Yes</option>'+
                         '<option name="working_place" value="sometimes" class="jspsych-demographics answer select">Sometimes</option>'+
@@ -161,19 +161,19 @@ jsPsych.plugins["demographics"] = (function() {
     var household = '<div id="household" class="demographics">'+
                       'Number of people in your household (except for yourself):'+
                       '<div class="demographics response">'+
-                      '<select id="household-total-selection" class="jspsych-survey-likert-select">'+
+                      '<select id="household-total-selection" class="jspsych-survey-select">'+
                       household_total_options+
                       '</select>'+
                       '</div>'+
                       '<div id="household_children" class="hidden">'+
                       '<div class="demographics followup optional">Number of children (< 18 years)?</div>'+
-                      '<select id="household-children-selection" class="jspsych-survey-likert-select">'+
+                      '<select id="household-children-selection" class="jspsych-survey-select">'+
                       household_children_options+
                       '</select>'+
                       '</div>'+
                       '<div id="household_elderly" class="hidden">'+
                       '<div class="demographics followup optional">Number of elderly (> 60 years)?</div>'+
-                      '<select id="household-elderly-selection" class="jspsych-survey-likert-select">'+
+                      '<select id="household-elderly-selection" class="jspsych-survey-select">'+
                       household_elderly_options+
                       '</select>'+
                       '</div>'+

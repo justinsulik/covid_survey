@@ -29,7 +29,7 @@ h2 {text-align: left}
   display: inline-block;
 }
 
-.demographics.response {
+.response {
   display: inline-block;
   margin-left: 10px;
 }
@@ -86,12 +86,32 @@ h2 {text-align: left}
 }
 
 .preamble {
-  margin-bottom: 15px;
+  margin-bottom: 20px;
   text-align: left;
   font-weight: bold;
 }
 
-.preamble_minor {
-  margin-bottom: 10px;
+.instructions {
+  font-size: 14px;
   text-align: left;
+  margin-bottom: 10px;
+}
+
+.cue {
+  font-size: 16px;
+  margin: 20px auto 10px auto;
+}
+
+.label {
+  font-size: 12px;
+  line-height: 1.1em;
+}
+
+.end-line {
+  border-bottom: 1px solid #c7c7c7;
+  padding-bottom: 10px;
+}
+
+.flex {
+  display: flex
 }

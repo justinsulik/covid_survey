@@ -8,8 +8,10 @@
         <script language="javascript" src="jspsych/jspsych.js"></script>
         <script language="javascript" src="jspsych/plugins/jspsych-instructions.js"></script>
         <script language="javascript" src="jspsych/plugins/jspsych-demographics.js"></script>
+        <script language="javascript" src="jspsych/plugins/jspsych-custom-form.js"></script>
         <script language="javascript" src="jspsych/plugins/jspsych-occupation.js"></script>
         <script language="javascript" src="jspsych/plugins/jspsych-table-completion.js"></script>
+        <script language="javascript" src="jspsych/plugins/jspsych-survey-likert-customized.js"></script>
         <link href="jspsych/css/jspsych.css" rel="stylesheet" type="text/css"></link>
         <link href="css/experiment.css" rel="stylesheet" type="text/css"></link>
     </head>
@@ -31,6 +33,7 @@
     var experiment_start_time;
     var data_not_processed = true;
     var dataUrl = '/data?trial_id=' + trial_id;
+    var social_network = [];
     var close_network = [];
 
     // Consent form
@@ -62,7 +65,7 @@
       type: 'occupation'
     }
 
-    var social_network = {
+    var social_network_trial = {
       type: 'table-completion',
       add_new: true,
       column_headers: ['Write down first names. Add new rows with "+"', 'face to face', 'video chat', 'phone', 'email', 'text message', 'letter', 'other'],
@@ -75,29 +78,60 @@
         var responses = JSON.parse(data.responses)
         Object.keys(responses).forEach(function(id){
           if(responses[id].name){
-            close_network.push({id: id, row_name: responses[id].name});
+            social_network.push({id: id, row_name: responses[id].name});
           }
         })
       }
     }
 
-    var social_network_followup = {
+    var close_network_trial = {
       type: 'table-completion',
       add_new: false,
-      column_headers: ['Names', 'I live in the same household with this person', 'I would turn to this person for advice or comfort when I have a major personal problem'],
-      column_vars: ['names', 'live', 'comfort'],
+      column_headers: ['Names', 'I would turn to this person for advice or comfort when I have a major personal problem'],
+      column_vars: ['names', 'comfort'],
       column_icons: false,
-      preamble: 'Now, look at this list again: which of these people live with you '+
-      'in the same household? Who you would turn to if you wanted to seek advice '+
-      'or comfort in connection with a major personal problem (such as a terminal illness, '+
-      'death of a loved one, or a serious accident)?',
+      preamble: 'Now, for each person in your list, think about whether you would '+
+      'turn to them if you wanted to seek advice or comfort in connection with a major personal problem?',
       row_values: function(){
-        return close_network;
+        return social_network;
+      },
+      on_finish: function(data){
+        var responses = JSON.parse(data.responses)
+        Object.keys(responses).forEach(function(id){
+          if(responses[id].choices.indexOf('comfort')!=-1){
+            console.log('here')
+            close_network.push({id: id, row_name: responses[id].name});
+          }
+        })
+        console.log('--->', close_network)
       }
     }
 
-    var social_network_followup_if = {
-      timeline: [social_network_followup],
+    var close_network_if = {
+      timeline: [close_network_trial],
+      conditional_function: function(){
+        if(social_network.length>0){
+          return true;
+        } else {
+          return false;
+        }
+      }
+    }
+
+    var close_network_followup = {
+      type: 'table-completion',
+      add_new: false,
+      column_headers: ['Names', 'This person and I live in the same country', 'This person and I live in the same household'],
+      column_vars: ['names', 'country', 'household'],
+      column_icons: false,
+      preamble: 'Now, for each person in your close network, answer the following two questions.',
+      row_values: function(){
+        return close_network;
+      },
+    }
+
+    var close_network_followup_if = {
+      timeline: [close_network_followup],
       conditional_function: function(){
         if(close_network.length>0){
           return true;
@@ -107,15 +141,190 @@
       }
     }
 
+    var threat = {
+      type: 'custom-form',
+      preamble: 'Many people who have contracted the disease do not have an official test result for confirmation. Please answer the below questions to the best of your knowledge.',
+      questions: [
+        {type: 'slider',
+        cue: 'I consider myself to be more vulnerable to the coronavirus disease than the average person:',
+        id: 'vulnerable',
+        labels: ['Not vulnerable at all', 'As vulnerable as an average person', 'Extremely vulnerable']},
+        {type: 'select',
+        id: 'vulnerable_reason',
+        cue: 'Please explain why you think that way.',
+        options: ['No medical conditions', '1 condition', '2 conditions', '3 conditions', 'More than 3 conditions', 'Prefer not to say', 'Other'],
+        values: ['0', '1', '2', '3', '4+', 'NA', 'other'],
+        specify: 'other',
+        end_line: true,},
+        {type: 'slider',
+        cue: 'Staying at home due to the coronavirus disease affects me more severely than the average person:',
+        id: 'isolation',
+        labels: ['Not affected at all', 'As affected as an average person', 'Extremely affected']},
+        {type: 'checkbox',
+        id: 'isolation_reason',
+        cue: 'Please explain why you think that way (select all that apply).',
+        options: ['Mental health condition', 'Physical condition', 'Living with someone with a mental health condition', 'Living with someone with a physical condition', 'Lost employment', 'Prefer not to say', 'Other'],
+        values: ['mental-self', 'physical-self', 'mental-other', 'physical-other', 'lost-employment', 'NA', 'other'],
+        specify: 'other',
+        end_line: true},
+        {type: 'slider',
+        cue: 'I currently have or have had the coronavirus disease:',
+        id: 'infected-self',
+        labels: ['Definitely false', 'Definitely true']},
+        {type: 'radio',
+        id: 'test-self',
+        cue: 'Have you received a positive test result?',
+        options: ['Yes', 'No'],
+        values: ['yes', 'no'],
+        end_line: true},
+        {type: 'slider',
+        cue: 'Someone I know currently has or has had the coronavirus disease.',
+        id: 'infected-others',
+        labels: ['Definitely false', 'Definitely true']},
+        {type: 'select',
+        cue: 'How many people?',
+        id: 'infected-others-number',
+        options: ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '10+']},
+        {type: 'radio',
+        id: 'test-others',
+        cue: 'Have they received a positive test result(s)?',
+        options: ['Yes all of them have', 'Some of them have', 'No none of them have'],
+        values: ['all', 'some', 'none']},
+      ]
+    }
+
+    var compliance_self = {
+      type: 'custom-form',
+      preamble: 'The general advice for the coronavirus disease (COVID-19) is to keep physical distance from others.',
+      instructions: 'Think about your own actions and beliefs in the past 7 days.',
+      questions: [
+        {type: 'slider',
+        cue: 'I have been following this general advice where I live',
+        id: 'comply-self',
+        labels: ['Not been following the advice at all', 'Been following the advice exactly', 'Been doing more than what is advised']},
+        {type: 'slider',
+        cue: 'I think that it is wrong not to follow this general advice',
+        id: 'ethics-self',
+        labels: ['Completely disagree', 'Completely agree']},
+      ]
+    }
+
+    var compliance_social_network = {
+      type: 'custom-form',
+      preamble: 'Now, think about the actions and beliefs of most people in your close network.',
+      instructions: function(){
+        var instruction_string = '';
+        if(close_network.length>0){
+          instruction_string += 'Remember, the people in your close network are: '
+          close_network.forEach(function(d, i){
+            console.log('--', d)
+            if(i>0){
+              instruction_string += ', '
+            }
+            instruction_string += d.row_name;
+          })
+          instruction_string += '.'
+        }
+        return instruction_string;
+      },
+      questions: [
+        {type: 'slider',
+        cue: 'Most people in my close network have been following this general advice.',
+        id: 'comply-social',
+        labels: ['Not been following the advice at all', 'Been following the advice exactly', 'Been doing more than what is advised']},
+        {type: 'slider',
+        cue: 'Most people in my close network think that it is wrong not to follow this general advice.',
+        id: 'ethics-social',
+        labels: ['Completely disagree', 'Completely agree']},
+      ]
+    }
+
+    var compliance_country = {
+      type: 'custom-form',
+      preamble: 'Now, think about the actions and beliefs of most of the people in your country.',
+      instructions: 'Please try to answer as accurately as you can.',
+      questions: [
+        {type: 'slider',
+        cue: 'Most people in my country have been following this general advice.',
+        id: 'comply-country',
+        labels: ['Not been following the advice at all', 'Been following the advice exactly', 'Been doing more than what is advised']},
+        {type: 'slider',
+        cue: 'Most people in my country think that it is wrong not to follow this general advice.',
+        id: 'ethics-country',
+        labels: ['Completely disagree', 'Completely agree']},
+      ]
+    }
+
+    var compliance_world = {
+      type: 'custom-form',
+      preamble: 'Now, think about the actions and beliefs of most of the people all around the world.',
+      instructions: 'Please try to answer as accurately as you can.',
+      questions: [
+        {type: 'slider',
+        cue: 'Most people all around the world have been following this general advice.',
+        id: 'comply-world',
+        labels: ['Not been following the advice at all', 'Been following the advice exactly', 'Been doing more than what is advised']},
+        {type: 'slider',
+        cue: 'Most people all around the world think that it is wrong not to follow this general advice.',
+        id: 'ethics-world',
+        labels: ['Completely disagree', 'Completely agree']},
+      ]
+    }
+
+    var warwick_items = ['I’ve been feeling optimistic about the future.',
+    'I’ve been feeling stressful.',
+    'I’ve been feeling relaxed.',
+    'I’ve been feeling interested in other people.',
+    'I’ve had energy to spare.',
+    'I’ve been dealing with problems well.',
+    'I’ve been thinking clearly.',
+    'I’ve been feeling good about myself.',
+    'I’ve been feeling close to other people.',
+    'I’ve been able to make up my own mind about things.',
+    'I’ve been feeling loved.',
+    'I’ve been interested in new things.',
+    'I’ve been feeling cheerful.',
+    'I’ve been feeling depressed.',
+    'I’ve been feeling anxious.',
+    'I’ve been feeling angry.',
+    'I’ve been feeling lonely.']
+
+
+    var warwick_labels = ['None of the time', 'Rarely', 'Some of the time', 'Often', 'All of the time'];
+
+    var warwick_questions = _.map(warwick_items, function(d,i){
+      return {
+        name: 'warwick_'+i,
+        prompt: d,
+        labels: warwick_labels,
+        required: true,
+      }
+    })
+
+
+    var warwick = {
+      type: 'survey-likert',
+      questions: warwick_questions,
+      preamble: 'Below are some statements about feelings and thoughts. Please tick the box that best describes your experience of each over the LAST WEEK.'
+
+    }
+
     /*
     Add trials to the timeline
     */
 
     // timeline.push(instructions);
-    timeline.push(social_network)
-    timeline.push(social_network_followup_if)
-    timeline.push(demographics);
-    timeline.push(occupation);
+    // timeline.push(demographics);
+    // timeline.push(occupation);
+    // timeline.push(threat);
+    // timeline.push(social_network_trial)
+    // timeline.push(close_network_if)
+    // timeline.push(close_network_followup_if)
+    // timeline.push(compliance_self);
+    // timeline.push(compliance_social_network);
+    // timeline.push(compliance_country);
+    // timeline.push(compliance_world);
+    timeline.push(warwick);
 
     /*
     Have jsPsych display the experiment timeline
