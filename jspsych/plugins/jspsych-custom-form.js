@@ -58,28 +58,30 @@ jsPsych.plugins["custom-form"] = (function() {
       if(question.type=='checkbox'){
         question_string = checkbox(question, q_index);
       }
-      if(question.type=='radio'){
-        question_string = radio(question, q_index);
+      if(question.type=='multiple'){
+        question_string = multiple(question, q_index);
       }
       html += question_string;
     });
 
 
 
-    function radio(question_data, q_index){
+    function multiple(question_data, q_index){
       var question_id = question_data.id || 'question-'+q_index;
       var cue = question_data.cue || '';
       var options = question_data.options || [];
       var values = question_data.values || [];
       var optional = question_data.optional || '';
-      var class_string = 'radio-container ' + optional;
+      var class_string = 'multiple-container ' + optional;
       if(question_data.end_line){
         class_string += ' end-line';
       }
 
       var html_string = '<div class="'+class_string+'">';
       html_string += '<div class="cue">'+cue+'</div>';
+      html_string += '<div id="'+question_id+'" class="custom-form-multiple flex" style="width:100%; flex-wrap: wrap; justify-content: space-around;">';
       var option_string = '';
+      var option_width = Math.round(100/(options.length+1));
       options.forEach(function(option, i){
         var option_id = question_id+'-'+i;
         var value_string;
@@ -88,8 +90,9 @@ jsPsych.plugins["custom-form"] = (function() {
         } else {
           value_string = option.replace(/ /g, '_').toLowerCase();
         }
-        option_string += '<input type="radio" name="'+question_id+'" id="'+option_id+'" value="'+value_string+'"><label for="'+option_id+'"> '+option+' </label></input>';
+        option_string += '<div style="width: '+option_width+'%" class="multiple-option answer" name="'+question_id+'" id="'+option_id+'" value="'+value_string+'">'+option+'</div>';
       });
+      option_string += '</div>';
       return html_string + option_string + '</div>';
     }
 
@@ -107,10 +110,8 @@ jsPsych.plugins["custom-form"] = (function() {
 
       var html_string = '<div class="'+class_string+'">';
       html_string += '<div class="cue">'+cue+'</div>';
-      html_string += '<div id="'+question_id+'" class="jspsych-survey-checkbox response flex" style="width:100%; flex-wrap: wrap;">';
+      html_string += '<div id="'+question_id+'" class="custom-form-checkbox response flex" style="width:100%; flex-wrap: wrap;">';
       var option_string = '';
-      var min_width = 50;
-      var max_width = 50;
       options.forEach(function(option, i){
         var option_id = question_id+'-'+i;
         var value_string;
@@ -149,7 +150,7 @@ jsPsych.plugins["custom-form"] = (function() {
 
       var html_string = '<div class="'+class_string+'">';
       html_string += '<div class="cue">'+cue+'</div>';
-      html_string += '<select id="'+question_id+'" class="jspsych-survey-select response">';
+      html_string += '<select id="'+question_id+'" class="custom-form-select response">';
       var option_string = '<option disabled selected value> -- select an option -- </option>';
       options.forEach(function(option,i){
         var option_id = question_id+'-'+i;
@@ -212,9 +213,9 @@ jsPsych.plugins["custom-form"] = (function() {
 
     display_element.innerHTML = css+html+submit;
 
-    /*
-     inputs/interactions
-    */
+/***
+Inputs/interactions
+***/
 
     $('#submit').click(function(e){
       // var responses = getResponses();
@@ -238,6 +239,22 @@ jsPsych.plugins["custom-form"] = (function() {
           }
         }
       }
+    });
+
+    $('.multiple-option').on('click', function(e){
+      var option_id = this.id;
+      var option_value = $(this).attr('value');
+      var name = $(this).attr('name');
+      $('.multiple-option[name='+name+']').each(function(i,d){
+        var current_option = $(d);
+        var match = current_option.attr('value') == option_value;
+        if(match){
+          current_option.addClass('selected');
+        } else {
+          current_option.removeClass('selected');
+        }
+      });
+
     });
 
     $('input[type=checkbox]').on('change', function(e){

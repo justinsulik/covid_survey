@@ -115,3 +115,18 @@ h2 {text-align: left}
 .flex {
   display: flex
 }
+
+.multiple-option {
+  border: 1px solid #c7c7c7;
+  padding: 5px 10px;
+  border-radius: 5px;
+}
+
+.multiple-option:hover {
+  background-color: #e6f2ff;
+}
+
+.multiple-option.selected {
+  background-color: #6ab0fc;
+  border: 1px solid #0069db;
+}

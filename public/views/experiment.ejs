@@ -153,7 +153,7 @@
         id: 'vulnerable_reason',
         cue: 'Please explain why you think that way.',
         options: ['No medical conditions', '1 condition', '2 conditions', '3 conditions', 'More than 3 conditions', 'Prefer not to say', 'Other'],
-        values: ['0', '1', '2', '3', '4+', 'NA', 'other'],
+        values: ['0', '1', '2', '3', '4+', 'none', 'other'],
         specify: 'other',
         end_line: true,},
         {type: 'slider',
@@ -164,14 +164,14 @@
         id: 'isolation_reason',
         cue: 'Please explain why you think that way (select all that apply).',
         options: ['Mental health condition', 'Physical condition', 'Living with someone with a mental health condition', 'Living with someone with a physical condition', 'Lost employment', 'Prefer not to say', 'Other'],
-        values: ['mental-self', 'physical-self', 'mental-other', 'physical-other', 'lost-employment', 'NA', 'other'],
+        values: ['mental-self', 'physical-self', 'mental-other', 'physical-other', 'lost-employment', 'none', 'other'],
         specify: 'other',
         end_line: true},
         {type: 'slider',
         cue: 'I currently have or have had the coronavirus disease:',
         id: 'infected-self',
         labels: ['Definitely false', 'Definitely true']},
-        {type: 'radio',
+        {type: 'multiple',
         id: 'test-self',
         cue: 'Have you received a positive test result?',
         options: ['Yes', 'No'],
@@ -185,7 +185,7 @@
         cue: 'How many people?',
         id: 'infected-others-number',
         options: ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '10+']},
-        {type: 'radio',
+        {type: 'multiple',
         id: 'test-others',
         cue: 'Have they received a positive test result(s)?',
         options: ['Yes all of them have', 'Some of them have', 'No none of them have'],
@@ -289,7 +289,6 @@
     'I’ve been feeling angry.',
     'I’ve been feeling lonely.']
 
-
     var warwick_labels = ['None of the time', 'Rarely', 'Some of the time', 'Often', 'All of the time'];
 
     var warwick_questions = _.map(warwick_items, function(d,i){
@@ -301,11 +300,215 @@
       }
     })
 
-
     var warwick = {
       type: 'survey-likert',
       questions: warwick_questions,
       preamble: 'Below are some statements about feelings and thoughts. Please tick the box that best describes your experience of each over the LAST WEEK.'
+    }
+
+    var attitude_labels = ['Strongly disagree', 'Strongly agree'];
+
+    var corona_attitudes = {
+      type: 'custom-form',
+      preamble: 'Please answer the below questions in the context of the coronavirus (COVID-19) outbreak',
+      instructions: 'Some of the questions ask about your opinions and feelings about your country. '+
+      'If you feel that answering these questions may compromise your privacy, please feel free to choose the “prefer not to answer” option.',
+      questions: [{
+        type: 'slider',
+        cue: 'Every individual is responsible for themselves if they want to avoid the adverse effects of the disease',
+        id: 'self-responsible',
+        labels: attitude_labels,
+        end_line: true},
+        {type: 'checkbox',
+        cue: 'I believe that the authorities in my country are imposing sufficient measures',
+        options: ['Prefer not to answer'],
+        id: 'state-sufficient-optout'},
+        {type: 'slider',
+        id: 'state-sufficient',
+        labels: attitude_labels,
+        end_line: true},
+        {type: 'checkbox',
+        cue: 'I believe that measures taken in my country are having a positive impact.',
+        options: ['Prefer not to answer'],
+        id: 'state-positive-optout'},
+        {type: 'slider',
+        id: 'state-positive',
+        labels: attitude_labels,
+        end_line: true},
+        {type: 'slider',
+        cue: 'Since the outbreak escalated, I have increased my involvement with groups and organisations to help others.',
+        id: 'involvement',
+        labels: attitude_labels,
+        end_line: true},
+        {type: 'slider',
+        cue: 'At times like this, it is essential that people work in solidarity to look after each other',
+        id: 'solidarity',
+        labels: attitude_labels,
+        end_line: true},
+        {type: 'checkbox',
+        cue: 'I trust that authorities in my country are knowledgeable about what to do about the disease.',
+        options: ['Prefer not to answer'],
+        id: 'state-knowledgeable-optout'},
+        {type: 'slider',
+        id: 'state-knowledgeable',
+        labels: attitude_labels,
+        end_line: true},
+        {type: 'slider',
+        cue: 'Since the outbreak escalated, I have been focused on what I can do to protect myself.',
+        id: 'self-protect',
+        labels: attitude_labels,
+        end_line: true},
+        {type: 'slider',
+        cue: 'I believe that my actions are having a positive effect.',
+        id: 'self-positive',
+        labels: attitude_labels,
+        end_line: true},
+        {type: 'slider',
+        cue: 'I feel equipped with the information I need on what to do about the disease.',
+        id: 'self-informed',
+        labels: attitude_labels,
+        end_line: true},
+        {type: 'checkbox',
+        cue: 'I support the COVID-19 policies applied in my country',
+        options: ['Prefer not to answer'],
+        id: 'support-optout',
+        end_line: false,},
+        {type: 'slider',
+        id: 'support',
+        labels: attitude_labels,
+        end_line: true,},
+        {type: 'slider',
+        cue: 'At times like this, each individual should do whatever is needed to look after themselves.',
+        id: 'others-responsible',
+        labels: attitude_labels,
+        end_line: true},
+        {type: 'slider',
+        cue: 'It is primarily the state’s responsibility to protect people against the disease.',
+        id: 'state-responsible',
+        labels: attitude_labels,
+        end_line: true},
+        {type: 'slider',
+        cue: 'Due to the outbreak, I have been going out less than usual.',
+        id: 'going-out',
+        labels: ['Much less than usual', 'About the same as usual', 'Much more than usual'],
+        end_line: true},
+      ]
+    }
+
+    var circle_distances = [1, 0.84, 0.66, 0.5, 0];
+    function generateCircles(distances, label1, label2){
+      var width = 120;
+      var height = 120;
+      var base_1 = width/3;
+      var base_2 = 2*width/3;
+      var base_distance = width/3;
+      var circle_ratio = 0.4;
+      var options = []
+      distances.forEach(function(distance,i){
+        var position_1 = base_1 + base_distance*(1-distance)/2
+        var position_2 = base_2 - base_distance*(1-distance)/2
+        var text_1_y = 5;
+        var text_2_y = height-5;
+        options.push('<div style="height:'+height+'px; width:'+width+'px"><svg>'+
+        '<text x="'+position_1+'", y="'+text_1_y+'" dominant-baseline="hanging" text-anchor="middle" fill="blue" font-size="14">'+label1+'</text>'+
+        '<text x="'+position_2+'", y="'+text_2_y+'" dominant-baseline="baseline" text-anchor="middle" fill="red" font-size="14">'+label2+'</text>'+
+        '<circle cx="'+position_1+'" cy="'+height/2+'" r="'+base_distance*circle_ratio+'" fill="blue" fill-opacity="0.4"/>'+
+        '<circle cx="'+position_2+'" cy="'+height/2+'" r="'+base_distance*(1-circle_ratio)+'" fill="red" fill-opacity="0.4"/>'+
+        '</svg></div>')
+      })
+      return options;
+    }
+
+    var ios_string_country = generateCircles(circle_distances, 'You', 'Your country');
+    var ios_string_gvmt = generateCircles(circle_distances, 'You', 'Your government');
+
+    var general_attitudes = {
+      type: 'custom-form',
+      preamble: 'Please answer the below questions based on how you think and feel GENERALLY.',
+      instructions: 'SIf you feel that answering the following questions may compromise your privacy, please feel free to choose the “prefer not to answer” option.',
+      questions: [
+        {type: 'slider',
+        cue: 'I am concerned by the amount of influence that scientists have in society.',
+        id: 'scientists-influence-R',
+        labels: attitude_labels,
+        end_line: true},
+        {type: 'slider',
+        cue: 'People trust scientists much less than they should.',
+        id: 'scientists-trust',
+        labels: attitude_labels,
+        end_line: true},
+        {type: 'checkbox',
+        cue: 'Think about how close you feel to the country you are currently living in, and choose one of the 5 options below. The two circles representing you and your country vary in how close they are to each other.',
+        id: 'ios-country-optout',
+        options: ['Prefer not to answer']},
+        {type: 'multiple',
+        id: 'ios-country',
+        options: ios_string_country,
+        values: ['1', '0.75', '0.5', '0.25', '0'],
+        end_line: true},
+        {type: 'checkbox',
+        cue: 'Think about how close you feel to the government of the country you are currently living in, and choose one of the 7 options below. The two circles representing you and your government vary in how close they are to each other.',
+        id: 'ios-gvmt-optout',
+        options: ['Prefer not to answer']},
+        {type: 'multiple',
+        id: 'ios-gvmt',
+        options: ios_string_gvmt,
+        values: ['1', '0.75', '0.5', '0.25', '0'],
+        end_line: true},
+        {type: 'slider',
+        id: 'ideology',
+        cue: 'What is your political self-identification?',
+        labels: ['Very liberal', 'Very conservative']},
+        {type: 'checkbox',
+        id: 'ideology-optout',
+        options: ['Does not apply to my political views', 'Prefer not to say'],
+        value: ['NA', 'None'],
+        end_line: true},
+        {type: 'slider',
+        cue: 'I would sacrifice an activity that I enjoy very much if my family did not approve of it.',
+        id: 'vertical-0',
+        labels: attitude_labels,
+        end_line: true},
+        {type: 'slider',
+        cue: 'I would do what would please my family, even if I detested that activity.',
+        id: 'vertical-1',
+        labels: attitude_labels,
+        end_line: true},
+        {type: 'slider',
+        cue: 'Before taking a major trip, I consult with most members of my family and many friends.',
+        id: 'vertical-2',
+        labels: attitude_labels,
+        end_line: true},
+        {type: 'slider',
+        cue: 'I usually sacrifice my self-interest for the benefit of my group.',
+        id: 'vertical-3',
+        labels: attitude_labels,
+        end_line: true},
+        {type: 'slider',
+        cue: 'Children should be taught to place duty before pleasure.',
+        id: 'vertical-4',
+        labels: attitude_labels,
+        end_line: true},
+        {type: 'slider',
+        cue: 'I hate to disagree with others in my group.',
+        id: 'vertical-5',
+        labels: attitude_labels,
+        end_line: true},
+        {type: 'slider',
+        cue: 'We should keep our aging parents with us at home.',
+        id: 'vertical-6',
+        labels: attitude_labels,
+        end_line: true},
+        {type: 'slider',
+        cue: 'Children should feel honoured if their parents receive a distinguished award.',
+        id: 'vertical-7',
+        labels: attitude_labels,
+        end_line: true},
+
+
+        //
+      ]
+
 
     }
 
@@ -314,17 +517,19 @@
     */
 
     // timeline.push(instructions);
-    // timeline.push(demographics);
-    // timeline.push(occupation);
-    // timeline.push(threat);
-    // timeline.push(social_network_trial)
-    // timeline.push(close_network_if)
-    // timeline.push(close_network_followup_if)
-    // timeline.push(compliance_self);
-    // timeline.push(compliance_social_network);
-    // timeline.push(compliance_country);
-    // timeline.push(compliance_world);
+    timeline.push(demographics);
+    timeline.push(occupation);
+    timeline.push(threat);
+    timeline.push(social_network_trial)
+    timeline.push(close_network_if)
+    timeline.push(close_network_followup_if)
+    timeline.push(compliance_self);
+    timeline.push(compliance_social_network);
+    timeline.push(compliance_country);
+    timeline.push(compliance_world);
     timeline.push(warwick);
+    timeline.push(corona_attitudes);
+    timeline.push(general_attitudes);
 
     /*
     Have jsPsych display the experiment timeline
