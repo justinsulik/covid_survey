@@ -245,13 +245,15 @@ Inputs/interactions
       var cell_id = this.id;
       var reg = cell_id.match(/check-([0-9]+)-([a-z]+)/);
       var checked1 = this.checked;
-      if(reg.length>1){
-        var row_id = reg[1];
-        var col1 = reg[2];
-        if(trial.column_vars.indexOf(col1)!=-1 && dependencies[col1]){
-          var col2_name = dependencies[col1];
-          var checkbox2 = $('#check-'+row_id+'-'+col2_name);
-          checkbox2.prop("checked", checked1);
+      if(reg){
+        if(reg.length>1){
+          var row_id = reg[1];
+          var col1 = reg[2];
+          if(trial.column_vars.indexOf(col1)!=-1 && dependencies[col1]){
+            var col2_name = dependencies[col1];
+            var checkbox2 = $('#check-'+row_id+'-'+col2_name);
+            checkbox2.prop("checked", checked1);
+          }
         }
       }
     });
@@ -284,10 +286,15 @@ data handling + endTrial
 
       $(':checked').each(function(i,d){
         var id_str = $(d).attr('id');
-        var data = id_str.match('check-([0-9]+)-([a-z]+)');
-        var row_id = data[1];
-        var col_id = data[2];
-        responses[row_id].choices.push(col_id);
+        if(id_str != 'optout'){
+          var data = id_str.match('check-([_a-zA-Z0-9]+)-([_a-zA-Z0-9]+)');
+          var row_id = data[1];
+          var col_id = data[2];
+          responses[row_id].choices.push(col_id);
+        } else {
+          responses.optout = true;
+        }
+
       });
       return responses;
     }

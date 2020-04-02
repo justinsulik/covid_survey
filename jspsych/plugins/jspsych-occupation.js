@@ -44,6 +44,7 @@ jsPsych.plugins["occupation"] = (function() {
     }
 
     var occupations = {
+      'None': ['No occupation'],
       'Managers': [],
       'Professionals': ['Science and engineering professional', 'Health professional',
         'Teaching professional', 'Business and administration professional',
@@ -64,7 +65,6 @@ jsPsych.plugins["occupation"] = (function() {
         'Food preparation assistant', 'Package deliverer', 'Other elementary worker'],
       'Armed forces occupations': [],
       'Self-employed': [],
-      'None': ['No occupation'],
       'Other': []
     };
 
@@ -131,8 +131,23 @@ jsPsych.plugins["occupation"] = (function() {
     });
 
     $('input[type=checkbox]').on('change', function(e){
+      var checked = this.checked;
       var option_id = e.target.id;
       var parent_name = option_id.match('occupation-([a-z]+)')[1];
+      if(parent_name == 'none'){
+        $('input[type=checkbox]').each(function(i,d){
+          if(d.value != 'no'){
+            if(checked){
+              $(d).attr("disabled", true);
+              $(d).addClass("disabled");
+            } else {
+              $(d).removeAttr("disabled");
+              $(d).removeClass("disabled");
+            }
+          }
+        })
+      }
+
       var parent_id = 'occupation-option-container-'+parent_name;
       var active = false;
       $('#'+parent_id).children().each(function(i,container){
@@ -182,7 +197,6 @@ jsPsych.plugins["occupation"] = (function() {
           responses['other'] = response;
         }
       });
-      console.log(responses)
       return responses;
     }
 

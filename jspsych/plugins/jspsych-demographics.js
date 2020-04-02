@@ -144,14 +144,16 @@ jsPsych.plugins["demographics"] = (function() {
                     'Where are you right now?'+
                     '<div class="demographics response">'+
                     '<input type="text" name="location_now-country" class="jspsych-demographics answer text" placeholder="Country">'+
-                    '<input type="text" name="location_now-city" class="jspsych-demographics answer text optional" placeholder="City (optional)">'+
+                    '<input type="text" name="location_now-province" class="jspsych-demographics answer text optional" placeholder="Province/state/region">'+
+                    '<input type="text" name="location_now-city" class="jspsych-demographics answer text" placeholder="City">'+
                     '</div></div>';
 
     var city_old = '<div id="location_old" class="demographics">'+
                     'Where did you grow up?'+
                     '<div class="demographics response">'+
                     '<input type="text" name="location_old-country" class="jspsych-demographics answer text" placeholder="Country">'+
-                    '<input type="text" name="location_old-city" class="jspsych-demographics answer text optional" placeholder="City (optional)">'+
+                    '<input type="text" name="location_old-province" class="jspsych-demographics answer text optional" placeholder="Province/state/region">'+
+                    '<input type="text" name="location_old-city" class="jspsych-demographics answer text" placeholder="City (optional)">'+
                     '</div></div>';
 
     var household_total_options = numericOptions('household-total');

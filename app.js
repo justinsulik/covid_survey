@@ -27,6 +27,7 @@ const express = require('express'),
 INSTANTIATE THE APP
 */
 const study_name = 'test';
+const phase = 1;
 const app = express();
 const PORT = process.env.PORT || 5000;
 
@@ -90,7 +91,7 @@ app.get('/', (req, res, next) => {
     if(browserOk){
       // render the experiment script, along with some data (here, just the trial_id);
       // data must be sent as a JSON string
-      res.render('experiment.ejs', {input_data: JSON.stringify({trial_id: trial_id})});
+      res.render('experiment.ejs', {input_data: JSON.stringify({trial_id: trial_id, phase: phase})});
     } else {
       res.send('You seem to be viewing this on a mobile device. The instructions explicitly forbade this. Please just return the HIT.');
     }
@@ -124,7 +125,7 @@ app.get('/finish', (req, res) => {
     // If, for whatever reason, the code has gone missing, generate a new one so that the participant can get paid
     code = helper.makeCode(10) + 'SZs';
   }
-  res.render('finish.ejs', {completionCode: code});
+  res.render('finish.ejs', {completionCode: code, phase: phase});
 });
 
 /*

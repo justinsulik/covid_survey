@@ -45,8 +45,8 @@ h2 {text-align: left}
   margin-left: 60px;
 }
 
-.option-label {
-  font-size: 12px;
+.option.label {
+  font-size: 14px;
 }
 
 .option-heading-container {
@@ -56,7 +56,7 @@ h2 {text-align: left}
 
 .option-heading {
   padding: 2px 4px;
-  font-size: 13px;
+  font-size: 16px;
   cursor: pointer;
 }
 
@@ -129,4 +129,16 @@ h2 {text-align: left}
 .multiple-option.selected {
   background-color: #6ab0fc;
   border: 1px solid #0069db;
+}
+
+.disabled {
+  color: grey;
+}
+
+.disabled~label {
+  color: grey;
+}
+
+#submit {
+  margin-bottom: 20px;
 }
