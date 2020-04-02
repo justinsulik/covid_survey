@@ -44,10 +44,20 @@ jsPsych.plugins["table-completion"] = (function() {
         default: null,
         description: "Preamble for the page"
       },
+      instructions: {
+        type: jsPsych.plugins.parameterType.STRING,
+        default: null,
+        description: "More detailed instructions"
+      },
       force_response: {
         type: jsPsych.plugins.parameterType.STRING,
         default: 'force',
         description: "If 'force', force responses; if 'invite', just alert asking for responses; otherwise no checking."
+      },
+      dependencies: {
+        type: jsPsych.plugins.parameterType.STRING,
+        default: '',
+        description: "In format 'column1>column2', selecting column1 will automatically select column 2."
       }
     }
   };
@@ -57,6 +67,7 @@ jsPsych.plugins["table-completion"] = (function() {
     // data saving
     var trial_data = {own_rows: [], responses: []};
     var start_time;
+    var dependencies = {};
 
     var css = '<style>';
     css += '.check-box {width: 15px; height: 15px; margin: auto; cursor: pointer;}';
@@ -66,12 +77,28 @@ jsPsych.plugins["table-completion"] = (function() {
     css += '.cell.header {border-top: 1px solid black;border-bottom: 1px solid black;font-size: 12px;}';
     css += '#add-button {font-size: 80; display: inline-block; font-weight: 900; color: #348ee3; width: 28px; border: 1px solid #348ee3; border-radius: 50px; margin-left: 5px; cursor: pointer}';
     css += '#final-row {border-top: 1px solid grey; border-bottom: 1px solid grey;}';
+    css += '.opt-out {margin-bottom: 10px;}';
     css += '</style>';
 
     var html = '';
     if(trial.preamble){
       html += '<div class="preamble">'+trial.preamble+'</div>';
     }
+    if(trial.instructions){
+      html += '<div class="instructions">'+trial.instructions+'</div>';
+    }
+    if(trial.opt_out){
+      html += '<div class="opt-out"><input id="optout" type="checkbox" value="optout"/><label for="optout">'+trial.opt_out+'</label></div>';
+    }
+    if(trial.dependencies.length>0){
+      var reg = /([a-z]+)>([a-z]+)/;
+      var matches = trial.dependencies.match(reg);
+      if(matches.length>1){
+        dependencies[matches[1]] = matches[2];
+      }
+      console.log('dependencies: ', dependencies)
+    }
+
 
 /***
 Table
@@ -210,6 +237,21 @@ Inputs/interactions
       if(!clicked_on){
         if($(e.target).hasClass('cell clickable')){
           $(e.target).children('input').trigger('click');
+        }
+      }
+    });
+
+    $('input[type=checkbox]').on('click', function(e){
+      var cell_id = this.id;
+      var reg = cell_id.match(/check-([0-9]+)-([a-z]+)/);
+      var checked1 = this.checked;
+      if(reg.length>1){
+        var row_id = reg[1];
+        var col1 = reg[2];
+        if(trial.column_vars.indexOf(col1)!=-1 && dependencies[col1]){
+          var col2_name = dependencies[col1];
+          var checkbox2 = $('#check-'+row_id+'-'+col2_name);
+          checkbox2.prop("checked", checked1);
         }
       }
     });

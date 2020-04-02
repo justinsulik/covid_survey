@@ -34,7 +34,14 @@
     var data_not_processed = true;
     var dataUrl = '/data?trial_id=' + trial_id;
     var social_network = [];
-    var close_network = [];
+    var close_network = [{row_name: 'flabs', id:0}, {row_name: 'meep', id:1}];
+    // var close_network = [];
+
+    // labels
+
+    var agree_labels = ['Strongly disagree', 'Strongly agree'];
+    var advice_labels = ['Not been following the advice at all', 'Been following the advice exactly', 'Been doing more than what is advised']
+    var warwick_labels = ['None of the time', 'Rarely', 'Some of the time', 'Often', 'All of the time'];
 
     // Consent form
 
@@ -57,23 +64,16 @@
       show_clickable_nav: true,
     }
 
-    var demographics = {
-      type: 'demographics',
-    }
-
-    var occupation = {
-      type: 'occupation'
-    }
-
     var social_network_trial = {
       type: 'table-completion',
       add_new: true,
-      column_headers: ['Write down first names. Add new rows with "+"', 'face to face', 'video chat', 'phone', 'email', 'text message', 'letter', 'other'],
+      column_headers: ['First names. Add new rows with "+"', 'face to face', 'video chat', 'phone', 'email', 'text message', 'other'],
       column_icons: true,
-      preamble: "Please write down the first names of all the people with whom you "+
-      "had a conversation in the <b>past 7 days</b>, and <b>how</b> you interacted with them. "+
-      "Please do not include casual contacts such as interactions with shop workers "+
+      preamble: "Please give the first names of all the people with whom you "+
+      "had a conversation in the PAST 7 DAYS, and HOW you interacted with them.",
+      instructions: "Please do not include casual contacts, such as interactions with shop workers "+
       "or professionals (e.g., doctors, police, etc.).",
+      opt_out: "I did NOT have any conversations other than casual contacts in the past 7 days.",
       on_finish: function(data){
         var responses = JSON.parse(data.responses)
         Object.keys(responses).forEach(function(id){
@@ -87,11 +87,10 @@
     var close_network_trial = {
       type: 'table-completion',
       add_new: false,
-      column_headers: ['Names', 'I would turn to this person for advice or comfort when I have a major personal problem'],
+      column_headers: ['Names', 'I would turn to this person for advice or comfort'],
       column_vars: ['names', 'comfort'],
       column_icons: false,
-      preamble: 'Now, for each person in your list, think about whether you would '+
-      'turn to them if you wanted to seek advice or comfort in connection with a major personal problem?',
+      preamble: 'Now, think about whether you would turn to these people if you wanted to seek advice or comfort.',
       row_values: function(){
         return social_network;
       },
@@ -121,10 +120,11 @@
     var close_network_followup = {
       type: 'table-completion',
       add_new: false,
-      column_headers: ['Names', 'This person and I live in the same country', 'This person and I live in the same household'],
-      column_vars: ['names', 'country', 'household'],
+      column_headers: ['Names', 'This person and I live in the same household', 'This person and I live in the same country'],
+      column_vars: ['names', 'household', 'country'],
       column_icons: false,
       preamble: 'Now, for each person in your close network, answer the following two questions.',
+      dependencies: 'household>country',
       row_values: function(){
         return close_network;
       },
@@ -141,6 +141,90 @@
       }
     }
 
+    function socialNetworkCue(){
+      var cue_string = 'Now, think about the actions and beliefs of most of the PEOPLE IN YOUR CLOSE NETWORK (> 80%), and how this advice is implemented where they currently are IN THE PAST 7 DAYS. Please try to answer as accurately as you can. Remember, the people in your close network are: ';
+
+      if(close_network.length>0){
+        close_network.forEach(function(d, i){
+          if(i>0){
+            cue_string += ', '
+          }
+          cue_string += d.row_name;
+        })
+        cue_string += '. '
+      }
+      cue_string += '<br><br>'
+      cue_string += 'Please move the slider all the way to the right.'
+      return cue_string;
+    }
+
+    var compliance = {
+      type: 'custom-form',
+      preamble: 'The general advice for the coronavirus disease (COVID-19) is to keep physical distance from others.',
+      questions: function(){
+        var social_network_cue = socialNetworkCue()
+        var compliance_cats = ['close_network', 'country', 'world'];
+        var compliance_cats_shuffled = jsPsych.randomization.shuffle(compliance_cats);
+        var compliance_questions = [
+          {type: 'slider',
+          cue: 'First, think about YOUR OWN actions and beliefs, and how this advice is implemented where you currently are IN THE PAST 7 DAYS.'+
+          '<br><br>'+
+          'I have been following this general advice where I live',
+          id: 'comply-self',
+          labels: advice_labels,
+          is_start: true},
+          {type: 'slider',
+          cue: 'I think that it is wrong not to follow this general advice',
+          id: 'ethics-self',
+          labels: agree_labels},
+        ]
+        compliance_cats_shuffled.forEach(function(category){
+          if(category=='close_network'){
+            compliance_questions.push({type: 'slider',
+                cue: social_network_cue,
+                id: 'complaince-attention-check',
+                labels: advice_labels,
+                is_start: true})
+            compliance_questions.push({type: 'slider',
+                cue: 'Most people in my close network have been following this general advice where they live',
+                id: 'complaince-attention-check',
+                labels: advice_labels})
+            compliance_questions.push({type: 'slider',
+                cue: 'Most people in my close network think that it is wrong not to follow this general advice',
+                id: 'complaince-attention-check',
+                labels: advice_labels})
+          }
+          if(category=='country'){
+            compliance_questions.push({type: 'slider',
+                cue: 'Now, think about the actions and beliefs of most of the PEOPLE IN YOUR COUNTRY (> 80%), and how this advice is implemented where they currently are IN THE PAST 7 DAYS. Please try to answer as accurately as you can.'+
+                '<br><br>'+
+                'Most people in my country have been following this general advice.',
+                id: 'comply-country',
+                labels: advice_labels,
+                is_start: true})
+            compliance_questions.push({type: 'slider',
+              cue: 'Most people in my country think that it is wrong not to follow this general advice.',
+              id: 'ethics-country',
+              labels: agree_labels})
+          }
+          if(category=='world'){
+            compliance_questions.push({type: 'slider',
+              cue: 'Now, think about the actions and beliefs of most of the people ALL AROUND THE WORLD (> 80%), and how this advice is implemented where they currently are IN THE PAST 7 DAYS. Please try to answer as accurately as you can.'+
+              '<br><br>'+
+              'Most people all around the world have been following this general advice.',
+              id: 'comply-world',
+              labels: advice_labels,
+              is_start: true})
+            compliance_questions.push({type: 'slider',
+              cue: 'Most people all around the world think that it is wrong not to follow this general advice.',
+              id: 'ethics-world',
+              labels: agree_labels})
+          }
+        })
+        return compliance_questions;
+      },
+    }
+
     var threat = {
       type: 'custom-form',
       preamble: 'Many people who have contracted the disease do not have an official test result for confirmation. Please answer the below questions to the best of your knowledge.',
@@ -148,148 +232,73 @@
         {type: 'slider',
         cue: 'I consider myself to be more vulnerable to the coronavirus disease than the average person:',
         id: 'vulnerable',
-        labels: ['Not vulnerable at all', 'As vulnerable as an average person', 'Extremely vulnerable']},
+        labels: ['Not vulnerable at all', 'As vulnerable as an average person', 'Extremely vulnerable'],
+        has_followup: [{id: 'vulnerable_reason', criterion: 50}],
+        is_start: true},
         {type: 'select',
         id: 'vulnerable_reason',
         cue: 'Please explain why you think that way.',
         options: ['No medical conditions', '1 condition', '2 conditions', '3 conditions', 'More than 3 conditions', 'Prefer not to say', 'Other'],
         values: ['0', '1', '2', '3', '4+', 'none', 'other'],
         specify: 'other',
-        end_line: true,},
+        is_followup: true},
         {type: 'slider',
         cue: 'Staying at home due to the coronavirus disease affects me more severely than the average person:',
         id: 'isolation',
-        labels: ['Not affected at all', 'As affected as an average person', 'Extremely affected']},
+        labels: ['Not affected at all', 'As affected as an average person', 'Extremely affected'],
+        has_followup: [{id: 'isolation_reason', criterion: 50}],
+        is_start: true},
         {type: 'checkbox',
         id: 'isolation_reason',
         cue: 'Please explain why you think that way (select all that apply).',
         options: ['Mental health condition', 'Physical condition', 'Living with someone with a mental health condition', 'Living with someone with a physical condition', 'Lost employment', 'Prefer not to say', 'Other'],
         values: ['mental-self', 'physical-self', 'mental-other', 'physical-other', 'lost-employment', 'none', 'other'],
         specify: 'other',
-        end_line: true},
+        is_followup: true},
         {type: 'slider',
         cue: 'I currently have or have had the coronavirus disease:',
         id: 'infected-self',
-        labels: ['Definitely false', 'Definitely true']},
+        labels: ['Definitely false', 'Definitely true'],
+        is_start: true,
+        has_followup: [{id: 'test-self', criterion: 50}]},
         {type: 'multiple',
         id: 'test-self',
         cue: 'Have you received a positive test result?',
         options: ['Yes', 'No'],
         values: ['yes', 'no'],
-        end_line: true},
+        is_followup: true},
         {type: 'slider',
-        cue: 'Someone I know currently has or has had the coronavirus disease.',
+        cue: 'Someone I know has had the coronavirus disease.',
         id: 'infected-others',
-        labels: ['Definitely false', 'Definitely true']},
+        labels: ['Definitely false', 'Definitely true'],
+        has_followup: [{id: 'infected-others-number', criterion: 50}, {id: 'test-others', criterion: 50}],
+        is_start: true},
         {type: 'select',
         cue: 'How many people?',
         id: 'infected-others-number',
-        options: ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '10+']},
+        options: ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10+'],
+        is_followup: true},
         {type: 'multiple',
         id: 'test-others',
         cue: 'Have they received a positive test result(s)?',
-        options: ['Yes all of them have', 'Some of them have', 'No none of them have'],
-        values: ['all', 'some', 'none']},
-      ]
-    }
-
-    var compliance_self = {
-      type: 'custom-form',
-      preamble: 'The general advice for the coronavirus disease (COVID-19) is to keep physical distance from others.',
-      instructions: 'Think about your own actions and beliefs in the past 7 days.',
-      questions: [
-        {type: 'slider',
-        cue: 'I have been following this general advice where I live',
-        id: 'comply-self',
-        labels: ['Not been following the advice at all', 'Been following the advice exactly', 'Been doing more than what is advised']},
-        {type: 'slider',
-        cue: 'I think that it is wrong not to follow this general advice',
-        id: 'ethics-self',
-        labels: ['Completely disagree', 'Completely agree']},
-      ]
-    }
-
-    var compliance_social_network = {
-      type: 'custom-form',
-      preamble: 'Now, think about the actions and beliefs of most people in your close network.',
-      instructions: function(){
-        var instruction_string = '';
-        if(close_network.length>0){
-          instruction_string += 'Remember, the people in your close network are: '
-          close_network.forEach(function(d, i){
-            console.log('--', d)
-            if(i>0){
-              instruction_string += ', '
-            }
-            instruction_string += d.row_name;
-          })
-          instruction_string += '.'
-        }
-        return instruction_string;
-      },
-      questions: [
-        {type: 'slider',
-        cue: 'Most people in my close network have been following this general advice.',
-        id: 'comply-social',
-        labels: ['Not been following the advice at all', 'Been following the advice exactly', 'Been doing more than what is advised']},
-        {type: 'slider',
-        cue: 'Most people in my close network think that it is wrong not to follow this general advice.',
-        id: 'ethics-social',
-        labels: ['Completely disagree', 'Completely agree']},
-      ]
-    }
-
-    var compliance_country = {
-      type: 'custom-form',
-      preamble: 'Now, think about the actions and beliefs of most of the people in your country.',
-      instructions: 'Please try to answer as accurately as you can.',
-      questions: [
-        {type: 'slider',
-        cue: 'Most people in my country have been following this general advice.',
-        id: 'comply-country',
-        labels: ['Not been following the advice at all', 'Been following the advice exactly', 'Been doing more than what is advised']},
-        {type: 'slider',
-        cue: 'Most people in my country think that it is wrong not to follow this general advice.',
-        id: 'ethics-country',
-        labels: ['Completely disagree', 'Completely agree']},
-      ]
-    }
-
-    var compliance_world = {
-      type: 'custom-form',
-      preamble: 'Now, think about the actions and beliefs of most of the people all around the world.',
-      instructions: 'Please try to answer as accurately as you can.',
-      questions: [
-        {type: 'slider',
-        cue: 'Most people all around the world have been following this general advice.',
-        id: 'comply-world',
-        labels: ['Not been following the advice at all', 'Been following the advice exactly', 'Been doing more than what is advised']},
-        {type: 'slider',
-        cue: 'Most people all around the world think that it is wrong not to follow this general advice.',
-        id: 'ethics-world',
-        labels: ['Completely disagree', 'Completely agree']},
+        options: ['No none of them have', 'Some of them have', 'Yes all of them have'],
+        values: ['all', 'some', 'none'],
+        is_followup: true},
       ]
     }
 
     var warwick_items = ['I’ve been feeling optimistic about the future.',
-    'I’ve been feeling stressful.',
+    'I’ve been feeling useful.',
     'I’ve been feeling relaxed.',
-    'I’ve been feeling interested in other people.',
-    'I’ve had energy to spare.',
+    'I’ve been feeling relaxed.',
     'I’ve been dealing with problems well.',
     'I’ve been thinking clearly.',
-    'I’ve been feeling good about myself.',
     'I’ve been feeling close to other people.',
     'I’ve been able to make up my own mind about things.',
-    'I’ve been feeling loved.',
-    'I’ve been interested in new things.',
-    'I’ve been feeling cheerful.',
     'I’ve been feeling depressed.',
     'I’ve been feeling anxious.',
     'I’ve been feeling angry.',
     'I’ve been feeling lonely.']
-
-    var warwick_labels = ['None of the time', 'Rarely', 'Some of the time', 'Often', 'All of the time'];
 
     var warwick_questions = _.map(warwick_items, function(d,i){
       return {
@@ -305,9 +314,7 @@
       questions: warwick_questions,
       preamble: 'Below are some statements about feelings and thoughts. Please tick the box that best describes your experience of each over the LAST WEEK.'
     }
-
-    var attitude_labels = ['Strongly disagree', 'Strongly agree'];
-
+    
     var corona_attitudes = {
       type: 'custom-form',
       preamble: 'Please answer the below questions in the context of the coronavirus (COVID-19) outbreak',
@@ -317,7 +324,7 @@
         type: 'slider',
         cue: 'Every individual is responsible for themselves if they want to avoid the adverse effects of the disease',
         id: 'self-responsible',
-        labels: attitude_labels,
+        labels: agree_labels,
         end_line: true},
         {type: 'checkbox',
         cue: 'I believe that the authorities in my country are imposing sufficient measures',
@@ -325,7 +332,7 @@
         id: 'state-sufficient-optout'},
         {type: 'slider',
         id: 'state-sufficient',
-        labels: attitude_labels,
+        labels: agree_labels,
         end_line: true},
         {type: 'checkbox',
         cue: 'I believe that measures taken in my country are having a positive impact.',
@@ -333,17 +340,17 @@
         id: 'state-positive-optout'},
         {type: 'slider',
         id: 'state-positive',
-        labels: attitude_labels,
+        labels: agree_labels,
         end_line: true},
         {type: 'slider',
         cue: 'Since the outbreak escalated, I have increased my involvement with groups and organisations to help others.',
         id: 'involvement',
-        labels: attitude_labels,
+        labels: agree_labels,
         end_line: true},
         {type: 'slider',
         cue: 'At times like this, it is essential that people work in solidarity to look after each other',
         id: 'solidarity',
-        labels: attitude_labels,
+        labels: agree_labels,
         end_line: true},
         {type: 'checkbox',
         cue: 'I trust that authorities in my country are knowledgeable about what to do about the disease.',
@@ -351,22 +358,22 @@
         id: 'state-knowledgeable-optout'},
         {type: 'slider',
         id: 'state-knowledgeable',
-        labels: attitude_labels,
+        labels: agree_labels,
         end_line: true},
         {type: 'slider',
         cue: 'Since the outbreak escalated, I have been focused on what I can do to protect myself.',
         id: 'self-protect',
-        labels: attitude_labels,
+        labels: agree_labels,
         end_line: true},
         {type: 'slider',
         cue: 'I believe that my actions are having a positive effect.',
         id: 'self-positive',
-        labels: attitude_labels,
+        labels: agree_labels,
         end_line: true},
         {type: 'slider',
         cue: 'I feel equipped with the information I need on what to do about the disease.',
         id: 'self-informed',
-        labels: attitude_labels,
+        labels: agree_labels,
         end_line: true},
         {type: 'checkbox',
         cue: 'I support the COVID-19 policies applied in my country',
@@ -375,20 +382,20 @@
         end_line: false,},
         {type: 'slider',
         id: 'support',
-        labels: attitude_labels,
+        labels: agree_labels,
         end_line: true,},
         {type: 'slider',
         cue: 'At times like this, each individual should do whatever is needed to look after themselves.',
         id: 'others-responsible',
-        labels: attitude_labels,
+        labels: agree_labels,
         end_line: true},
         {type: 'slider',
         cue: 'It is primarily the state’s responsibility to protect people against the disease.',
         id: 'state-responsible',
-        labels: attitude_labels,
+        labels: agree_labels,
         end_line: true},
         {type: 'slider',
-        cue: 'Due to the outbreak, I have been going out less than usual.',
+        cue: 'Since the outbreak, how much have you been going out?',
         id: 'going-out',
         labels: ['Much less than usual', 'About the same as usual', 'Much more than usual'],
         end_line: true},
@@ -425,17 +432,17 @@
     var general_attitudes = {
       type: 'custom-form',
       preamble: 'Please answer the below questions based on how you think and feel GENERALLY.',
-      instructions: 'SIf you feel that answering the following questions may compromise your privacy, please feel free to choose the “prefer not to answer” option.',
+      instructions: 'If you feel that answering the following questions may compromise your privacy, please feel free to choose the “prefer not to answer” option.',
       questions: [
         {type: 'slider',
         cue: 'I am concerned by the amount of influence that scientists have in society.',
         id: 'scientists-influence-R',
-        labels: attitude_labels,
+        labels: agree_labels,
         end_line: true},
         {type: 'slider',
         cue: 'People trust scientists much less than they should.',
         id: 'scientists-trust',
-        labels: attitude_labels,
+        labels: agree_labels,
         end_line: true},
         {type: 'checkbox',
         cue: 'Think about how close you feel to the country you are currently living in, and choose one of the 5 options below. The two circles representing you and your country vary in how close they are to each other.',
@@ -467,49 +474,52 @@
         {type: 'slider',
         cue: 'I would sacrifice an activity that I enjoy very much if my family did not approve of it.',
         id: 'vertical-0',
-        labels: attitude_labels,
+        labels: agree_labels,
         end_line: true},
         {type: 'slider',
         cue: 'I would do what would please my family, even if I detested that activity.',
         id: 'vertical-1',
-        labels: attitude_labels,
+        labels: agree_labels,
         end_line: true},
         {type: 'slider',
         cue: 'Before taking a major trip, I consult with most members of my family and many friends.',
         id: 'vertical-2',
-        labels: attitude_labels,
+        labels: agree_labels,
         end_line: true},
         {type: 'slider',
         cue: 'I usually sacrifice my self-interest for the benefit of my group.',
         id: 'vertical-3',
-        labels: attitude_labels,
+        labels: agree_labels,
         end_line: true},
         {type: 'slider',
         cue: 'Children should be taught to place duty before pleasure.',
         id: 'vertical-4',
-        labels: attitude_labels,
+        labels: agree_labels,
         end_line: true},
         {type: 'slider',
         cue: 'I hate to disagree with others in my group.',
         id: 'vertical-5',
-        labels: attitude_labels,
+        labels: agree_labels,
         end_line: true},
         {type: 'slider',
         cue: 'We should keep our aging parents with us at home.',
         id: 'vertical-6',
-        labels: attitude_labels,
+        labels: agree_labels,
         end_line: true},
         {type: 'slider',
         cue: 'Children should feel honoured if their parents receive a distinguished award.',
         id: 'vertical-7',
-        labels: attitude_labels,
+        labels: agree_labels,
         end_line: true},
-
-
-        //
       ]
+    }
 
+    var demographics = {
+      type: 'demographics',
+    }
 
+    var occupation = {
+      type: 'occupation'
     }
 
     /*
@@ -517,19 +527,25 @@
     */
 
     // timeline.push(instructions);
-    timeline.push(demographics);
-    timeline.push(occupation);
+
+    // timeline.push(social_network_trial);
+    // timeline.push(close_network_if);
+    // timeline.push(close_network_followup_if);
+
+    timeline.push(compliance);
+
     timeline.push(threat);
-    timeline.push(social_network_trial)
-    timeline.push(close_network_if)
-    timeline.push(close_network_followup_if)
-    timeline.push(compliance_self);
-    timeline.push(compliance_social_network);
-    timeline.push(compliance_country);
-    timeline.push(compliance_world);
     timeline.push(warwick);
+
     timeline.push(corona_attitudes);
     timeline.push(general_attitudes);
+
+    // timeline.push(vertical_collectivism);
+    // timeline.push(eq);
+    timeline.push(demographics);
+    timeline.push(occupation);
+    // timeline.push(email);
+
 
     /*
     Have jsPsych display the experiment timeline
