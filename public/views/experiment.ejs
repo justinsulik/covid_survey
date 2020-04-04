@@ -91,7 +91,8 @@
     var participant_id = {
       type: 'instructions',
       pages: ['To keep your data anonymous, we are assigning everyone an anonymous ID. Yours is <br><b>' + trial_id +'</b><br>'+
-      'You may wish to make a note of this if, for example, you wish to ask us to discard your data.']
+      'You may wish to make a note of this if, for example, you wish to ask us to discard your data.'],
+      show_clickable_nav: true,
     }
 
     var social_network_trial = {
@@ -536,7 +537,7 @@
     Add trials to the timeline
     */
 
-    // timeline.push(information)
+    timeline.push(information)
     timeline.push(consent)
     timeline.push(participant_id);
 
