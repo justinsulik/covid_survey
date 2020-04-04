@@ -89,7 +89,7 @@ jsPsych.plugins["table-completion"] = (function() {
     css += '.cell.highlight {background-color: #cfe1e6}';
     css += '.check-table {border-collapse: collapse}';
     css += '.cell.header {border-top: 1px solid black;border-bottom: 1px solid black;font-size: 12px;}';
-    css += '#add-button {font-size: 80; display: inline-block; font-weight: 900; color: #348ee3; width: 28px; border: 1px solid #348ee3; border-radius: 50px; margin-left: 5px; cursor: pointer}';
+    css += '#add-button {font-size: 80; display: inline-block; font-weight: 900; color: #348ee3; width: 28px; border: 1px solid #005597; border-radius: 50px; margin-left: 5px; cursor: pointer}';
     css += '#final-row {border-top: 1px solid grey; border-bottom: 1px solid grey;}';
     css += '.opt-out {margin-bottom: 10px;}';
     css += '</style>';
@@ -151,8 +151,10 @@ Table
       if(trial.column_icons && i != 0){
         if(trial.column_vars){
             if(trial.column_vars[i]){
-              var icon_file_string = 'img/icons/' + trial.column_vars[i] + '.png';
-              icon_string += '<div><img class="header-icon" src="'+icon_file_string+'"></div>';
+              if(trial.column_vars[i]!='other'){
+                var icon_file_string = 'img/icons/' + trial.column_vars[i] + '.png';
+                icon_string += '<div><img class="header-icon" src="'+icon_file_string+'"></div>';
+              }
             }
         }
       }

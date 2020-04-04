@@ -167,7 +167,7 @@ jsPsych.plugins["demographics"] = (function() {
                       '</select>'+
                       '</div>'+
                       '<div id="household_children" class="hidden">'+
-                      '<div class="demographics followup optional">Number of children (< 18 years)?</div>'+
+                      '<div class="demographics followup optional">Number of children?</div>'+
                       '<select id="household-children-selection" class="jspsych-survey-select">'+
                       household_children_options+
                       '</select>'+
@@ -181,7 +181,7 @@ jsPsych.plugins["demographics"] = (function() {
                       '</div>';
 
     var submit = '<div>'+
-                  '<br><button type="button" id="submit">Submit</button>'+
+                  '<br><button type="button" id="submit">Continue</button>'+
                   '</div>';
 
 

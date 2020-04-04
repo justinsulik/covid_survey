@@ -93,12 +93,14 @@
       pages: ['To keep your data anonymous, we are assigning everyone an anonymous ID. Yours is <br><b>' + trial_id +'</b><br>'+
       'You may wish to make a note of this if, for example, you wish to ask us to discard your data.'],
       show_clickable_nav: true,
+      button_label_next: 'Continue'
     }
 
     var social_network_trial = {
       type: 'table-completion',
       add_new: true,
       column_headers: ['First names. Add new rows with "+"', 'face to face', 'video chat', 'phone', 'email', 'text message', 'other'],
+      column_vars: ['names', 'face', 'video', 'phone', 'email', 'text', 'other'],
       column_icons: true,
       preamble: "Please write down the first names of all the people with whom you had a conversation in the PAST 7 DAYS and how you interacted with them. Select all that apply.",
       instructions: "Please do not include casual contacts, such as interactions with shop workers or professionals (e.g., doctors, police, etc.).",
@@ -149,7 +151,7 @@
     var close_network_followup = {
       type: 'table-completion',
       add_new: false,
-      column_headers: ['Names', 'Lives in the same household as me', 'Lives in the same country as me'],
+      column_headers: ['Name', 'Lives in the same household as me', 'Lives in the same country as me'],
       column_vars: ['names', 'household', 'country'],
       column_icons: false,
       preamble: 'Does this person live in the same household or same country as you?',
@@ -445,6 +447,8 @@
         group: 2}
       ]
     }
+
+    // create items from array forEach
 
     var vertical_collectivism = {
       type: 'table-completion',
