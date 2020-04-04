@@ -14,7 +14,7 @@ jsPsych.plugins["custom-form"] = (function() {
       questions: {
         type: jsPsych.plugins.parameterType.OBJECT, // BOOL, STRING, INT, FLOAT, FUNCTION, KEYCODE, SELECT, HTML_STRING, IMAGE, AUDIO, VIDEO, OBJECT, COMPLEX
         array: true,
-        description: "List of question types/options"
+        description: "List of question types/options. See below for options"
       },
       preamble: {
         type: jsPsych.plugins.parameterType.STRING,
@@ -26,10 +26,33 @@ jsPsych.plugins["custom-form"] = (function() {
         default: null,
         description: "Further instructions"
       },
+      highlight: {
+        type: jsPsych.plugins.parameterType.STRING,
+        default: 'item',
+        description: "Highlight alternate items or alternative groups (marked by question variable: group)"
+      },
+      submit: {
+        type: jsPsych.plugins.parameterType.STRING,
+        default: 'Continue',
+        description: "Text for 'submit' button"
+      },
     }
   };
 
   plugin.trial = function(display_element, trial) {
+
+    /* question options:
+    type: string - question type: slider, select,  checkbox, multiple, text
+    optiona: boolean - if true, can skip
+    inline: boolean - place question inline with cue
+    options: array of options to display
+    values: array of values corresponding to above optionSelected
+    is_start: boolean - if true, start of group
+    has_followup: array of objects - keys id=id of followup items; criterion=what value will unhide followup;
+    is_followup: boolean - if true, is a follow up question, and will only be displayed depending on main question criterion
+    group: numeric - used for highlighting
+    force_all: boolean - if true (for checkbox type) then all options must be selected
+    */
 
     // data saving
     var trial_data = {};
@@ -37,9 +60,29 @@ jsPsych.plugins["custom-form"] = (function() {
     var display_logic = {};
 
     var css = '<style>';
-    css += '.gap {margin-bottom: 10px}';
+    css += '.form-item {text-align: left; padding: 20px 5px 10px 5px}';
+    css += '.preamble {margin: 30px auto 20px auto; font-weight: bold; text-align: left}';
+    css += '.instructions {font-size: 14px;margin-bottom: 10px;}';
+    css += '.gap {margin-bottom: 10px;}';
     css += '.start-line {border-top: 1px solid #c7c7c7; padding-top: 15px;}';
+    css += '.response {margin-left: 10px;}';
+    css += '.specify {display: inline-block;}';
+    css += '.highlight {background-color: #cfe1e6}';
+    css += '.followup {display: inline-block;margin-left: 60px;}';
+    css += '.indent {margin-left: 24px;}';
+    css += '.flex {display: flex;}';
+    css += '.multiple-option {border: 1px solid #c7c7c7; padding: 5px 10px; border-radius: 5px;}';
+    css += '.multiple-option:hover {background-color: #e6f2ff;}';
+    css += '.multiple-option.selected {background-color: #6ab0fc; border: 1px solid #0069db;}';
+    css += '.instructions {font-size: 14px; text-align: left; margin-bottom: 10px;}';
+    css += '.cue {font-size: 16px; padding: 10px 5px 5px 5px;}';
+    css += '.inline > .cue {display: inline-block}';
+    css += '.label {font-size: 12px; line-height: 1.1em;}';
+    css += '.slider.label {font-size: 14px; line-height: 1.1em;}';
+    css += '.hidden {display: none;}';
+    css += '.problem {color: red;}';
     css += '</style>';
+
 
     var html = '';
     if(trial.preamble){
@@ -63,17 +106,37 @@ jsPsych.plugins["custom-form"] = (function() {
       if(question.type=='multiple'){
         question_string = multiple(question, q_index);
       }
+      if(question.type=='text'){
+        question_string = text(question, q_index);
+      }
       html += question_string;
     });
 
+    function text(question_data, q_index){
+      var question_id = question_data.id || 'question-'+q_index;
+      var cue = question_data.cue || '';
+      var options = question_data.options || [];
+      var values = parseValues(question_data);
+      var class_string = 'text-container ' + embellishClassString(question_data, q_index);
+      var placeholder_string = '';
+      if(question_data.placeholder){
+        placeholder_string += question_data.placeholder;
+      }
 
+      var html_string = '<div id="question-container-'+question_id+'" class="'+class_string+'">';
+      html_string += '<div class="cue">'+cue+'</div>';
+      html_string += '<input type="text" name="'+question_id+'" id="'+question_id+'" class="text response answer" placeholder="'+placeholder_string+'">';
+      html_string += '</div>';
+      handleFollowups(question_id, question_data);
+      return html_string;
+    }
 
     function multiple(question_data, q_index){
       var question_id = question_data.id || 'question-'+q_index;
       var cue = question_data.cue || '';
       var options = question_data.options || [];
-      var values = question_data.values || [];
-      var class_string = 'multiple-container ' + embellishClassString(question_data);
+      var values = parseValues(question_data);
+      var class_string = 'multiple-container ' + embellishClassString(question_data, q_index);
 
       var html_string = '<div id="question-container-'+question_id+'" class="'+class_string+'">';
       html_string += '<div class="cue">'+cue+'</div>';
@@ -86,6 +149,7 @@ jsPsych.plugins["custom-form"] = (function() {
         if(values.length>0 && values[i]){
           value_string = values[i];
         } else {
+          option = ''+option;
           value_string = option.replace(/ /g, '_').toLowerCase();
         }
         option_string += '<div style="width: '+option_width+'%" class="multiple-option answer" name="'+question_id+'" id="'+option_id+'" value="'+value_string+'">'+option+'</div>';
@@ -97,52 +161,49 @@ jsPsych.plugins["custom-form"] = (function() {
       return html_string + option_string + '</div>';
     }
 
-    function handleFollowups(question_id, question_data){
-      if(!display_logic[question_id]){
-        display_logic[question_id] = [];
-      }
-      if(question_data.has_followup){
-        question_data.has_followup.forEach(function(d, i){
-          display_logic[question_id].push({type: 'followup', target: d.id, criterion: d.criterion});
-        });
-      }
-    }
-
     function checkbox(question_data, q_index){
       var question_id = question_data.id || 'question-'+q_index;
       display_logic[question_id] = [];
       var cue = question_data.cue || '';
       var options = question_data.options || [];
-      var values = question_data.values || [];
-      var specify = question_data.specify || '';
-      var class_string = 'checkbox-container ' + embellishClassString(question_data);
+      var values = parseValues(question_data);
+      var class_string = 'checkbox-container ' + embellishClassString(question_data, q_index);
 
       var html_string = '<div id="question-container-'+question_id+'" class="'+class_string+'">';
       html_string += '<div class="cue">'+cue+'</div>';
       html_string += '<div id="'+question_id+'" class="custom-form-checkbox response flex" style="width:100%; flex-wrap: wrap;">';
       var option_string = '';
+      var width_string;
+      if(question_data.columns){
+        width_string = Math.round(100/question_data.columns) + "%";
+      } else {
+        width_string = "50%";
+      }
       options.forEach(function(option, i){
         var option_id = question_id+'-'+i;
         var value_string;
+        var option_class_string = 'answer check ';
+        if(question_data.force_all){
+          option_class_string += 'required ';
+        }
         if(values.length>0 && values[i]){
           value_string = values[i];
         } else {
+          option = ''+option;
           value_string = option.replace(/ /g, '_').toLowerCase();
         }
-        option_string += '<div style="width:50%" class=""><input type="checkbox" name="'+question_id+'" id="'+option_id+'" value="'+value_string+'" class="answer check">';
+        option_string += '<div id="option-container-'+option_id+'" style="width:'+width_string+'" class=""><input type="checkbox" name="'+question_id+'" id="'+option_id+'" value="'+value_string+'" class="'+option_class_string+'">';
         option_string += '<label for="'+option_id+'" class="option label"> '+option+'</label></div>';
       });
 
-      if(specify){
-        option_string += '<div id="'+question_id+'-specify" class="response optional hidden"><input type="text" name="'+question_id+'-specify" class="jspsych-demographics answer text" placeholder="Please specify"></div>';
-        display_logic[question_id].push({type: 'specify', unhide_on: 'other'});
+      if(question_data.specify){
+        option_string += '<div id="'+question_id+'-specify" class="response optional hidden"><input type="text" name="'+question_id+'-specify" class="answer text specify" placeholder="Please specify"></div>';
+        display_logic[question_id].push({type: 'specify', unhide_on: question_data.specify});
       }
       option_string += '</div>';
       html_string += option_string;
 
-      if(question_data.has_followup){
-        display_logic[question_id].push({type: 'followup', target: question_data.has_followup.id, criterion: question_data.has_followup.criterion});
-      }
+      handleFollowups(question_id, question_data);
 
       html_string += '</div>';
       return html_string;
@@ -153,8 +214,8 @@ jsPsych.plugins["custom-form"] = (function() {
       display_logic[question_id] = [];
       var cue = question_data.cue || '';
       var options = question_data.options || [];
-      var values = question_data.values || [];
-      var class_string = 'select-container ' + embellishClassString(question_data);
+      var values = parseValues(question_data);
+      var class_string = 'select-container ' + embellishClassString(question_data, q_index);
 
       var html_string = '<div id="question-container-'+question_id+'" class="'+class_string+'">';
       html_string += '<div class="cue">'+cue+'</div>';
@@ -166,6 +227,7 @@ jsPsych.plugins["custom-form"] = (function() {
         if(values.length>0 && values[i]){
           value_string = values[i];
         } else {
+          option = ''+option;
           value_string = option.replace(/ /g, '_').toLowerCase();
         }
         option_string += '<option name="'+question_id+'" id="'+option_id+'" value="'+value_string+'" class="answer select">'+option+'</option>';
@@ -174,12 +236,10 @@ jsPsych.plugins["custom-form"] = (function() {
       html_string += option_string + '</select>';
 
       if(question_data.specify){
-        html_string += '<div id="'+question_id+'-specify" class="response hidden inline optional"><input type="text" name="'+question_id+'-specify" class="jspsych-demographics answer text" placeholder="Please specify"></div>';
-        display_logic[question_id].push({type: 'specify', unhide_on: 'other'});
+        html_string += '<div id="'+question_id+'-specify" class="response hidden inline optional"><input type="text" name="'+question_id+'-specify" id="'+question_id+'-'+question_data.specify+'" class="specify answer text specify" placeholder="Please specify"></div>';
+        display_logic[question_id].push({type: 'specify', unhide_on: question_data.specify});
       }
-      if(question_data.has_followup){
-        display_logic[question_id].push({type: 'followup', target: question_data.has_followup.id, criterion: question_data.has_followup.criterion});
-      }
+      handleFollowups(question_id, question_data);
       html_string += '</div>';
       return html_string;
     }
@@ -189,7 +249,7 @@ jsPsych.plugins["custom-form"] = (function() {
       display_logic[question_id] = [];
       var cue = question_data.cue || '';
       var labels = question_data.labels || '';
-      var class_string = 'slider-container gap ' + embellishClassString(question_data);
+      var class_string = 'slider-container ' + embellishClassString(question_data, q_index);
 
       var width = Math.floor(100/(labels.length+1));
       var html_string = '<div id="question-container-'+question_id+'" class="'+class_string+'" style="width: 80%; margin: auto;">';
@@ -205,7 +265,7 @@ jsPsych.plugins["custom-form"] = (function() {
         if(i==labels.length-1){
           style_string += 'text-align: right;';
         }
-        label_string += '<div class="label" style="'+style_string+'">'+label+'</div>';
+        label_string += '<div class="label slider" style="'+style_string+'">'+label+'</div>';
       });
       label_string += '</div>';
 
@@ -216,9 +276,8 @@ jsPsych.plugins["custom-form"] = (function() {
     }
 
     var submit = '<div>'+
-                  '<br><button type="button" id="submit">Submit</button>'+
+                  '<br><button type="button" id="submit">'+trial.submit+'</button>'+
                   '</div>';
-
 
     display_element.innerHTML = css+html+submit;
 
@@ -228,13 +287,13 @@ Inputs/interactions
 
 
     $('#submit').click(function(e){
-      // var responses = getResponses();
-      // var validated = validateResponses(responses);
-      // if(validated.ok){
-        endTrial();
-      // } else {
-        // highlightProblems(validated.problems);
-      // }
+      var responses = getResponses();
+      var validated = validateResponses(responses);
+      if(validated.ok){
+        endTrial(responses);
+      } else {
+        highlightProblems(validated.problems);
+      }
     });
 
     $('.slider').mouseup(function(e){
@@ -258,9 +317,9 @@ Inputs/interactions
       display_logic[name].forEach(function(d){
         if(d.type=='specify'){
           if(value == d.unhide_on){
-            $("#"+name+'-specify').addClass('inline').removeClass('optional hidden');
+            $("#"+name+'-specify').addClass('specify').removeClass('optional hidden');
           } else {
-            $("#"+name+'-specify').removeClass('inline').addClass('optional hidden');
+            $("#"+name+'-specify').removeClass('specify').addClass('optional hidden');
           }
         }
         if(d.type=='followup'){
@@ -297,9 +356,9 @@ Inputs/interactions
         if(d.type=='specify'){
           if(value == d.unhide_on){
             if(clicked_box.checked){
-              $("#"+name+'-specify').addClass('inline').removeClass('optional hidden');
+              $("#"+name+'-specify').addClass('specify').removeClass('optional hidden');
             } else {
-              $("#"+name+'-specify').removeClass('inline').addClass('optional hidden');
+              $("#"+name+'-specify').removeClass('specify').addClass('optional hidden');
             }
           }
         }
@@ -317,11 +376,63 @@ Inputs/interactions
     Data handling
     */
 
+    function getResponses(){
+      var responses = [];
+      $('.answer').each(function(i, answer){
+        var answer_obj = $(answer);
+        var value = this.value;
+        var id = this.id;
+        var name = answer_obj.attr('name');
+        var optional = false;
+        var required = false;// the difference is that a non-optional question will be OK-ed if one option is ticked; a required question needs to have *all* options ticked
+        if(answer_obj.hasClass('optional')){
+          optional = true;
+        }
+        if(answer_obj.hasClass('required')){
+          required = true;
+        }
+        if(answer_obj.hasClass('select') || answer_obj.hasClass('check')){
+          if(required){
+            responses.push({id: id, name: name, value: value, selected: answer_obj.is(':checked'), required: true});
+          } else if(this.selected){
+            responses.push({id: id, name: name, value: value, optional: optional});
+          }
+        }
+        if(answer_obj.hasClass('text')){
+          responses.push({id: id, name: name, value: value, optional: optional});
+        }
+        if(answer_obj.hasClass('multiple')){
+
+        }
+        if(answer_obj.hasClass('slider')){
+
+        }
+      });
+      // console.log(responses)
+      return responses;
+    }
+
 
     function validateResponses(responses){
+      // console.log('here')
+      var validation = {ok: true, problems: []};
+      responses.forEach(function(d,i){
+        if(d.required && !d.selected){
+            validation.ok = false;
+            validation.problems.push({id: 'option-container-'+d.id, problem: 'required'});
+        }
+      });
+      return validation;
     }
 
     function highlightProblems(problems){
+      // reset problems
+      $('.problem').each(function(i, d){
+        $(d).removeClass('problem');
+      });
+      problems.forEach(function(problem){
+        $('#'+problem.id).addClass('problem');
+      });
 
     }
 
@@ -334,10 +445,10 @@ Inputs/interactions
     }
 
     function endTrial(responses){
-      // var end_time = Date.now();
-      // var rt = end_time - start_time;
-      // trial_data.rt = rt;
-      // trial_data.responses = responses;
+      var end_time = Date.now();
+      var rt = end_time - start_time;
+      trial_data.rt = rt;
+      trial_data.responses = JSON.stringify(responses);
 
       // kill any remaining setTimeout handlers
       jsPsych.pluginAPI.clearAllTimeouts();
@@ -346,11 +457,25 @@ Inputs/interactions
       display_element.innerHTML = '';
 
       jsPsych.finishTrial(trial_data);
-      console.log(trial_data);
+      // console.log(trial_data);
     }
 
-    function embellishClassString(question_data){
-      var class_string = '';
+    function handleFollowups(question_id, question_data){
+      if(!display_logic[question_id]){
+        display_logic[question_id] = [];
+      }
+      if(question_data.has_followup){
+        question_data.has_followup.forEach(function(d, i){
+          display_logic[question_id].push({type: 'followup', target: d.id, criterion: d.criterion});
+        });
+      }
+    }
+
+    function embellishClassString(question_data, q_index){
+      var class_string = 'form-item ';
+      if(question_data.inline){
+        class_string += ' inline';
+      }
       if(question_data.optional){
         class_string += ' optional';
       }
@@ -360,20 +485,28 @@ Inputs/interactions
       if(question_data.is_followup){
         class_string += ' followup hidden';
       }
+      if(trial.highlight=='group'){
+        if(question_data.group%2==1){
+          class_string += ' highlight';
+        }
+      } else {
+        if(q_index%2==1){
+          class_string += ' highlight';
+        }
+      }
       return class_string;
     }
 
-    function numericOptions(tag){
-      return _.reduce(_.range(0,11), function(acc, i){
-        var display_string = i;
-        if(i==10){
-          display_string+='+';
-        }
-        acc += '<option name="'+tag+'" value="'+i+'" class="jspsych-demographics answer select">'+display_string+'</option>';
-        return acc;
-      }, '<option disabled selected value> -- select an option -- </option>');
+    function parseValues(question_data){
+      // value need to be strings. Mostly because a value=0 is treated as null by javascript in some cases
+      var values = [];
+      if(question_data.values){
+        question_data.values.forEach(function(d){
+          values.push(''+d);
+        });
+      }
+      return values;
     }
-
 
     $( document ).ready(function() {
       start_time = Date.now();

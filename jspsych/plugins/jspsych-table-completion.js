@@ -2,6 +2,8 @@
  * Plugin for collecting common demographic variables
  * If adding any more, ensure that the relevant input tag has class="jspsych-demographics answer"
  *store both ID and name of previous data
+
+ LOAD LODASH
  */
 
 jsPsych.plugins["table-completion"] = (function() {
@@ -17,10 +19,10 @@ jsPsych.plugins["table-completion"] = (function() {
         description: "Whether new rows can be added"
       },
       row_values: {
-        type: jsPsych.plugins.parameterType.STRING,
+        type: jsPsych.plugins.parameterType.OBJECT,
         array: true,
         default: [],
-        description: "Values to go in the first column"
+        description: "Values to go in the first column. Object with keys id, row_name"
       },
       column_headers: {
         type: jsPsych.plugins.parameterType.STRING,
@@ -58,6 +60,16 @@ jsPsych.plugins["table-completion"] = (function() {
         type: jsPsych.plugins.parameterType.STRING,
         default: '',
         description: "In format 'column1>column2', selecting column1 will automatically select column 2."
+      },
+      highlighting: {
+        type: jsPsych.plugins.parameterType.STRING,
+        default: 'column',
+        description: "Whether alternative rows or columns are highlighted."
+      },
+      new_row_placeholder: {
+        type: jsPsych.plugins.parameterType.STRING,
+        default: 'Add a name',
+        description: "Text input placeholder for new rows."
       }
     }
   };
@@ -70,9 +82,11 @@ jsPsych.plugins["table-completion"] = (function() {
     var dependencies = {};
 
     var css = '<style>';
+    css += '.preamble {margin-bottom: 20px; font-weight: bold;}';
+    css += '.instructions {font-size: 14px; margin-bottom: 10px;}';
     css += '.check-box {width: 15px; height: 15px; margin: auto; cursor: pointer;}';
     css += '.header-icon {padding: 2px; width: 45%}';
-    css += '.cell.even {background-color: #e6e6e6}';
+    css += '.cell.highlight {background-color: #cfe1e6}';
     css += '.check-table {border-collapse: collapse}';
     css += '.cell.header {border-top: 1px solid black;border-bottom: 1px solid black;font-size: 12px;}';
     css += '#add-button {font-size: 80; display: inline-block; font-weight: 900; color: #348ee3; width: 28px; border: 1px solid #348ee3; border-radius: 50px; margin-left: 5px; cursor: pointer}';
@@ -96,7 +110,6 @@ jsPsych.plugins["table-completion"] = (function() {
       if(matches.length>1){
         dependencies[matches[1]] = matches[2];
       }
-      console.log('dependencies: ', dependencies)
     }
 
 
@@ -108,7 +121,10 @@ Table
     var column_number = trial.column_headers.length;
     var base_width;
     var first_column_width; // allow first column to be wider
-    if(column_number>3){
+    if(column_number>7){
+      base_width = 100/(column_number+3); //first row counts as 3
+      first_column_width = 4*base_width;
+    } else if(column_number>3){
       base_width = 100/(column_number+1); //first row counts as 2
       first_column_width = 2*base_width;
     } else {
@@ -127,25 +143,32 @@ Table
       } else {
         column_width = base_width;
       }
-      if(i%2==1){
-        class_string += ' even';
+      if(i%2==1 && trial.highlighting=='column'){
+        class_string += ' highlight';
       }
       column_width = Math.round(100*column_width)/100;
       var icon_string = '';
-      if(trial.column_icons && i != 0 && i != column_number-1){
-        var icon_file_string = 'img/icons/' + header.replace(/ /g, '-') + '.png';
-        icon_string += '<div><img class="header-icon" src="'+icon_file_string+'"></div>';
+      if(trial.column_icons && i != 0){
+        if(trial.column_vars){
+            if(trial.column_vars[i]){
+              var icon_file_string = 'img/icons/' + trial.column_vars[i] + '.png';
+              icon_string += '<div><img class="header-icon" src="'+icon_file_string+'"></div>';
+            }
+        }
       }
       acc += '<th valign="bottom" class="'+class_string+'" style="width:'+column_width+'%">'+icon_string+header+'</th>';
       return acc;
     }, '');
     var header_row = '<tr>'+header_cells+'</tr>';
 
-    function add_columns(row_id){
+    function add_columns(row_id, row_index){
       var other_cols = '';
       var check_box = '';
       _.range(column_number-1).forEach(function(i){
         var class_string = 'cell clickable ';
+        if(row_index%2==1 && trial.highlighting=='row'){
+          class_string += 'highlight';
+        }
         if(row_id!='final'){
           var id_str;
           if(trial.column_vars.length>0){
@@ -154,8 +177,8 @@ Table
             id_str = 'check-'+row_id+'-'+trial.column_headers[i+1].replace(/ /g, '-');
           }
           check_box = '<input type="checkbox" class="check-box response" id="'+id_str+'">';
-          if(i%2==0){
-            class_string += 'even';
+          if(i%2==0 && trial.highlighting=='column'){
+            class_string += 'highlight';
           }
         }
         other_cols += '<td class="'+class_string+'">'+check_box+'</td>';
@@ -164,14 +187,18 @@ Table
       return other_cols;
     }
 
-    function add_first_column(row_id, type){
+    function add_first_column(row_id, type, row_index){
       var first_col;
+      var class_string = 'cell main ';
+      if(row_index%2==1 && trial.highlighting=='row'){
+        class_string += 'highlight';
+      }
       if(type=='old'){
-        first_col = '<tr><td class="cell main">'+row_id+'</td>';
+        first_col = '<tr><td class="'+class_string+'">'+row_id+'</td>';
       } else {
         first_col = '';
-        first_col += '<tr><td id="row-'+row_id+'">';
-        first_col += '<input id="new-name-'+row_id+'" name="new-name-'+row_id+'" type="text" placeholder="Add a name" size="12">';
+        first_col += '<tr><td class="'+class_string+'" id="row-'+row_id+'">';
+        first_col += '<input id="new-name-'+row_id+'" name="new-name-'+row_id+'" type="text" placeholder="'+trial.new_row_placeholder+'" size="15">';
         first_col += '</td>';
       }
       return first_col;
@@ -189,8 +216,8 @@ Table
       trial.row_values.forEach(function(d,i){
         var row_id = d.id;
         var row_name = d.row_name;
-        var first_col = add_first_column(row_name, 'old');
-        var other_cols = add_columns(row_id);
+        var first_col = add_first_column(row_name, 'old', i);
+        var other_cols = add_columns(row_id, i);
         table_rows += first_col + other_cols;
       });
     }
@@ -198,8 +225,9 @@ Table
 
     function add_new_row(){
       var row_id = latest_row();
-      var first_col = add_first_column(row_id);
-      var other_cols = add_columns(row_id);
+      var row_index = row_id + trial.row_values.length;
+      var first_col = add_first_column(row_id, 'new', row_index);
+      var other_cols = add_columns(row_id, row_index);
       return first_col+other_cols;
     }
 
@@ -218,7 +246,7 @@ Table
     table += '</table>';
 
     var submit = '<div>'+
-                  '<br><button type="button" id="submit">Submit</button>'+
+                  '<br><button type="button" id="submit">Continue</button>'+
                   '</div>';
 
     display_element.innerHTML = css+html+table+submit;

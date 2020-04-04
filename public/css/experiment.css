@@ -97,10 +97,6 @@ h2 {text-align: left}
   margin-bottom: 10px;
 }
 
-.cue {
-  font-size: 16px;
-  margin: 20px auto 10px auto;
-}
 
 .label {
   font-size: 12px;
@@ -141,4 +137,15 @@ h2 {text-align: left}
 
 #submit {
   margin-bottom: 20px;
+  padding: 5px 10px;
+  border: 1px solid #007ca7;
+  background-color: #009bbd;
+  border-radius: 3px;
+  font-size: 18px;
+  color: white;
+}
+
+#submit:hover {
+  background-color: #007ca7;
+  border: 1px solid #005597;
 }

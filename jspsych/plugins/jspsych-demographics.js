@@ -63,10 +63,9 @@ jsPsych.plugins["demographics"] = (function() {
                       '<option disabled selected value> -- select an option -- </option>'+
                       '<option name="gender" value="man" class="jspsych-demographics answer select">Man</option>'+
                       '<option name="gender" value="woman" class="jspsych-demographics answer select">Woman</option>'+
+                      '<option name="gender" value="non-binary" class="jspsych-demographics answer select">Non-binary</option>'+
                       '<option name="gender" value="none" class="jspsych-demographics answer select">Prefer not to say</option>'+
-                      '<option name="gender" value="self" class="jspsych-demographics answer select">Prefer to self-describe</option>'+
                     '</select>&nbsp;'+
-                    '<div id="gender-self" class="hidden"><input type="text" name="gender-self" class="jspsych-demographics answer text" placeholder="How do you identify?"></div>'+
                   '</div></div>';
 
     var education = '<div id="education" class="demographics">'+
@@ -111,7 +110,7 @@ jsPsych.plugins["demographics"] = (function() {
                   '</div>';
 
     var working = '<div id="working" class="demographics">'+
-                      'Are you currently working?'+
+                      'Do you currently have a job?'+
                       '<div class="demographics response">'+
                       '<label class="jspsych-survey-likert-opt-label">'+
                         '<input id="working-no" type="radio" name="working" value="no" class="jspsych-demographics answer radio"> No '+
@@ -144,7 +143,7 @@ jsPsych.plugins["demographics"] = (function() {
                     'Where are you right now?'+
                     '<div class="demographics response">'+
                     '<input type="text" name="location_now-country" class="jspsych-demographics answer text" placeholder="Country">'+
-                    '<input type="text" name="location_now-province" class="jspsych-demographics answer text optional" placeholder="Province/state/region">'+
+                    '<input type="text" name="location_now-province" class="jspsych-demographics answer text optional" placeholder="Province/State/Region (optional)">'+
                     '<input type="text" name="location_now-city" class="jspsych-demographics answer text" placeholder="City">'+
                     '</div></div>';
 
@@ -152,8 +151,8 @@ jsPsych.plugins["demographics"] = (function() {
                     'Where did you grow up?'+
                     '<div class="demographics response">'+
                     '<input type="text" name="location_old-country" class="jspsych-demographics answer text" placeholder="Country">'+
-                    '<input type="text" name="location_old-province" class="jspsych-demographics answer text optional" placeholder="Province/state/region">'+
-                    '<input type="text" name="location_old-city" class="jspsych-demographics answer text" placeholder="City (optional)">'+
+                    '<input type="text" name="location_old-province" class="jspsych-demographics answer text optional" placeholder="Province/State/Region (optional)">'+
+                    '<input type="text" name="location_old-city" class="jspsych-demographics answer text" placeholder="City">'+
                     '</div></div>';
 
     var household_total_options = numericOptions('household-total');
@@ -233,12 +232,6 @@ jsPsych.plugins["demographics"] = (function() {
     $('select').on('change', function (e) {
       var optionSelected = $("option:selected", this);
       var valueSelected = this.value;
-      if(valueSelected=="self"){
-        $("#gender-self").addClass('inline').removeClass('optional hidden');
-      }
-      if(valueSelected!="self" && e.target.id=='gender-selection'){
-        $("#gender-self").removeClass('inline').addClass('optional hidden');
-      }
       if(e.target.id=='household-total-selection'){
         if(parseInt(valueSelected)>0){
           $("#household_elderly").show(400).removeClass('optional');

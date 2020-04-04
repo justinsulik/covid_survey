@@ -19,7 +19,7 @@ jsPsych.plugins["occupation"] = (function() {
       },
       instructions: {
         type: jsPsych.plugins.parameterType.STRING,
-        default: "(select all that apply; if you don’t find your own occupation, please select the options you think apply closely)",
+        default: "(Please choose the closest option and select all that apply)",
         description: "Preamble for the page"
       },
       force_response: {
@@ -44,7 +44,7 @@ jsPsych.plugins["occupation"] = (function() {
     }
 
     var occupations = {
-      'None': ['No occupation'],
+      'None': ['Never had an occupation'],
       'Managers': [],
       'Professionals': ['Science and engineering professional', 'Health professional',
         'Teaching professional', 'Business and administration professional',
