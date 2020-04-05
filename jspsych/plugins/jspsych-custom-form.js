@@ -52,18 +52,19 @@ jsPsych.plugins["custom-form"] = (function() {
     is_followup: boolean - if true, is a follow up question, and will only be displayed depending on main question criterion
     group: numeric - used for highlighting
     force_all: boolean - if true (for checkbox type) then all options must be selected
+    columns: int - for select answers, how many columns to display the options in
     */
 
-    // data saving
+    // set up
     var trial_data = {};
     var start_time;
     var display_logic = {};
+    var slider_movement_tracker = {};
 
     var css = '<style>';
     css += '.form-item {text-align: left; padding: 20px 5px 10px 5px}';
     css += '.preamble {margin: 30px auto 20px auto; font-weight: bold; text-align: left}';
-    css += '.instructions {font-size: 14px;margin-bottom: 10px;}';
-    css += '.gap {margin-bottom: 10px;}';
+    css += '.instructions {font-size: 14px; margin-bottom: 10px;}';
     css += '.start-line {border-top: 1px solid #c7c7c7; padding-top: 15px;}';
     css += '.response {margin-left: 10px;}';
     css += '.specify {display: inline-block;}';
@@ -71,9 +72,9 @@ jsPsych.plugins["custom-form"] = (function() {
     css += '.followup {display: inline-block;margin-left: 60px;}';
     css += '.indent {margin-left: 24px;}';
     css += '.flex {display: flex;}';
-    css += '.multiple-option {border: 1px solid #c7c7c7; padding: 5px 10px; border-radius: 5px;}';
-    css += '.multiple-option:hover {background-color: #e6f2ff;}';
-    css += '.multiple-option.selected {background-color: #6ab0fc; border: 1px solid #0069db;}';
+    css += '.multiple.answer {border: 1px solid #c7c7c7; padding: 5px 10px; border-radius: 5px;}';
+    css += '.multiple.answer:hover {background-color: #e6f2ff;}';
+    css += '.multiple.answer.selected {background-color: #6ab0fc; border: 1px solid #0069db;}';
     css += '.instructions {font-size: 14px; text-align: left; margin-bottom: 10px;}';
     css += '.cue {font-size: 16px; padding: 10px 5px 5px 5px;}';
     css += '.inline > .cue {display: inline-block}';
@@ -82,7 +83,6 @@ jsPsych.plugins["custom-form"] = (function() {
     css += '.hidden {display: none;}';
     css += '.problem {color: red;}';
     css += '</style>';
-
 
     var html = '';
     if(trial.preamble){
@@ -152,7 +152,7 @@ jsPsych.plugins["custom-form"] = (function() {
           option = ''+option;
           value_string = option.replace(/ /g, '_').toLowerCase();
         }
-        option_string += '<div style="width: '+option_width+'%" class="multiple-option answer" name="'+question_id+'" id="'+option_id+'" value="'+value_string+'">'+option+'</div>';
+        option_string += '<div style="width: '+option_width+'%" class="multiple answer" name="'+question_id+'" id="'+option_id+'" value="'+value_string+'">'+option+'</div>';
       });
       option_string += '</div>';
 
@@ -247,6 +247,7 @@ jsPsych.plugins["custom-form"] = (function() {
     function slider(question_data, q_index){
       var question_id = question_data.id || 'question-'+q_index;
       display_logic[question_id] = [];
+      slider_movement_tracker[question_id] = false;
       var cue = question_data.cue || '';
       var labels = question_data.labels || '';
       var class_string = 'slider-container ' + embellishClassString(question_data, q_index);
@@ -299,6 +300,7 @@ Inputs/interactions
     $('.slider').mouseup(function(e){
       var name = this.id;
       var value = this.value;
+      slider_movement_tracker[name] = true;
       display_logic[name].forEach(function(d){
         if(d.type=='followup'){
           if(value > d.criterion){
@@ -332,11 +334,11 @@ Inputs/interactions
      });
     });
 
-    $('.multiple-option').on('click', function(e){
+    $('.multiple.answer').on('click', function(e){
       var option_id = this.id;
       var option_value = $(this).attr('value');
       var name = $(this).attr('name');
-      $('.multiple-option[name='+name+']').each(function(i,d){
+      $('.multiple.answer[name='+name+']').each(function(i,d){
         var current_option = $(d);
         var match = current_option.attr('value') == option_value;
         if(match){
@@ -378,40 +380,70 @@ Inputs/interactions
 
     function getResponses(){
       var responses = [];
+      var requirement_tracker = {};
       $('.answer').each(function(i, answer){
         var answer_obj = $(answer);
-        var value = this.value;
+        var value = this.value || answer_obj.attr('value'); // latter option e.g. for type=multiple, where value is property of div, not input
         var id = this.id;
-        var name = answer_obj.attr('name');
-        var optional = false;
-        var required = false;// the difference is that a non-optional question will be OK-ed if one option is ticked; a required question needs to have *all* options ticked
-        if(answer_obj.hasClass('optional')){
-          optional = true;
+        var name = this.name || answer_obj.attr('name');
+        var parent = findParent(name, id);
+        var selected = answer_obj.hasClass('selected');
+        /*
+        The difference between 'optional' and 'required' is that a non-optional question will be OK-ed if one option is selected.
+        A required question needs to have *all* options selected (e.g. for consent forms).
+        Due to this difference, non-optional answers are handled with the requirement_tracker above (since this involves validation across individual answers),
+        whereas the later is just handled with validateResponses below (since any individual failure is a problem)
+        */
+        var required = answer_obj.hasClass('required');
+        var optional = answer_obj.hasClass('optional');
+        if(!optional && !requirement_tracker[parent]){
+          requirement_tracker[parent] = false;
         }
-        if(answer_obj.hasClass('required')){
-          required = true;
-        }
+        // make a record of non-optional questions, so that if no options are selected, this is noted
+        var numeric = answer_obj.hasClass('numeric');
         if(answer_obj.hasClass('select') || answer_obj.hasClass('check')){
+          selected = answer_obj.is(':checked');
           if(required){
-            responses.push({id: id, name: name, value: value, selected: answer_obj.is(':checked'), required: true});
-          } else if(this.selected){
+            responses.push({id: id, name: name, value: value, selected: selected, required: true});
+          } else if(selected){
+            requirement_tracker[parent] = true;
             responses.push({id: id, name: name, value: value, optional: optional});
           }
         }
         if(answer_obj.hasClass('text')){
-          responses.push({id: id, name: name, value: value, optional: optional});
+          value = JSON.stringify(value);
+          requirement_tracker[parent] = true;
+          responses.push({id: id, name: name, value: value, optional: optional, numeric: numeric});
         }
-        if(answer_obj.hasClass('multiple')){
-
+        if(answer_obj.hasClass('multiple') && selected){
+          requirement_tracker[parent] = true;
+          responses.push({id: id, name: name, value: value, optional: optional, numeric: numeric});
         }
         if(answer_obj.hasClass('slider')){
-
+          // slider doesn't have distinct name, since there aren't any suboptions to choose among
+          var moved = slider_movement_tracker[id];
+          requirement_tracker[parent] = true; // for now - all sliders are automatically ok-ed
+          responses.push({id: id, value: value, optional: optional, moved: moved});
         }
       });
-      // console.log(responses)
+      // console.log(responses);
+      console.log(requirement_tracker);
       return responses;
     }
 
+    function findParent(name, id){
+      // if there is an optout or a nameless anwer (e.g. a slider), then this finds which question it is an optout or slider for
+      var parent = name;
+      if(name){
+        var reg = name.match(/(.+)-optout/);
+        if(reg){
+          parent = reg[1];
+        }
+      } else {
+        parent = id;
+      }
+      return parent;
+    }
 
     function validateResponses(responses){
       // console.log('here')

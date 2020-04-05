@@ -70,7 +70,12 @@ jsPsych.plugins["table-completion"] = (function() {
         type: jsPsych.plugins.parameterType.STRING,
         default: 'Add a name',
         description: "Text input placeholder for new rows."
-      }
+      },
+      select_one: {
+        type: jsPsych.plugins.parameterType.BOOL,
+        default: false,
+        description: "If true, only one choice per row; otherwise as many as apply."
+      },
     }
   };
 
@@ -112,7 +117,6 @@ jsPsych.plugins["table-completion"] = (function() {
       }
     }
 
-
 /***
 Table
 ***/
@@ -132,7 +136,6 @@ Table
       first_column_width = base_width;
     }
 
-
     // header
     var header_cells = _.reduce(trial.column_headers, function(acc, header, i){
       var class_string = 'cell header';
@@ -150,12 +153,12 @@ Table
       var icon_string = '';
       if(trial.column_icons && i != 0){
         if(trial.column_vars){
-            if(trial.column_vars[i]){
-              if(trial.column_vars[i]!='other'){
-                var icon_file_string = 'img/icons/' + trial.column_vars[i] + '.png';
-                icon_string += '<div><img class="header-icon" src="'+icon_file_string+'"></div>';
-              }
+          if(trial.column_vars[i]){
+            if(trial.column_vars[i]!='other'){
+              var icon_file_string = 'img/icons/' + trial.column_vars[i] + '.png';
+              icon_string += '<div><img class="header-icon" src="'+icon_file_string+'"></div>';
             }
+          }
         }
       }
       acc += '<th valign="bottom" class="'+class_string+'" style="width:'+column_width+'%">'+icon_string+header+'</th>';
@@ -273,13 +276,24 @@ Inputs/interactions
 
     $('input[type=checkbox]').on('click', function(e){
       var cell_id = this.id;
-      var reg = cell_id.match(/check-([0-9]+)-([a-z]+)/);
+      var reg = cell_id.match(/check-([0-9a-zA-Z]+)-([0-9a-zA-Z]+)/);
       var checked1 = this.checked;
       if(reg){
         if(reg.length>1){
           var row_id = reg[1];
           var col1 = reg[2];
-          if(trial.column_vars.indexOf(col1)!=-1 && dependencies[col1]){
+          if(trial.select_one){
+            // set all other columns to unchecked
+            $('input[type=checkbox]').each(function(i, d){
+              var other_cell_id = d.id;
+              var check_row = new RegExp('check-'+row_id);
+              var same_row = check_row.test(other_cell_id);
+              if(same_row && other_cell_id!=cell_id){
+                $('#'+other_cell_id).prop("checked", false);
+              }
+            });
+          } else if (trial.column_vars.indexOf(col1)!=-1 && dependencies[col1]){
+            // handle dependencies
             var col2_name = dependencies[col1];
             var checkbox2 = $('#check-'+row_id+'-'+col2_name);
             checkbox2.prop("checked", checked1);
@@ -299,20 +313,17 @@ data handling + endTrial
 
     function getResponses(){
       var responses = {};
-      if(trial.add_new){
-        $(':text').each(function(i,d){
-          var name = $(d).val();
-          var id_str = $(d).attr('id');
-          var id = id_str.match('new-name-([0-9]+)')[1];
-          responses[id] = {name: name, choices: []};
-        });
-      } else {
-        trial.row_values.forEach(function(d,i){
-          var row_id = d.id;
-          var row_name = d.row_name;
-          responses[row_id] = {name: row_name, choices: []};
-        });
-      }
+      trial.row_values.forEach(function(d,i){
+        var row_id = d.id;
+        var row_name = d.row_name;
+        responses[row_id] = {name: row_name, choices: []};
+      });
+      $(':text').each(function(i,d){
+        var name = $(d).val();
+        var id_str = $(d).attr('id');
+        var id = id_str.match('new-name-([0-9]+)')[1];
+        responses[id] = {name: name, choices: []};
+      });
 
       $(':checked').each(function(i,d){
         var id_str = $(d).attr('id');

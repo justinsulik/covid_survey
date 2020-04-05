@@ -34,8 +34,7 @@ const PORT = process.env.PORT || 5000;
 /*
 DATABASE SETUP
 */
-// db.connect(process.env.MONGODB_URI);
-
+db.connect(process.env.MONGODB_URI);
 
 /*
 SET MIDDLEWARE/LIBRARIES/PARSING
@@ -51,7 +50,6 @@ app.use('/helper', express.static(__dirname + "/helper"));
 app.engine('ejs', ejs.renderFile);
 app.set('view engine', 'ejs');
 app.set('views', __dirname + '/public/views');
-
 
 /*
 ROUTING
@@ -81,12 +79,13 @@ app.get('/', (req, res, next) => {
 
     // Check device not mobile
     let browserOk = true;
-    // if (browser) {
-    //   console.log(trial_id, 'Detected browser...', browser);
-    //   if (browser.mobile==true){
-    //     browserOk = false;
-    //   }
-    // }
+    let mobile = false;
+    if (browser) {
+      console.log(trial_id, 'Detected browser...', browser);
+      if (browser.mobile==true){
+        mobile = true;
+      }
+    }
 
     if(browserOk){
       // render the experiment script, along with some data (here, just the trial_id);
