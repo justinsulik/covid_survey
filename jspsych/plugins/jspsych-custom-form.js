@@ -439,7 +439,7 @@ Inputs/interactions
         */
         var required = answer_obj.hasClass('required');
         var optional = answer_obj.hasClass('optional');
-        if(!optional && !requirement_tracker[parent]){
+        if(!optional && !requirement_tracker[parent] && !required){
           requirement_tracker[parent] = false;
         }
         // make a record of non-optional questions, so that if no options are selected, this is noted
@@ -478,6 +478,7 @@ Inputs/interactions
         }
       });
       var response_data = {responses: responses, requirements: requirement_tracker};
+      console.log(response_data);
       return response_data;
     }
 
@@ -533,7 +534,11 @@ Inputs/interactions
       // kill any remaining setTimeout handlers
       jsPsych.pluginAPI.clearAllTimeouts();
       // kill listeners
-      $('body').off();
+      $('#submit').off();
+      $('input[type=checkbox]').off();
+      $('.multiple.answer').off();
+      $('select').off();
+      $('.slider').off();
 
       // clear screen
       display_element.innerHTML = '';

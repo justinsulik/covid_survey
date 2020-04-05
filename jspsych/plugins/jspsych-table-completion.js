@@ -51,10 +51,10 @@ jsPsych.plugins["table-completion"] = (function() {
         default: null,
         description: "More detailed instructions"
       },
-      force_response: {
+      response_validation: {
         type: jsPsych.plugins.parameterType.STRING,
-        default: 'force',
-        description: "If 'force', force responses; if 'invite', just alert asking for responses; otherwise no checking."
+        default: 'none',
+        description: "If 'force_column', force >=1 response per non-empty line; if 'force_row' force response for all rows with checks; if 'force_both' do both."
       },
       dependencies: {
         type: jsPsych.plugins.parameterType.STRING,
@@ -86,6 +86,10 @@ jsPsych.plugins["table-completion"] = (function() {
     var start_time;
     var dependencies = {};
 
+    var left_arrow = '&#8592;';
+    var right_arrow = '&#8594;';
+    var both_arrow = '&#8596;';
+
     var css = '<style>';
     css += '.preamble {margin-bottom: 20px; font-weight: bold;}';
     css += '.instructions {font-size: 14px; margin-bottom: 10px;}';
@@ -97,6 +101,7 @@ jsPsych.plugins["table-completion"] = (function() {
     css += '#add-button {font-size: 80; display: inline-block; font-weight: 900; color: #348ee3; width: 28px; border: 1px solid #005597; border-radius: 50px; margin-left: 5px; cursor: pointer}';
     css += '#final-row {border-top: 1px solid grey; border-bottom: 1px solid grey;}';
     css += '.opt-out {margin-bottom: 10px;}';
+    css += '.problem {color: red; font-weight: 900}';
     css += '</style>';
 
     var html = '';
@@ -136,7 +141,7 @@ Table
       first_column_width = base_width;
     }
 
-    // header
+    // header row
     var header_cells = _.reduce(trial.column_headers, function(acc, header, i){
       var class_string = 'cell header';
       var column_width;
@@ -166,56 +171,7 @@ Table
     }, '');
     var header_row = '<tr>'+header_cells+'</tr>';
 
-    function add_columns(row_id, row_index){
-      var other_cols = '';
-      var check_box = '';
-      _.range(column_number-1).forEach(function(i){
-        var class_string = 'cell clickable ';
-        if(row_index%2==1 && trial.highlighting=='row'){
-          class_string += 'highlight';
-        }
-        if(row_id!='final'){
-          var id_str;
-          if(trial.column_vars.length>0){
-            id_str = 'check-'+row_id+'-'+trial.column_vars[i+1];
-          } else {
-            id_str = 'check-'+row_id+'-'+trial.column_headers[i+1].replace(/ /g, '-');
-          }
-          check_box = '<input type="checkbox" class="check-box response" id="'+id_str+'">';
-          if(i%2==0 && trial.highlighting=='column'){
-            class_string += 'highlight';
-          }
-        }
-        other_cols += '<td class="'+class_string+'">'+check_box+'</td>';
-      });
-      other_cols += '</tr>';
-      return other_cols;
-    }
-
-    function add_first_column(row_id, type, row_index){
-      var first_col;
-      var class_string = 'cell main ';
-      if(row_index%2==1 && trial.highlighting=='row'){
-        class_string += 'highlight';
-      }
-      if(type=='old'){
-        first_col = '<tr><td class="'+class_string+'">'+row_id+'</td>';
-      } else {
-        first_col = '';
-        first_col += '<tr><td class="'+class_string+'" id="row-'+row_id+'">';
-        first_col += '<input id="new-name-'+row_id+'" name="new-name-'+row_id+'" type="text" placeholder="'+trial.new_row_placeholder+'" size="15">';
-        first_col += '</td>';
-      }
-      return first_col;
-    }
-
-    function latest_row(){
-      new_row = trial_data.own_rows.length;
-      trial_data.own_rows.push({row: new_row});
-      return new_row;
-    }
-
-    // previous rows
+    // add in prefilled/given rows
     var table_rows = '';
     if(trial.row_values){
       trial.row_values.forEach(function(d,i){
@@ -227,22 +183,6 @@ Table
       });
     }
     table += header_row+table_rows;
-
-    function add_new_row(){
-      var row_id = latest_row();
-      var row_index = row_id + trial.row_values.length;
-      var first_col = add_first_column(row_id, 'new', row_index);
-      var other_cols = add_columns(row_id, row_index);
-      return first_col+other_cols;
-    }
-
-    function last_row(){
-      var row_id = 'final';
-      var add_button = '<td><div id="add-button">+</div></td>';
-      var first_col = '<tr id="final-row">'+add_button+'</td>';
-      var other_cols = add_columns(row_id);
-      return first_col + other_cols;
-    }
 
     if(trial.add_new){
       table += add_new_row() + last_row();
@@ -304,7 +244,12 @@ Inputs/interactions
 
     $('#submit').on('click', function(e){
       var responses = getResponses();
-      endTrial(responses);
+      var validation = validateResponses(responses);
+      if(responses.optout || validation.ok){
+        endTrial(responses);
+      } else {
+        highlightProblems(validation, responses);
+      }
     });
 
 /***
@@ -319,7 +264,7 @@ data handling + endTrial
         responses[row_id] = {name: row_name, choices: []};
       });
       $(':text').each(function(i,d){
-        var name = $(d).val();
+        var name = JSON.stringify($(d).val());
         var id_str = $(d).attr('id');
         var id = id_str.match('new-name-([0-9]+)')[1];
         responses[id] = {name: name, choices: []};
@@ -327,17 +272,50 @@ data handling + endTrial
 
       $(':checked').each(function(i,d){
         var id_str = $(d).attr('id');
-        if(id_str != 'optout'){
+        if(id_str == 'optout'){
+          responses.optout = true;
+        } else {
           var data = id_str.match('check-([_a-zA-Z0-9]+)-([_a-zA-Z0-9]+)');
           var row_id = data[1];
           var col_id = data[2];
           responses[row_id].choices.push(col_id);
-        } else {
-          responses.optout = true;
         }
-
       });
       return responses;
+    }
+
+    function validateResponses(responses){
+      console.log(responses);
+      var validation = {ok: true, problems: {}};
+      Object.keys(responses).forEach(function(response_id){
+        var response_data = responses[response_id];
+        var row_ok = response_data.name.length>0;
+        var column_ok = response_data.choices.length>0;
+        if(trial.response_validation == 'force_row' && !row_ok){
+          validation.ok = false;
+          validation.problems.row = true;
+        }
+        if(trial.response_validation == 'force_column' && !column_ok){
+          validation.ok = false;
+          validation.problems.column = true;
+        }
+        if(trial.response_validation == 'force_both' && row_ok != column_ok){
+          validation.ok = false;
+          validation.problems.row = true;
+          validation.problems.column = true;
+        }
+      });
+      return validation;
+    }
+
+    function highlightProblems(validation, responses){
+      if(trial.response_validation == 'force_column'){
+        if(validation.problems.column){
+          $('#column-reminder').addClass('problem');
+        } else {
+          $('#column-reminder').removeClass('problem');
+        }
+      }
     }
 
     function endTrial(responses){
@@ -357,6 +335,75 @@ data handling + endTrial
 
       jsPsych.finishTrial(trial_data);
       console.log(trial_data);
+    }
+
+/***
+Helper functions
+***/
+
+    function add_columns(row_id, row_index){
+      var other_cols = '';
+      var check_box = '';
+      _.range(column_number-1).forEach(function(i){
+        var class_string = 'cell clickable ';
+        if(row_index%2==1 && trial.highlighting=='row'){
+          class_string += 'highlight';
+        }
+        if(row_id!='final'){
+          var id_str;
+          if(trial.column_vars.length>0){
+            id_str = 'check-'+row_id+'-'+trial.column_vars[i+1];
+          } else {
+            id_str = 'check-'+row_id+'-'+trial.column_headers[i+1].replace(/ /g, '-');
+          }
+          check_box = '<input type="checkbox" class="check-box response" id="'+id_str+'">';
+          if(i%2==0 && trial.highlighting=='column'){
+            class_string += 'highlight';
+          }
+        }
+        other_cols += '<td class="'+class_string+'">'+check_box+'</td>';
+      });
+      other_cols += '</tr>';
+      return other_cols;
+    }
+
+    function add_first_column(row_id, type, row_index){
+      var first_col;
+      var class_string = 'cell main ';
+      if(row_index%2==1 && trial.highlighting=='row'){
+        class_string += 'highlight';
+      }
+      if(type=='old'){
+        first_col = '<tr><td class="'+class_string+'">'+row_id+'</td>';
+      } else {
+        first_col = '';
+        first_col += '<tr><td class="'+class_string+'" id="row-'+row_id+'">';
+        first_col += '<input id="new-name-'+row_id+'" name="new-name-'+row_id+'" type="text" placeholder="'+trial.new_row_placeholder+'" size="16">';
+        first_col += '</td>';
+      }
+      return first_col;
+    }
+
+    function latest_row(){
+      new_row = trial_data.own_rows.length;
+      trial_data.own_rows.push({row: new_row});
+      return new_row;
+    }
+
+    function add_new_row(){
+      var row_id = latest_row();
+      var row_index = row_id + trial.row_values.length;
+      var first_col = add_first_column(row_id, 'new', row_index);
+      var other_cols = add_columns(row_id, row_index);
+      return first_col+other_cols;
+    }
+
+    function last_row(){
+      var row_id = 'final';
+      var add_button = '<td><div id="add-button">+</div></td>';
+      var first_col = '<tr id="final-row">'+add_button+'</td>';
+      var other_cols = add_columns(row_id);
+      return first_col + other_cols;
     }
 
     $( document ).ready(function() {

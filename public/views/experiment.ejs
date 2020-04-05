@@ -102,9 +102,10 @@
       column_headers: ['First names. Add new rows with "+"', 'face to face', 'video chat', 'phone', 'email', 'text message', 'other'],
       column_vars: ['names', 'face', 'video', 'phone', 'email', 'text', 'other'],
       column_icons: true,
-      preamble: "Please write down the first names of all the people with whom you had a conversation in the PAST 7 DAYS and how you interacted with them. Select all that apply.",
+      preamble: "Please write down the first names of all the people with whom you had a conversation in the PAST 7 DAYS and <span id='column-reminder'>how you interacted with them</span>. Select all that apply.",
       instructions: "Please do not include casual contacts, such as interactions with shop workers or professionals (e.g., doctors, police, etc.).",
       opt_out: "I did NOT have any conversations other than casual contacts in the past 7 days.",
+      response_validation: 'force_column',
       on_finish: function(data){
         var responses = JSON.parse(data.responses)
         Object.keys(responses).forEach(function(id){
@@ -546,7 +547,7 @@
     // timeline.push(consent)
     // timeline.push(participant_id);
     //
-    // timeline.push(social_network_trial);
+    timeline.push(social_network_trial);
     // timeline.push(close_network_if);
     // timeline.push(close_network_followup_if);
     //
