@@ -44,7 +44,7 @@ jsPsych.plugins["custom-form"] = (function() {
     /* question options:
     type: string - question type: slider, select,  checkbox, multiple, text
     optiona: boolean - if true, can skip
-    inline: boolean - place question inline with cue
+    inline: boolean - place question inline with prompt
     options: array of options to display
     values: array of values corresponding to above optionSelected
     is_start: boolean - if true, start of group
@@ -62,27 +62,21 @@ jsPsych.plugins["custom-form"] = (function() {
     var slider_movement_tracker = {};
 
     var css = '<style>';
-    css += '.form-item {text-align: left; padding: 5px}';
-    css += '.preamble {margin: 30px auto 20px auto; font-weight: bold; text-align: left}';
-    css += '.instructions {font-size: 14px; margin-bottom: 10px;}';
-    css += '.start {padding-top: 15px;}';
-    css += '.end {padding-bottom: 15px;}';
-    css += '.response {margin-left: 10px;}';
+    css += '.form-item {text-align: left}';
+    css += '.inline-contents > div:not(.reminder) {display: inline-block}';
+    css += '.response {margin-left: 2vw;}';
     css += '.specify {display: inline-block;}';
     css += '.highlight {background-color: #daedf2}';
-    css += '.followup {display: inline-block; margin-left: 60px}';
+    css += '.followup {display: inline-block; padding-left: 20%}';
     css += '.indent {margin-left: 24px;}';
     css += '.flex {display: flex;}';
     css += '.multiple.answer {border: 1px solid #c7c7c7; padding: 5px 10px; border-radius: 5px;}';
     css += '.multiple.answer:hover {background-color: #e6f2ff;}';
     css += '.multiple.answer.selected {background-color: #6ab0fc; border: 1px solid #0069db;}';
-    css += '.instructions {font-size: 14px; text-align: left; margin-bottom: 10px;}';
-    css += '.cue {font-size: 16px; padding: 10px 5px 5px 5px;}';
-    css += '.inline > .cue {display: inline-block}';
+    css += '.inline > .prompt {display: inline-block}';
     css += '.reminder {display: none; font-size: 16px; padding-left: 5px}';
     css += '.reminder.problem {display: inline-block; font-size: 16px; padding-left: 5px}';
     css += '.label {font-size: 12px; line-height: 1.1em;}';
-    css += '.slider.label {font-size: 14px; line-height: 1.1em;}';
     css += '.hidden {display: none;}';
     css += '.problem {color: red;}';
     css += '</style>';
@@ -136,7 +130,7 @@ jsPsych.plugins["custom-form"] = (function() {
 
     function text(question_data, q_index){
       var question_id = question_data.id || 'question-'+q_index;
-      var cue = question_data.cue || '';
+      var prompt = question_data.prompt || '';
       var options = question_data.options || [];
       var values = parseValues(question_data);
       var class_strings = embellishClassString(question_data, q_index);
@@ -147,10 +141,13 @@ jsPsych.plugins["custom-form"] = (function() {
       }
       var input_class_string = 'text response answer ' + class_strings.input;
       var html_string = '<div id="question-container-'+question_id+'" class="'+container_class_string+'">';
-      html_string += '<div class="cue">'+cue+'</div>';
-      html_string += '<input type="text" name="'+question_id+'" id="'+question_id+'" class="'+input_class_string+'" placeholder="'+placeholder_string+'">';
+      html_string += '<div class="prompt">'+prompt+'</div>';
+      html_string += '<input type="text" name="'+question_id+'" id="'+question_id+'" class="'+input_class_string+'" placeholder="'+placeholder_string+'" size="24">';
       if(question_data.numeric){
         html_string += '<div id="'+question_id+'-reminder" class="reminder">Number only</div>';
+      }
+      if(question_data.email){
+        html_string += '<div id="'+question_id+'-reminder" class="reminder">enter a valid email address (containing @) OR leave blank</div>';
       }
       html_string += '</div>';
       handleFollowups(question_id, question_data);
@@ -159,17 +156,17 @@ jsPsych.plugins["custom-form"] = (function() {
 
     function multiple(question_data, q_index){
       var question_id = question_data.id || 'question-'+q_index;
-      var cue = question_data.cue || '';
+      var prompt = question_data.prompt || '';
       var options = question_data.options || [];
       var values = parseValues(question_data);
       var class_strings = embellishClassString(question_data, q_index);
       var container_class_string = 'multiple-container ' + class_strings.container;
 
       var html_string = '<div id="question-container-'+question_id+'" class="'+container_class_string+'">';
-      html_string += '<div class="cue">'+cue+'</div>';
+      html_string += '<div class="prompt">'+prompt+'</div>';
       html_string += '<div id="'+question_id+'" class="custom-form-multiple flex" style="width:100%; flex-wrap: wrap; justify-content: space-around;">';
       var option_string = '';
-      var option_width = Math.round(100/(options.length+1));
+      var option_width = Math.round(100/(options.length+2));
       options.forEach(function(option, i){
         var option_id = question_id+'-'+i;
         var value_string;
@@ -180,7 +177,7 @@ jsPsych.plugins["custom-form"] = (function() {
           value_string = option.replace(/ /g, '_').toLowerCase();
         }
         var option_class_string = 'multiple answer ' + class_strings.input;
-        option_string += '<div style="width: '+option_width+'%" class="'+option_class_string+'" name="'+question_id+'" id="'+option_id+'" value="'+value_string+'">'+option+'</div>';
+        option_string += '<div style="width: '+option_width+'%; text-align: center;" class="'+option_class_string+'" name="'+question_id+'" id="'+option_id+'" value="'+value_string+'">'+option+'</div>';
       });
       option_string += '</div>';
 
@@ -192,14 +189,14 @@ jsPsych.plugins["custom-form"] = (function() {
     function checkbox(question_data, q_index){
       var question_id = question_data.id || 'question-'+q_index;
       display_logic[question_id] = [];
-      var cue = question_data.cue || '';
+      var prompt = question_data.prompt || '';
       var options = question_data.options || [];
       var values = parseValues(question_data);
       var class_strings = embellishClassString(question_data, q_index);
       var container_class_string = 'checkbox-container ' + class_strings.container;
 
       var html_string = '<div id="question-container-'+question_id+'" class="'+container_class_string+'">';
-      html_string += '<div class="cue">'+cue+'</div>';
+      html_string += '<div class="prompt">'+prompt+'</div>';
       html_string += '<div id="'+question_id+'" class="custom-form-checkbox response flex" style="width:100%; flex-wrap: wrap;">';
       var option_string = '';
       var width_string;
@@ -226,7 +223,7 @@ jsPsych.plugins["custom-form"] = (function() {
       if(question_data.specify){
         option_string += '<div id="'+question_id+'-specify" class="response optional hidden">';
         option_string += '<input type="text" name="'+question_id+'-specify" class="answer text specify optional" placeholder="Please specify">';
-        option_string += '<div id="'+question_id+'-specify-reminder" class="reminder">Please specify</div>'
+        option_string += '<div id="'+question_id+'-specify-reminder" class="reminder">Please specify</div>';
         option_string += '</div>';
         display_logic[question_id].push({type: 'specify', unhide_on: question_data.specify});
       }
@@ -242,7 +239,7 @@ jsPsych.plugins["custom-form"] = (function() {
     function select(question_data, q_index){
       var question_id = question_data.id || 'question-'+q_index;
       display_logic[question_id] = [];
-      var cue = question_data.cue || '';
+      var prompt = question_data.prompt || '';
       var options = question_data.options || [];
       var values = parseValues(question_data);
       var class_strings = embellishClassString(question_data, q_index);
@@ -250,7 +247,7 @@ jsPsych.plugins["custom-form"] = (function() {
       var input_class_string = 'answer select response ' + class_strings.input;
 
       var html_string = '<div id="question-container-'+question_id+'" class="'+container_class_string+'">';
-      html_string += '<div class="cue">'+cue+'</div>';
+      html_string += '<div class="prompt">'+prompt+'</div>';
       html_string += '<select id="'+question_id+'" class="'+input_class_string+'">';
       var option_string = '<option disabled selected value> -- select an option -- </option>';
       options.forEach(function(option,i){
@@ -283,14 +280,14 @@ jsPsych.plugins["custom-form"] = (function() {
       var question_id = question_data.id || 'question-'+q_index;
       display_logic[question_id] = [];
       slider_movement_tracker[question_id] = false;
-      var cue = question_data.cue || '';
+      var prompt = question_data.prompt || '';
       var labels = question_data.labels || '';
       var class_strings = embellishClassString(question_data, q_index);
       var container_class_string = 'slider-container ' + class_strings.container;
 
       var width = Math.floor(100/(labels.length+1));
       var html_string = '<div id="question-container-'+question_id+'" class="'+container_class_string+'" style="width: 80%; margin: auto;">';
-      html_string += '<div class="cue">'+cue+'</div>';
+      html_string += '<div class="prompt">'+prompt+'</div>';
       var input_class_string = 'slider answer ' + class_strings.input;
       html_string += '<input type="range" min="1" max="100" value="50" class="'+input_class_string+'" id="'+question_id+'" style="width: 100%">';
 
@@ -354,7 +351,7 @@ Inputs/interactions
           }
         }
         if(d.type=='followup'){
-          if(value == d.criterion){
+          if(d.criterion(value)){
             $('#question-container-'+d.target).show(400);
             $('#'+d.target).removeClass('optional');
           } else {
@@ -364,6 +361,10 @@ Inputs/interactions
         }
      });
     });
+
+    function evaluateCriterion(value, criterion){
+
+    }
 
     $('.multiple.answer').on('click', function(e){
       var option_id = this.id;
@@ -376,6 +377,18 @@ Inputs/interactions
           current_option.addClass('selected');
         } else {
           current_option.removeClass('selected');
+        }
+      });
+      display_logic[name].forEach(function(d){
+        // console.log(value, name)
+        if(d.type=='followup'){
+          if(option_value == d.criterion){
+            $('#question-container-'+d.target).show(400);
+            $('#'+d.target).removeClass('optional');
+          } else {
+            $('#question-container-'+d.target).hide(200);
+            $('#'+d.target).addClass('optional');
+          }
         }
       });
     });
@@ -439,11 +452,10 @@ Inputs/interactions
         */
         var required = answer_obj.hasClass('required');
         var optional = answer_obj.hasClass('optional');
+        // make a record of non-optional questions, so that if no options are selected, this is noted
         if(!optional && !requirement_tracker[parent] && !required){
           requirement_tracker[parent] = false;
         }
-        // make a record of non-optional questions, so that if no options are selected, this is noted
-        var numeric = answer_obj.hasClass('numeric');
         if(answer_obj.hasClass('select')){
           if(value){
             requirement_tracker[parent] = true;
@@ -460,15 +472,19 @@ Inputs/interactions
           }
         }
         if(answer_obj.hasClass('text')){
+          // make a record of non-optional questions, so that if no options are selected, this is noted
+          var numeric = answer_obj.hasClass('numeric');
+          var email = answer_obj.hasClass('email');
+
           if(value){
             value = JSON.stringify(value.trim());
             requirement_tracker[parent] = true;
-            responses.push({id: id, name: name, value: value, optional: optional, numeric: numeric});
+            responses.push({id: id, name: name, value: value, optional: optional, numeric: numeric, email: email});
           }
         }
         if(answer_obj.hasClass('multiple') && selected){
           requirement_tracker[parent] = true;
-          responses.push({id: id, name: name, value: value, optional: optional, numeric: numeric});
+          responses.push({id: id, name: name, value: value, optional: optional});
         }
         if(answer_obj.hasClass('slider')){
           // slider doesn't have distinct name, since there aren't any suboptions to choose among
@@ -478,7 +494,7 @@ Inputs/interactions
         }
       });
       var response_data = {responses: responses, requirements: requirement_tracker};
-      console.log(response_data);
+      // console.log(response_data);
       return response_data;
     }
 
@@ -497,6 +513,14 @@ Inputs/interactions
             validation.problems.push({id: d.id+'-reminder', problem: 'numeric'});
           }
         }
+        if(d.email){
+          var is_email = checkEmail(d.value);
+          if(!is_email){
+            validation.ok = false;
+            validation.problems.push({id: 'question-container-'+d.id, problem: 'email'});
+            validation.problems.push({id: d.id+'-reminder', problem: 'numeric'});
+          }
+        }
       });
       Object.keys(response_data.requirements).forEach(function(question_id,i){
         var satisfied = response_data.requirements[question_id];
@@ -512,10 +536,12 @@ Inputs/interactions
           }
         }
       });
+      // console.log('validation', validation);
       return validation;
     }
 
     function highlightProblems(problems){
+      $(this).scrollTop(0);
       // reset problems
       $('.problem').each(function(i, d){
         $(d).removeClass('problem');
@@ -563,7 +589,7 @@ Helper functions
     }
 
     function embellishClassString(question_data, q_index){
-      var container_string = 'form-item ';
+      var container_string = ' ';
       var input_string = ' ';
       if(question_data.start){
         container_string += 'start ';
@@ -571,17 +597,17 @@ Helper functions
       if(question_data.end){
         container_string += 'end ';
       }
+      if(question_data.email){
+        input_string += 'email ';
+      }
       if(question_data.numeric){
         input_string += 'numeric ';
       }
       if(question_data.inline){
-        container_string += 'inline ';
+        container_string += 'inline-contents ';
       }
       if(question_data.optional){
         input_string += 'optional ';
-      }
-      if(question_data.is_start){
-        container_string += 'start-line ';
       }
       if(question_data.is_followup){
         container_string += 'followup hidden ';
@@ -599,6 +625,7 @@ Helper functions
           container_string += 'highlight ';
         }
       }
+      container_string += 'form-item ';
       return {container: container_string, input: input_string};
     }
 
@@ -633,8 +660,15 @@ Helper functions
       return is_numeric;
     }
 
+    function checkEmail(value){
+      value = JSON.parse(value);
+      var is_email = (/@/.test(value));
+      return is_email
+    }
+
     $( document ).ready(function() {
       start_time = Date.now();
+      $(this).scrollTop(0);
     });
 
   };

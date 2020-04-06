@@ -17,6 +17,7 @@
         <script language="javascript" src="jspsych/plugins/jspsych-external-html.js"></script>
         <link href="jspsych/css/jspsych.css" rel="stylesheet" type="text/css"></link>
         <link href="css/experiment.css" rel="stylesheet" type="text/css"></link>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
     </head>
     <body>
     </body>
@@ -63,7 +64,7 @@
         experiment_start_time = Date.now();
         return true;
       },
-      cont_btn: 'consent'
+      cont_btn: 'submit'
     }
 
     // instructions
@@ -76,7 +77,7 @@
       'CONTACT DETAILS: Dr. Bahar Tunçgenç at bahar.tuncgenc@nottingham.ac.uk',
       questions: [
         {type: 'checkbox',
-        cue: 'By clicking the button below, I indicate that the study has been explained to me to my satisfaction, and I agree to take part. I understand that I am free to withdraw at any time simply by clicking out of my browser window:',
+        prompt: 'By clicking the button below, I indicate that the study has been explained to me to my satisfaction, and I agree to take part. I understand that I am free to withdraw at any time simply by clicking out of my browser window:',
         id: 'consent',
         columns: 1,
         force_all: true,
@@ -107,7 +108,8 @@
       opt_out: "I did NOT have any conversations other than casual contacts in the past 7 days.",
       response_validation: 'force_column',
       on_finish: function(data){
-        var responses = JSON.parse(data.responses)
+        var response_data = JSON.parse(data.responses);
+        var responses = response_data.responses;
         Object.keys(responses).forEach(function(id){
           if(responses[id].name){
             social_network.push({id: id, row_name: responses[id].name});
@@ -127,7 +129,8 @@
         return social_network;
       },
       on_finish: function(data){
-        var responses = JSON.parse(data.responses)
+        var response_data = JSON.parse(data.responses);
+        var responses = response_data.responses;
         Object.keys(responses).forEach(function(id){
           if(responses[id].choices.indexOf('yes')!=-1){
             console.log('here')
@@ -173,21 +176,21 @@
       }
     }
 
-    function socialNetworkCue(){
-      var cue_string = 'Now, think about the actions and beliefs of most PEOPLE IN YOUR CLOSE NETWORK (> 80%) IN THE PAST 7 DAYS. Consider how this advice was implemented where THEY currently are. Please try to answer as accurately as you can. ';
+    function socialNetworkprompt(){
+      var prompt_string = 'Now, think about the actions and beliefs of most PEOPLE IN YOUR CLOSE NETWORK (> 80%) IN THE PAST 7 DAYS. Consider how this advice was implemented where THEY currently are. Please try to answer as accurately as you can. ';
       if(close_network.length>0){
-        cue_string += 'Remember, the people in your close network are: ';
+        prompt_string += 'Remember, the people in your close network are: ';
         close_network.forEach(function(d, i){
           if(i>0){
-            cue_string += ', '
+            prompt_string += ', '
           }
-          cue_string += d.row_name;
+          prompt_string += d.row_name;
         })
-        cue_string += '. '
+        prompt_string += '. '
       }
-      cue_string += '<br><br>'
-      cue_string += 'Most people in my close network have been following this general advice where they live'
-      return cue_string;
+      prompt_string += '<br><br>'
+      prompt_string += 'Most people in my close network have been following this general advice where they live'
+      return prompt_string;
     }
 
     var compliance = {
@@ -195,12 +198,12 @@
       preamble: 'The general advice for the coronavirus disease (COVID-19) is to keep physical distance from others.',
       highlight: 'group',
       questions: function(){
-        var social_network_cue = socialNetworkCue()
+        var social_network_prompt = socialNetworkprompt()
         var compliance_cats = ['close_network', 'country', 'world'];
         var compliance_cats_shuffled = jsPsych.randomization.shuffle(compliance_cats);
         var compliance_questions = [
           {type: 'slider',
-          cue: 'First, think about YOUR OWN actions and beliefs IN THE PAST 7 DAYS. Consider how this advice was implemented where you currently are.'+
+          prompt: 'First, think about YOUR OWN actions and beliefs IN THE PAST 7 DAYS. Consider how this advice was implemented where you currently are.'+
           '<br><br>'+
           'I have been following this general advice where I live',
           id: 'comply-self',
@@ -208,7 +211,7 @@
           is_start: true,
           group: 0},
           {type: 'slider',
-          cue: 'I think that it is wrong not to follow this general advice',
+          prompt: 'I think that it is wrong not to follow this general advice',
           id: 'ethics-self',
           labels: morality_labels,
           group: 0},
@@ -216,20 +219,20 @@
         compliance_cats_shuffled.forEach(function(category, i){
           if(category=='close_network'){
             compliance_questions.push({type: 'slider',
-                cue: social_network_cue,
+                prompt: social_network_prompt,
                 id: 'comply-social',
                 labels: advice_labels,
                 is_start: true,
                 group: i+1})
             compliance_questions.push({type: 'slider',
-                cue: 'Most people in my close network think that it is wrong not to follow this general advice',
+                prompt: 'Most people in my close network think that it is wrong not to follow this general advice',
                 id: 'ethics-social',
                 labels: morality_labels,
                 group: i+1})
           }
           if(category=='country'){
             compliance_questions.push({type: 'slider',
-                cue: 'Now, think about the actions and beliefs of most PEOPLE IN YOUR COUNTRY (> 80%) IN THE PAST 7 DAYS. Consider how this advice was implemented where THEY currently are. Please try to answer as accurately as you can.'+
+                prompt: 'Now, think about the actions and beliefs of most PEOPLE IN YOUR COUNTRY (> 80%) IN THE PAST 7 DAYS. Consider how this advice was implemented where THEY currently are. Please try to answer as accurately as you can.'+
                 '<br><br>'+
                 'Most people in my country have been following this general advice.',
                 id: 'comply-country',
@@ -237,14 +240,14 @@
                 is_start: true,
                 group: i+1})
             compliance_questions.push({type: 'slider',
-              cue: 'Most people in my country think that it is wrong not to follow this general advice.',
+              prompt: 'Most people in my country think that it is wrong not to follow this general advice.',
               id: 'ethics-country',
               labels: morality_labels,
               group: i+1})
           }
           if(category=='world'){
             compliance_questions.push({type: 'slider',
-              cue: 'Now, think about the actions and beliefs of most PEOPLE ALL AROUND THE WORLD (> 80%)  IN THE PAST 7 DAYS. Consider how this advice was implemented where THEY currently are. Please try to answer as accurately as you can.'+
+              prompt: 'Now, think about the actions and beliefs of most PEOPLE ALL AROUND THE WORLD (> 80%)  IN THE PAST 7 DAYS. Consider how this advice was implemented where THEY currently are. Please try to answer as accurately as you can.'+
               '<br><br>'+
               'Most people all around the world have been following this general advice.',
               id: 'comply-world',
@@ -252,7 +255,7 @@
               is_start: true,
               group: i+1})
             compliance_questions.push({type: 'slider',
-              cue: 'Most people all around the world think that it is wrong not to follow this general advice.',
+              prompt: 'Most people all around the world think that it is wrong not to follow this general advice.',
               id: 'ethics-world',
               labels: morality_labels,
               group: i+1})
@@ -267,15 +270,15 @@
       preamble: 'In your opinion, how vulnerable are the following people to the coronavirus disease?',
       questions: [
         {type: 'slider',
-        cue: 'Myself',
+        prompt: 'Myself',
         id: 'vulnerable-self',
         labels: vulnerable_labels},
         {type: 'slider',
-        cue: 'Someone I care about in my household',
+        prompt: 'Someone I care about in my household',
         id: 'vulnerable-household',
         labels: vulnerable_labels},
         {type: 'slider',
-        cue: 'Someone I care about outside of my household',
+        prompt: 'Someone I care about outside of my household',
         id: 'vulnerable-outside',
         labels: vulnerable_labels},
       ]
@@ -286,15 +289,15 @@
       preamble: 'To the best of your knowledge, have the following people had the coronavirus disease?',
       questions: [
         {type: 'slider',
-        cue: 'Myself',
+        prompt: 'Myself',
         id: 'infected-self',
         labels: infected_labels},
         {type: 'slider',
-        cue: 'Someone I care about in my household.',
+        prompt: 'Someone I care about in my household.',
         id: 'infected-household',
         labels: infected_labels},
         {type: 'slider',
-        cue: 'Someone I care about outside of my household',
+        prompt: 'Someone I care about outside of my household',
         id: 'infected-outside',
         labels: infected_labels},
       ]
@@ -322,6 +325,7 @@
     var wembs = {
       type: 'table-completion',
       preamble: 'Please tell us how you\'ve been feeling and thinking OVER THE LAST WEEK.',
+      response_validation: 'force_column',
       column_headers: wembs_labels,
       row_values: wembs_questions,
       highlighting: 'row',
@@ -332,27 +336,27 @@
       preamble: ' Please answer the below questions in the context of the coronavirus (COVID-19) outbreak.',
       questions: [{
         type: 'slider',
-        cue: 'At times like this, it is essential that people work in solidarity to look after each other',
+        prompt: 'At times like this, it is essential that people work in solidarity to look after each other',
         id: 'solidarity',
         labels: agree_labels,
         is_start: true},
         {type: 'slider',
-        cue: 'I believe that my actions are having a positive impact',
+        prompt: 'I believe that my actions are having a positive impact',
         labels: agree_labels,
         id: 'impact',
         is_start: true},
         {type: 'slider',
-        cue: 'Every individual is responsible for themselves if they want to avoid the adverse effects of the disease',
+        prompt: 'Every individual is responsible for themselves if they want to avoid the adverse effects of the disease',
         labels: agree_labels,
         id: 'responsible',
         is_start: true},
         {type: 'slider',
-        cue: 'Things are improving due to the collective efforts made where I live',
+        prompt: 'Things are improving due to the collective efforts made where I live',
         id: 'improving',
         labels: agree_labels,
         is_start: true},
         {type: 'slider',
-        cue: 'In the PAST 7 DAYS, how much have you been going out?',
+        prompt: 'In the PAST 7 DAYS, how much have you been going out?',
         id: 'solidarity',
         labels: ['Much less than usual', 'About the same as usual', 'Much more than usual'],
         is_start: true}
@@ -360,9 +364,16 @@
     }
 
     var circle_distances = [1.1, 0.83, 0.63, 0.43, 0];
+    var ios_size;
+    if($(window).width() < 480) {
+      ios_size = 60;
+    } else {
+      ios_size = 120;
+    }
+    console.log($(window).width())
     function generateCircles(distances, label1, label2){
-      var width = 120;
-      var height = 120;
+      var width = ios_size;
+      var height = ios_size;
       var base_1 = width/3;
       var base_2 = 2*width/3;
       var base_distance = width/3;
@@ -391,16 +402,16 @@
       preamble: 'Please answer the below questions based on how you think and feel GENERALLY.',
       questions: [
         {type: 'slider',
-        cue: 'People trust scientists a lot more than they should.',
+        prompt: 'People trust scientists a lot more than they should.',
         id: 'cred_sci_1',
         labels: agree_labels,
         is_start: true},
         {type: 'slider',
-        cue: 'A lot of scientific theories are dead wrong.',
+        prompt: 'A lot of scientific theories are dead wrong.',
         id: 'cred_sci_2',
         labels: agree_labels},
         {type: 'slider',
-        cue: 'Our society places too much emphasis on science.',
+        prompt: 'Our society places too much emphasis on science.',
         id: 'cred_sci_3',
         labels: agree_labels},
       ]
@@ -413,7 +424,7 @@
       highlight: 'group',
       questions: [
         {type: 'checkbox',
-        cue: 'How close or distant do you feel to the COUNTRY YOU ARE CURRENTLY LIVING IN? Choose one of the 5 options below.',
+        prompt: 'How close or distant do you feel to the COUNTRY YOU ARE CURRENTLY LIVING IN? Choose one of the 5 options below.',
         id: 'ios-country-optout',
         options: ['Prefer not to answer'],
         is_start: true,
@@ -424,7 +435,7 @@
         values: [0, 1, 2, 3, 4],
         group: 0},
         {type: 'checkbox',
-        cue: 'How close or distant do you feel to the GOVERNMENT OF THE COUNTRY YOU ARE CURRENTLY LIVING IN? Choose one of the 5 options below.',
+        prompt: 'How close or distant do you feel to the GOVERNMENT OF THE COUNTRY YOU ARE CURRENTLY LIVING IN? Choose one of the 5 options below.',
         id: 'ios-gvmt-optout',
         options: ['Prefer not to answer'],
         is_start: true,
@@ -437,7 +448,7 @@
         group: 1},
         {type: 'slider',
         id: 'ideology',
-        cue: 'What is your political self-identification?',
+        prompt: 'What is your political self-identification?',
         labels: ['Very liberal', 'Very conservative'],
         is_start: true,
         group: 2},
@@ -456,6 +467,7 @@
       type: 'table-completion',
       highlighting: 'row',
       preamble: 'Please answer the below questions based on how you think and feel GENERALLY.',
+      response_validation: 'force_column',
       column_headers: vertical_collectivism_labels,
       column_vars: ['', 0, 1, 2, 3, 4, 5, 6, 7, 8],
       row_values: [
@@ -518,12 +530,134 @@
       highlighting: 'row',
       row_values: eq_rows,
       column_headers: agree_likert,
+      response_validation: 'force_column',
       column_vars: ['', 0, 1, 2, 3],
       preamble: 'How strongly do you agree or disagree with the following statements? There are no right or wrong answers, or trick questions.'
     }
 
     var demographics = {
-      type: 'demographics',
+      type: 'custom-form',
+      preamble: 'Please tell us about yourself',
+      highlight: 'group',
+      questions: [
+        {type: 'text',
+        prompt: 'Age: ',
+        placeholder: '(number only)',
+        numeric: true,
+        inline: true,
+        id: 'age',
+        group: 0},
+        {type: 'select',
+        prompt: 'Gender: ',
+        id: 'gender',
+        inline: true,
+        options: ['man', 'woman', 'non-binary', 'prefer not to say'],
+        values: ['man', 'woman', 'nb', 'none'],
+        group: 1},
+        {type: 'select',
+        prompt: 'Education:',
+        id: 'education',
+        options: ['No schooling completed', 'Primary education (age: 5-10)', 'Secondary education (age: 11-17)', 'University undergraduate degree/  professional equivalent', 'Postgraduate degree (Master’s/Doctorate)'],
+        values: [0, 1, 2, 3, 4],
+        group: 2},
+        {type: 'multiple',
+        prompt: 'Are you currently a student?',
+        id: 'student',
+        options: ['No', 'Yes'],
+        values: ['no', 'yes'],
+        has_followup: [{id: 'student-type', criterion: 'yes'}, {id: 'student-place', criterion: 'yes'}],
+        group: 3},
+        {type: 'select',
+        prompt: 'What type?',
+        id: 'student-type',
+        options: ['Full-time', 'Part-time'],
+        values: ['full_time', 'part_time'],
+        is_followup: true,
+        group: 3},
+        {type: 'select',
+        prompt: 'Are you studying from home?',
+        id: 'student-place',
+        options: ['Yes', 'Sometimes', 'No'],
+        values: ['yes', 'sometimes', 'no'],
+        is_followup: true,
+        group: 3},
+        {type: 'multiple',
+        prompt: 'Do you currently have a job?',
+        id: 'work',
+        options: ['No', 'Yes'],
+        values: ['no', 'yes'],
+        has_followup: [{id: 'work-type', criterion: 'yes'}, {id: 'work-place', criterion: 'yes'}],
+        group: 4},
+        {type: 'select',
+        prompt: 'How often?',
+        id: 'work-type',
+        options: ['Full-time', 'Half-time', 'Less than half-time'],
+        values: ['full_time', 'part_time', 'half_time'],
+        is_followup: true,
+        group: 4},
+        {type: 'select',
+        prompt: 'Are you working from home?',
+        id: 'work-place',
+        options: ['Yes', 'Sometimes', 'No'],
+        values: ['yes', 'sometimes', 'no'],
+        is_followup: true,
+        group: 4},
+        {type: 'text',
+        prompt: 'Where are you right now?',
+        placeholder: 'Country',
+        group: 5},
+        {type: 'text',
+        prompt: '',
+        placeholder: 'State/Province (optional)',
+        optional: true,
+        group: 5},
+        {type: 'text',
+        prompt: '',
+        placeholder: 'City',
+        group: 5},
+        {type: 'text',
+        prompt: 'Where did you grow up? (if different)',
+        placeholder: 'Country (optional)',
+        optional: true,
+        group: 6},
+        {type: 'text',
+        prompt: '',
+        placeholder: 'State/Province (optional)',
+        optional: true,
+        group: 6},
+        {type: 'text',
+        prompt: '',
+        placeholder: 'City (optional)',
+        optional: true,
+        group: 6},
+        {type: 'select',
+        prompt: 'Number of people in your household (except for yourself): ',
+        id: 'household-number',
+        options: numericOptions(11, true),
+        values:  numericOptions(11),
+        group: 7,
+        has_followup: [{id: 'household-children', criterion: function(val){
+            return val > 0;
+            }
+          },
+        {id: 'household-elderly', criterion: function(val){
+            return val > 0;
+            }
+          }
+        ]},
+        {type: 'select',
+        prompt: 'Number of children?',
+        id: 'household-children',
+        options: numericOptions(11, true),
+        group: 7,
+        is_followup: true},
+        {type: 'select',
+        prompt: 'Number of elderly (> 60 years)?',
+        id: 'household-elderly',
+        options: numericOptions(11, true),
+        group: 7,
+        is_followup: true}
+      ]
     }
 
     var occupation = {
@@ -531,23 +665,26 @@
     }
 
     var email = {
-      type: 'survey-text',
+      type: 'custom-form',
       questions: [{
         prompt: 'We want to learn about how people\'s attitudes around the Coronavirus change over time. If you would like to help us do that, we will send you a link to a MUCH SHORTER version of this survey in 2 weeks. Note that we will NOT use your email address for any other correspondences, and will not share it with any third parties. Your email address will be deleted from our database immediately after study completion.',
         placeholder: 'Email',
-        name: 'email'
+        type: 'text',
+        id: 'email',
+        optional: true,
+        email: true,
       }]
     } // try separate instructions before/after "note"
 
     /*
     Add trials to the timeline
     */
-
-    // timeline.push(information)
-    // timeline.push(consent)
+    //
+    // timeline.push(information);
+    // timeline.push(consent);
     // timeline.push(participant_id);
     //
-    timeline.push(social_network_trial);
+    // timeline.push(social_network_trial);
     // timeline.push(close_network_if);
     // timeline.push(close_network_followup_if);
     //
@@ -556,15 +693,15 @@
     // timeline.push(vulnerable1);
     // timeline.push(vulnerable2);
     // timeline.push(wembs);
-    //
+
     // timeline.push(corona_attitudes);
     // timeline.push(general_attitudes1);
-    timeline.push(general_attitudes2);
+    // timeline.push(general_attitudes2);
 
-    timeline.push(vertical_collectivism);
-    timeline.push(eq);
-    timeline.push(demographics);
-    timeline.push(occupation);
+    // timeline.push(vertical_collectivism);
+    // timeline.push(eq);
+    // timeline.push(demographics);
+    // timeline.push(occupation);
     timeline.push(email);
 
 
@@ -589,6 +726,16 @@
           helper.save(data, dataUrl, trial_id);
         }
     });
+
+    function numericOptions(range, plus=false){
+      return _.map(_.range(0,range), function(acc, i){
+        if(i==range-1 && plus){
+          return i+'+';
+        } else {
+          return i;
+        }
+      });
+    }
 
     </script>
 </html>

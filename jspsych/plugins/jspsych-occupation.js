@@ -35,6 +35,17 @@ jsPsych.plugins["occupation"] = (function() {
     // data saving
     var trial_data = {};
 
+    var css = '<style>';
+    css += '.options.container {text-align: left}';
+    css += '.option-heading-container {text-align: left}';
+    css += '.disabled {color: grey;}';
+    css += '.disabled~label {color: grey;}';
+    css += '.option-heading-container {display: flex;justify-content: flex-start;}';
+    css += '.option-heading {padding: 2px 4px;font-size: 16px;cursor: pointer;}';
+    css += '.option-heading:hover {background-color: #e6f2ff}';
+    css += '.option-heading.active:not(.disabled) {color: #0069db;font-weight: 600;}';
+    css += '</style>';
+
     var html = '';
     if(trial.preamble){
       html += '<div class="preamble">'+trial.preamble+'</div>';
@@ -44,7 +55,7 @@ jsPsych.plugins["occupation"] = (function() {
     }
 
     var occupations = {
-      'None': ['Never had an occupation'],
+      'Never had an occupation ': ['Never had an occupation'],
       'Managers': [],
       'Professionals': ['Science and engineering professional', 'Health professional',
         'Teaching professional', 'Business and administration professional',
@@ -79,23 +90,23 @@ jsPsych.plugins["occupation"] = (function() {
       var short_heading = shortName(heading);
       var option_heading = '<div class="option-heading-container"><div id="occupation-heading-'+short_heading+'" class="option-heading">'+heading+'</div></div>';
       var option_string;
-      var subfield_string = '<div id="occupation-option-container-'+short_heading+'" class="demographics options container collapse">';
+      var subfield_string = '<div id="occupation-option-container-'+short_heading+'" class="options container collapse">';
       if(short_heading=='other'){
         var other_input_string = '<div class="indent">'+
-        '<input type="text" name="occupation-text" class="jspsych-demographics answer text inline" placeholder="Please specify [max. 100 words]" size="100"></div>';
+        '<input type="text" name="occupation-text" class="answer text inline" placeholder="Please specify" size="25"></div>';
         subfield_string += other_input_string;
       } else {
         if(options.length==0){
           // if no sub-fields, the top-level field must be selectable
           option_string = '<div class="indent">'+
-          '<input type="checkbox" id="occupation-'+short_heading+'" class="demographics answer check" name="occupation" value="'+short_heading+'">'+
+          '<input type="checkbox" id="occupation-'+short_heading+'" class="answer check" name="occupation" value="'+short_heading+'">'+
           '<label for="occupation-'+short_heading+'" class="option label"> '+heading+'</label></div>';
           subfield_string += option_string;
         } else {
           options.forEach(function(option, i){
             short_option = shortName(option);
             option_string = '<div class="indent inline">'+
-            '<input type="checkbox" id="occupation-'+short_heading+'-'+short_option+'" name="occupation" class="demographics answer check" value="'+short_option+'">'+
+            '<input type="checkbox" id="occupation-'+short_heading+'-'+short_option+'" name="occupation" class="answer check" value="'+short_option+'">'+
             '<label for="occupation-'+short_heading+'-'+short_option+'" class="option label"> '+option+'</label></div>';
             subfield_string += option_string;
           });
@@ -105,7 +116,7 @@ jsPsych.plugins["occupation"] = (function() {
       return acc;
     }, '');
 
-    var occupation = '<div id="occupation" class="demographics">'+
+    var occupation = '<div id="occupation" class="">'+
                       '<br>'+
                       occupations_string+'</div>';
 
@@ -116,7 +127,7 @@ jsPsych.plugins["occupation"] = (function() {
 
     html += occupation;
 
-    display_element.innerHTML = html+submit;
+    display_element.innerHTML = css + html + submit;
 
     $('.option-heading').on('click', function(e){
       var heading_id = e.target.id;
@@ -134,18 +145,21 @@ jsPsych.plugins["occupation"] = (function() {
       var checked = this.checked;
       var option_id = e.target.id;
       var parent_name = option_id.match('occupation-([a-z]+)')[1];
-      if(parent_name == 'none'){
+      if(parent_name == 'never'){
         $('input[type=checkbox]').each(function(i,d){
-          if(d.value != 'no'){
+          var other_parent = d.id.match('occupation-([a-z]+)')[1];
+          if(d.value != 'never' && other_parent != parent){
             if(checked){
+              $('#occupation-heading-'+other_parent).addClass('disabled');
               $(d).attr("disabled", true);
               $(d).addClass("disabled");
             } else {
+              $('#occupation-heading-'+other_parent).removeClass('disabled');
               $(d).removeAttr("disabled");
               $(d).removeClass("disabled");
             }
           }
-        })
+        });
       }
 
       var parent_id = 'occupation-option-container-'+parent_name;
