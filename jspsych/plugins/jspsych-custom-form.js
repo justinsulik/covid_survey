@@ -326,7 +326,7 @@ jsPsych.plugins["custom-form"] = (function() {
 Inputs/interactions
 ***/
 
-    $('.slider').mouseup(function(e){
+    $('.slider').on('click', function(e){
       var name = this.id;
       var value = this.value;
       slider_movement_tracker[name] = true;
@@ -496,7 +496,7 @@ Inputs/interactions
           // slider doesn't have distinct name, since there aren't any suboptions to choose among
           var moved = slider_movement_tracker[id];
           if(moved){
-            requirement_tracker[parent] = true; 
+            requirement_tracker[parent] = true;
           }
           responses.push({id: id, value: value, optional: optional, moved: moved});
         }
