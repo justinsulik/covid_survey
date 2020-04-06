@@ -426,30 +426,28 @@
       instructions: 'If you feel that answering the following questions may compromise your privacy, please feel free to choose the "prefer not to answer" option.',
       highlight: 'group',
       questions: [
-        {type: 'checkbox',
-        prompt: 'How close or distant do you feel to the COUNTRY YOU ARE CURRENTLY LIVING IN? Choose one of the 5 options below.',
-        id: 'ios-country',
-        options: ['Prefer not to answer'],
-        is_start: true,
-        group: 0},
         {type: 'multiple',
-        id: 'ios-country-specify',
+        id: 'ios-country',
         unpadded: true,
+        prompt: 'How close or distant do you feel to the COUNTRY YOU ARE CURRENTLY LIVING IN? Choose one of the 5 options below.',
         options: ios_string_country,
         values: [0, 1, 2, 3, 4],
         group: 0},
         {type: 'checkbox',
-        prompt: 'How close or distant do you feel to the GOVERNMENT OF THE COUNTRY YOU ARE CURRENTLY LIVING IN? Choose one of the 5 options below.',
-        id: 'ios-gvmt-optout',
+        id: 'ios-country-optout',
         options: ['Prefer not to answer'],
-        is_start: true,
-        group: 1},
+        group: 0},
         {type: 'multiple',
         id: 'ios-gvmt',
+        prompt: 'How close or distant do you feel to the GOVERNMENT OF THE COUNTRY YOU ARE CURRENTLY LIVING IN? Choose one of the 5 options below.',
         unpadded: true,
         options: ios_string_gvmt,
         values: [0, 1, 2, 3, 4],
-        end_line: true,
+        group: 1},
+        {type: 'checkbox',
+        id: 'ios-gvmt-optout',
+        options: ['Prefer not to answer'],
+        is_start: true,
         group: 1},
         {type: 'slider',
         id: 'ideology',
@@ -471,40 +469,40 @@
     var vertical_collectivism = {
       type: 'table-completion',
       highlighting: 'row',
-      preamble: 'Please answer the below questions based on how you think and feel GENERALLY.',
+      preamble: 'Please answer the below questions based on how you think and feel GENERALLY. <span id="column-reminder" class="">Please answer all items.</span>',
       response_validation: 'force_column',
       column_headers: vertical_collectivism_labels,
       column_vars: ['', 0, 1, 2, 3, 4, 5, 6, 7, 8],
       row_values: [
         {
-            id: 'vert-conf-1',
+            id: 'vert_conf_1',
             row_name: 'I would sacrifice an activity that I enjoy very much if my family did not approve of it'},
         {
-            id: 'vert-conf-2',
+            id: 'vert_conf_2',
             row_name: 'I would do what would please my family, even if I detested that activity',
         },
         {
-            id: 'vert-conf-3',
+            id: 'vert_conf_3',
             row_name: 'Before taking a major trip, I consult with most members of my family and many friends',
         },
         {
-            id: 'vert-conf-4',
+            id: 'vert_conf_4',
             row_name: 'I usually sacrifice my self-interest for the benefit of my group',
         },
         {
-          id: 'vert-conf-5',
+          id: 'vert_conf_5',
           row_name: 'Children should be taught to place duty before pleasure',
         },
         {
-          id: 'vert-conf-6',
+          id: 'vert_conf_6',
           row_name: 'I hate to disagree with others in my group',
         },
         {
-          id: 'vert-conf-7',
+          id: 'vert_conf_7',
           row_name: 'We should keep our aging parents with us at home',
         },
         {
-          id: 'vert-conf-8',
+          id: 'vert_conf_8',
           row_name: 'Children should feel honoured if their parents receive a distinguished award',
         },
       ]
@@ -537,7 +535,7 @@
       column_headers: agree_likert,
       response_validation: 'force_column',
       column_vars: ['', 0, 1, 2, 3],
-      preamble: 'How strongly do you agree or disagree with the following statements? There are no right or wrong answers, or trick questions.'
+      preamble: 'How strongly do you agree or disagree with the following statements? There are no right or wrong answers, or trick questions. <span id="column-reminder" class="">Please answer all items.</span>'
     }
 
     var demographics = {
@@ -685,22 +683,22 @@
     Add trials to the timeline
     */
     //
-    // timeline.push(information);
-    // timeline.push(consent);
-    // timeline.push(participant_id);
-    //
-    // timeline.push(social_network_trial);
-    // timeline.push(close_network_if);
-    // timeline.push(close_network_followup_if);
-    //
-    // timeline.push(compliance);
-    //
-    // timeline.push(vulnerable1);
-    // timeline.push(vulnerable2);
+    timeline.push(information);
+    timeline.push(consent);
+    timeline.push(participant_id);
+
+    timeline.push(social_network_trial);
+    timeline.push(close_network_if);
+    timeline.push(close_network_followup_if);
+
+    timeline.push(compliance);
+
+    timeline.push(vulnerable1);
+    timeline.push(vulnerable2);
     timeline.push(wembs);
 
-    // timeline.push(corona_attitudes);
-    // timeline.push(science_attitudes);
+    timeline.push(corona_attitudes);
+    timeline.push(science_attitudes);
     timeline.push(political_attitudes);
 
     timeline.push(vertical_collectivism);
