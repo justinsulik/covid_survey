@@ -3,6 +3,8 @@
  * If adding any more, ensure that the relevant input tag has class="jspsych-demographics answer"
  *store both ID and name of previous data
 
+- to do: auto parse column headers into vals
+
  LOAD LODASH
  */
 
@@ -35,10 +37,10 @@ jsPsych.plugins["table-completion"] = (function() {
         default: false,
         description: "Whether to include header icons"
       },
-      column_vars: {
+      column_vals: {
         type: jsPsych.plugins.parameterType.STRING,
         array: true,
-        default: [],
+        default: null,
         description: "Short names for variables of columns"
       },
       preamble: {
@@ -85,13 +87,23 @@ jsPsych.plugins["table-completion"] = (function() {
     var trial_data = {own_rows: [], responses: []};
     var start_time;
     var dependencies = {};
+    var column_number = trial.column_headers.length;
 
     var left_arrow = '&#8592;';
     var right_arrow = '&#8594;';
     var both_arrow = '&#8596;';
 
+    var column_vals;
+    if(trial.column_vals){
+      column_vals = trial.column_vals;
+    } else {
+      column_vals = _.range(0, column_number);
+    }
+
     var css = '<style>';
     css += '.check-box {width: 15px; height: 15px; margin: auto; cursor: pointer;}';
+    css += '.arrow {display: none;}';
+    css += 'tr.problem {border: 1px solid red;}';
     css += '.header-icon {padding-top: 2px; width: 60%}';
     css += '.cell.highlight {background-color: #daedf2}';
     css += '.check-table {border-collapse: collapse}';
@@ -99,7 +111,6 @@ jsPsych.plugins["table-completion"] = (function() {
     css += '#add-button {font-size: 1.8em; display: inline-block; font-weight: 900; color: #348ee3; width: 28px; border: 1px solid #005597; border-radius: 50px; margin-left: 5px; cursor: pointer}';
     css += '#final-row {border-top: 1px solid grey; border-bottom: 1px solid grey;}';
     css += '.opt-out {margin-bottom: 10px;}';
-    css += '.problem {font-weight: 900}';
     css += 'td {vertical-align: middle;}';
     css += 'tr {display: table}';
     css += '</style>';
@@ -115,10 +126,15 @@ jsPsych.plugins["table-completion"] = (function() {
       html += '<div class="opt-out"><input id="optout" type="checkbox" value="optout"/><label for="optout">'+trial.opt_out+'</label></div>';
     }
     if(trial.dependencies.length>0){
-      var reg = /([a-z]+)>([a-z]+)/;
+      var reg = /([a-zA-Z0-9_]+)>([a-zA-Z0-9_]+)/;
       var matches = trial.dependencies.match(reg);
       if(matches.length>1){
-        dependencies[matches[1]] = matches[2];
+        var match1 = matches[1];
+        var match2 = matches[2];
+        if(column_vals.indexOf(match1) ==-1 || column_vals.indexOf(match1)==-1){
+          console.log('Error in trial.dependencies: check you provided appropriate column_vals!');
+        }
+        dependencies[match1] = match2;
       }
     }
 
@@ -127,7 +143,6 @@ Table
 ***/
 
     var table = '<table class="check-table" style="width:100%">';
-    var column_number = trial.column_headers.length;
     var base_width;
     var first_column_width; // allow first column to be wider
     if(column_number>7){
@@ -160,10 +175,10 @@ Table
       if(trial.column_icons && i != 0){
         header_height = 40;
         icon_string += '<div style="width:70%; margin: auto; position: relative;">';
-        if(trial.column_vars){
-          if(trial.column_vars[i]){
-            if(trial.column_vars[i]!='other'){
-              var icon_file_string = 'img/icons/' + trial.column_vars[i] + '.png';
+        if(column_vals){
+          if(column_vals[i]){
+            if(column_vals[i]!='other'){
+              var icon_file_string = 'img/icons/' + column_vals[i] + '.png';
               icon_string += '<div style="margin-top: 0px"><img class="header-icon" src="'+icon_file_string+'"></div>';
               icon_string += '</div>';
             }
@@ -182,8 +197,8 @@ Table
     if(trial.row_values){
       trial.row_values.forEach(function(d,i){
         var row_id = d.id;
-        var row_name = d.row_name;
-        var first_col = add_first_column(row_name, 'old', i);
+        var row_val = d.row_name;
+        var first_col = add_first_column(row_id, row_val, i, 'old');
         var other_cols = add_columns(row_id, i);
         table_rows += first_col + other_cols;
       });
@@ -221,9 +236,17 @@ Inputs/interactions
       }
     });
 
+
     $('input[type=checkbox]').on('click', function(e){
+      if(this.id=='optout'){
+        if(this.checked){
+          $('table').css({opacity: 1.0}).animate({opacity: 0}, 200).slideUp();
+        } else {
+          $('table').slideDown().css({opacity: 0}).animate({opacity: 1}, 200);
+        }
+      }
       var cell_id = this.id;
-      var reg = cell_id.match(/check-([0-9a-zA-Z]+)-([0-9a-zA-Z]+)/);
+      var reg = cell_id.match(/check-([0-9a-zA-Z_]+)-([0-9a-zA-Z_]+)/);
       var checked1 = this.checked;
       if(reg){
         if(reg.length>1){
@@ -239,7 +262,7 @@ Inputs/interactions
                 $('#'+other_cell_id).prop("checked", false);
               }
             });
-          } else if (trial.column_vars.indexOf(col1)!=-1 && dependencies[col1]){
+          } else if (column_vals.indexOf(col1)!=-1 && dependencies[col1]){
             // handle dependencies
             var col2_name = dependencies[col1];
             var checkbox2 = $('#check-'+row_id+'-'+col2_name);
@@ -255,6 +278,7 @@ Inputs/interactions
       if(response_data.optout || validation.ok){
         endTrial(response_data);
       } else {
+        console.log(validation);
         highlightProblems(validation, response_data.responses);
       }
     });
@@ -266,16 +290,16 @@ data handling + endTrial
     function getResponses(){
       var responses = {};
       var optout = false;
-      trial.row_values.forEach(function(d,i){
+      trial.row_values.forEach(function(d,row_index){
         var row_id = d.id;
         var row_name = d.row_name;
-        responses[row_id] = {name: row_name, choices: []};
+        responses[row_id] = {name: row_name, row_index: row_index, choices: []};
       });
-      $(':text').each(function(i,d){
+      $(':text').each(function(row_index,d){
         var name = $(d).val();
         var id_str = $(d).attr('id');
-        var id = id_str.match('new-name-([0-9]+)')[1];
-        responses[id] = {name: name, choices: []};
+        var id = id_str.match('new-row-([0-9]+)')[1];
+        responses[id] = {name: name, row_index: row_index, choices: []};
       });
 
       $(':checked').each(function(i,d){
@@ -294,38 +318,48 @@ data handling + endTrial
     }
 
     function validateResponses(responses){
-      console.log(responses);
-      var validation = {ok: true, problems: {}};
+      var validation = {ok: true, problems: {rows: [], columns: []}};
       Object.keys(responses).forEach(function(response_id){
         var response_data = responses[response_id];
         var row_ok = response_data.name.length>0;
         var column_ok = response_data.choices.length>0;
         if(trial.response_validation == 'force_row' && !row_ok){
           validation.ok = false;
-          validation.problems.row = true;
+          validation.problems.flag_row = true;
         }
         if(trial.response_validation == 'force_column' && !column_ok && row_ok){ // last part is to ignore rows with blank text inputs
           validation.ok = false;
-          validation.problems.column = true;
+          validation.problems.flag_column = true;
+          validation.problems.rows.push(response_id);
         }
         if(trial.response_validation == 'force_both' && row_ok != column_ok){
           validation.ok = false;
-          validation.problems.row = true;
-          validation.problems.column = true;
+          validation.problems.flag_row = true;
+          validation.problems.flag_column = true;
         }
       });
       return validation;
     }
 
     function highlightProblems(validation, responses){
+      $('.problem').each(function(i,d){
+        $(d).removeClass('problem');
+      });
       $("html,body").animate({scrollTop: 0}, 100);
       $('tbody').scrollTop(0);
       if(trial.response_validation == 'force_column'){
-        if(validation.problems.column){
+        if(validation.problems.flag_column){
           $('#column-reminder').addClass('problem');
         } else {
           $('#column-reminder').removeClass('problem');
         }
+        validation.problems.rows.forEach(function(row_id){
+          $('#row-'+row_id).addClass('problem');
+          if($('#row-'+row_id).has('input[type="text"]').length){ //.length needed to get false (if lack children), otherwise returns something truthy even if no child
+            $('#row-'+row_id).parent().addClass('problem');
+          }
+        });
+
       }
     }
 
@@ -355,48 +389,49 @@ Helper functions
     function add_columns(row_id, row_index){
       var other_cols = '';
       var check_box = '';
-      _.range(column_number-1).forEach(function(i){
+      _.range(1,column_number).forEach(function(i){
         var class_string = 'cell clickable ';
         if(row_index%2==1 && trial.highlighting=='row'){
           class_string += 'highlight';
         }
-        if(row_id!='final'){
-          var id_str;
-          if(trial.column_vars.length>0){
-            id_str = 'check-'+row_id+'-'+trial.column_vars[i+1];
-          } else {
-            id_str = 'check-'+row_id+'-'+trial.column_headers[i+1].replace(/ /g, '-');
-          }
-          check_box = '<input type="checkbox" class="check-box response" id="'+id_str+'">';
-          if(i%2==0 && trial.highlighting=='column'){
-            class_string += 'highlight';
-          }
+        var id_str = 'check-'+row_id+'-'+column_vals[i];
+        check_box = '<input type="checkbox" class="check-box response" id="'+id_str+'">';
+        if(i%2==1 && trial.highlighting=='column'){
+          class_string += 'highlight';
         }
-        other_cols += '<td class="'+class_string+'" style="width:'+base_width+'%">'+check_box+'</td>';
+        if(row_id=='final'){
+          other_cols += '<td style="width:'+base_width+'%"></td>';
+        } else {
+          other_cols += '<td class="'+class_string+'" style="width:'+base_width+'%">'+check_box+'</td>';
+        }
+
       });
       other_cols += '</tr>';
       return other_cols;
     }
 
-    function add_first_column(row_id, type, row_index){
+    function add_first_column(row_id, row_value, row_index, type){
+      console.log(row_id, row_value, row_index, type)
       var first_col;
       var class_string = 'cell main ';
       if(row_index%2==1 && trial.highlighting=='row'){
         class_string += 'highlight';
       }
       if(type=='old'){
-        first_col = '<tr style="width:100%"><td class="'+class_string+'" style="width:'+first_column_width+'%">'+row_id+'</td>';
+        first_col = '<tr style="width:100%">';
+        first_col += '<td class="'+class_string+'" id="row-'+row_id+'" style="width:'+first_column_width+'%">'+row_value+'</td>';
       } else {
         first_col = '';
-        first_col += '<tr style="width:100%"><td class="'+class_string+'" id="row-'+row_id+'" style="width:'+first_column_width+'%">';
-        first_col += '<input id="new-name-'+row_id+'" name="new-name-'+row_id+'" type="text" placeholder="'+trial.new_row_placeholder+'" size="10">';
+        first_col += '<tr style="width:100%">';
+        first_col += '<td class="'+class_string+'" id="row-'+row_id+'" style="width:'+first_column_width+'%">';
+        first_col += '<input id="new-row-'+row_id+'" name="new-name-'+row_id+'" type="text" placeholder="'+trial.new_row_placeholder+'" size="10">';
         first_col += '</td>';
       }
       return first_col;
     }
 
     function latest_row(){
-      new_row = trial_data.own_rows.length;
+      new_row = trial_data.own_rows.length + trial.row_values.length;
       trial_data.own_rows.push({row: new_row});
       return new_row;
     }
@@ -404,7 +439,7 @@ Helper functions
     function add_new_row(){
       var row_id = latest_row();
       var row_index = row_id + trial.row_values.length;
-      var first_col = add_first_column(row_id, 'new', row_index);
+      var first_col = add_first_column(row_id, null, row_index, 'new');
       var other_cols = add_columns(row_id, row_index);
       return first_col+other_cols;
     }
