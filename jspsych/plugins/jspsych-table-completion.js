@@ -159,11 +159,10 @@ Table
     // header row
     var header_cells = _.reduce(trial.column_headers, function(acc, header, i){
       var class_string = 'cell header';
-      var valign = 'bottom';
+      var valign = 'middle';
       if(i==0){
         class_string += ' main';
         column_width = first_column_width;
-        valign = 'middle';
       } else {
         column_width = base_width;
       }
@@ -178,6 +177,7 @@ Table
         if(column_vals){
           if(column_vals[i]){
             if(column_vals[i]!='other'){
+              valign = 'bottom';
               var icon_file_string = 'img/icons/' + column_vals[i] + '.png';
               icon_string += '<div ><img class="header-icon" src="'+icon_file_string+'"></div>';
               icon_string += '</div>';

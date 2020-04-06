@@ -46,6 +46,7 @@
     var experiment_start_time;
     var data_not_processed = true;
     var dataUrl = '/data?trial_id=' + trial_id;
+    // var social_network = [{row_name: 'flabs', id:0}, {row_name: 'meep', id:1}];
     var social_network = [];
     // var close_network = [{row_name: 'flabs', id:0}, {row_name: 'meep', id:1}];
     var close_network = [];
@@ -675,7 +676,7 @@
     timeline.push(social_network_trial);
     timeline.push(close_network_if);
     timeline.push(close_network_followup_if);
-
+    //
     timeline.push(compliance);
 
     timeline.push(vulnerable1);

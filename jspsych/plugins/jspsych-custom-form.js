@@ -368,6 +368,12 @@ Inputs/interactions
      });
     });
 
+    $('input[type="text"]').on('keydown', function(e){
+      if(e.keyCode==13){
+        this.blur();
+      }
+    });
+
     function evaluateCriterion(value, criterion){
 
     }
@@ -573,6 +579,7 @@ Inputs/interactions
       $('.multiple.answer').off();
       $('select').off();
       $('.slider').off();
+      $('input[type="text"]').off();
 
       // clear screen
       display_element.innerHTML = '';
