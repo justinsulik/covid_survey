@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
     <head>
-        <title>Experiment</title>
+        <title>Survey</title>
         <script language="javascript" src="libraries/jquery-3.4.1.min.js"></script>
         <script language="javascript" src="libraries/lodash.js"></script>
         <script language="javascript" src="libraries/helper.js"></script>
@@ -69,11 +69,13 @@
 
     // instructions
 
+    var researchers = 'Dr Bahar Tunçgenç (University of Nottingham), Prof. Ophelia Deroy (Ludwig Maximillian University of Munich), Dr Guillaume Dezecache (University of Clermont Auvergne), Dr Marwa El Zein (University College London), Dr Yi Zhao (Indiana University)<br>'
+
     var consent = {
       type: 'custom-form',
       preamble: 'SOCIAL TIES AND DISTANCING IN THE FACE OF THE COVID-19 PANDEMIC',
       instructions: 'ETHICS APPROVAL NUMBER: F1248R<br>'+
-      'RESEARCHERS:  Dr Bahar Tunçgenç (University of Nottingham), Prof. Ophelia Deroy (Ludwig Maximillian University of Munich), Dr Guillaume Dezecache (University of Clermont Auvergne), Dr Marwa El Zein (University College London), Dr Yi Zhao (Indiana University)<br>'+
+      'RESEARCHERS: '+researchers+
       'CONTACT DETAILS: Dr. Bahar Tunçgenç at bahar.tuncgenc@nottingham.ac.uk',
       questions: [
         {type: 'checkbox',
@@ -124,6 +126,7 @@
       column_headers: ['Name', 'I would turn to this person for comfort/advice', 'I would NOT turn to this person for comfort/advice'],
       column_vars: ['name', 'yes', 'no'],
       column_icons: false,
+      select_one: true,
       preamble: 'Would you turn to these people if you wanted to seek advice or comfort if you had a major personal problem?',
       row_values: function(){
         return social_network;
@@ -329,6 +332,7 @@
       column_headers: wembs_labels,
       row_values: wembs_questions,
       highlighting: 'row',
+      select_one: true,
     }
 
     var corona_attitudes = {
@@ -533,6 +537,7 @@
       highlighting: 'row',
       row_values: eq_rows,
       column_headers: agree_likert,
+      select_one: true,
       response_validation: 'force_column',
       column_vars: ['', 0, 1, 2, 3],
       preamble: 'How strongly do you agree or disagree with the following statements? There are no right or wrong answers, or trick questions. <span id="column-reminder" class="">Please answer all items.</span>'

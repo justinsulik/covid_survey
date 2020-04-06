@@ -285,7 +285,6 @@ data handling + endTrial
           var data = id_str.match('check-([_a-zA-Z0-9]+)-([_a-zA-Z0-9]+)');
           var row_id = data[1];
           var col_id = data[2];
-          console.log(row_id, col_id)
           responses[row_id].choices.push(col_id);
         }
       });
