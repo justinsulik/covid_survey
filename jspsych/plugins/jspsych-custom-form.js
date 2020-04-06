@@ -495,7 +495,7 @@ Inputs/interactions
         if(answer_obj.hasClass('slider')){
           // slider doesn't have distinct name, since there aren't any suboptions to choose among
           var moved = slider_movement_tracker[id];
-          if(moved){
+          if(moved || value != 50){
             requirement_tracker[parent] = true;
           }
           responses.push({id: id, value: value, optional: optional, moved: moved});
