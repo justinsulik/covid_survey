@@ -96,7 +96,7 @@ jsPsych.plugins["table-completion"] = (function() {
     css += '.cell.highlight {background-color: #daedf2}';
     css += '.check-table {border-collapse: collapse}';
     css += '.cell.header {border-top: 1px solid black;border-bottom: 1px solid black;}';
-    css += '#add-button {font-size: 80; display: inline-block; font-weight: 900; color: #348ee3; width: 28px; border: 1px solid #005597; border-radius: 50px; margin-left: 5px; cursor: pointer}';
+    css += '#add-button {font-size: 1.8em; display: inline-block; font-weight: 900; color: #348ee3; width: 28px; border: 1px solid #005597; border-radius: 50px; margin-left: 5px; cursor: pointer}';
     css += '#final-row {border-top: 1px solid grey; border-bottom: 1px solid grey;}';
     css += '.opt-out {margin-bottom: 10px;}';
     css += '.problem {font-weight: 900}';
@@ -317,6 +317,8 @@ data handling + endTrial
     }
 
     function highlightProblems(validation, responses){
+      $("html,body").animate({scrollTop: 0}, 100);
+      $('tbody').scrollTop(0);
       if(trial.response_validation == 'force_column'){
         if(validation.problems.column){
           $('#column-reminder').addClass('problem');
@@ -416,7 +418,8 @@ Helper functions
 
     $( document ).ready(function() {
       start_time = Date.now();
-      $(this).scrollTop(0);
+      // $(this).scrollTop(0);
+      $("html,body").animate({scrollTop: 0}, 100);
       $('tbody').scrollTop(0);
     });
 

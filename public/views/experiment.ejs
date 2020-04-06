@@ -324,7 +324,7 @@
 
     var wembs = {
       type: 'table-completion',
-      preamble: 'Please tell us how you\'ve been feeling and thinking OVER THE LAST WEEK.',
+      preamble: 'Please tell us how you\'ve been feeling and thinking OVER THE LAST WEEK. <span id="column-reminder" class="">Please answer all items.</span>',
       response_validation: 'force_column',
       column_headers: wembs_labels,
       row_values: wembs_questions,
@@ -363,41 +363,7 @@
       ]
     }
 
-    var circle_distances = [1.1, 0.83, 0.63, 0.43, 0];
-    var ios_size;
-    if($(window).width() < 480) {
-      ios_size = 60;
-    } else {
-      ios_size = 120;
-    }
-    console.log($(window).width())
-    function generateCircles(distances, label1, label2){
-      var width = ios_size;
-      var height = ios_size;
-      var base_1 = width/3;
-      var base_2 = 2*width/3;
-      var base_distance = width/3;
-      var circle_ratio = 0.4;
-      var options = []
-      distances.forEach(function(distance,i){
-        var position_1 = base_1 + base_distance*(1-distance)/2
-        var position_2 = base_2 - base_distance*(1-distance)/2
-        var text_1_y = 5;
-        var text_2_y = height-5;
-        options.push('<div style="height:'+height+'px; width:'+width+'px"><svg>'+
-        '<text x="'+position_1+'", y="'+text_1_y+'" dominant-baseline="hanging" text-anchor="middle" fill="blue" font-size="14">'+label1+'</text>'+
-        '<text x="'+position_2+'", y="'+text_2_y+'" dominant-baseline="baseline" text-anchor="middle" fill="red" font-size="14">'+label2+'</text>'+
-        '<circle cx="'+position_1+'" cy="'+height/2+'" r="'+base_distance*circle_ratio+'" fill="blue" fill-opacity="0.4"/>'+
-        '<circle cx="'+position_2+'" cy="'+height/2+'" r="'+base_distance*(1-circle_ratio)+'" fill="red" fill-opacity="0.4"/>'+
-        '</svg></div>')
-      })
-      return options;
-    }
-
-    var ios_string_country = generateCircles(circle_distances, 'You', 'Your country');
-    var ios_string_gvmt = generateCircles(circle_distances, 'You', 'Your government');
-
-    var general_attitudes1 = {
+    var science_attitudes = {
       type: 'custom-form',
       preamble: 'Please answer the below questions based on how you think and feel GENERALLY.',
       questions: [
@@ -417,7 +383,44 @@
       ]
     }
 
-    var general_attitudes2 = {
+    var circle_distances = [1.1, 0.83, 0.63, 0.43, 0];
+    var ios_size;
+    var ios_font;
+    if($(window).width() < 480) {
+      ios_size = 48;
+      ios_font = 8;
+    } else {
+      ios_size = 120;
+      ios_font = 14;
+    }
+    console.log($(window).width())
+    function generateCircles(distances, label1, label2){
+      var width = ios_size;
+      var height = ios_size;
+      var base_1 = width/3;
+      var base_2 = 2*width/3;
+      var base_distance = width/3;
+      var circle_ratio = 0.4;
+      var options = []
+      distances.forEach(function(distance,i){
+        var position_1 = base_1 + base_distance*(1-distance)/2
+        var position_2 = base_2 - base_distance*(1-distance)/2
+        var text_1_y = 5;
+        var text_2_y = height-2*(ios_font);
+        options.push('<div style="height:'+height+'px; width:'+width+'px"><svg>'+
+        '<text x="'+position_1+'", y="'+text_1_y+'" dominant-baseline="hanging" text-anchor="middle" fill="blue" font-size="'+ios_font+'">'+label1+'</text>'+
+        '<text x="'+position_2+'", y="'+text_2_y+'" dominant-baseline="hanging" text-anchor="middle" fill="red" font-size="'+ios_font+'">'+label2+'</text>'+
+        '<circle cx="'+position_1+'" cy="'+height/2+'" r="'+base_distance*circle_ratio+'" fill="blue" fill-opacity="0.4"/>'+
+        '<circle cx="'+position_2+'" cy="'+height/2+'" r="'+base_distance*(1-circle_ratio)+'" fill="red" fill-opacity="0.4"/>'+
+        '</svg></div>')
+      })
+      return options;
+    }
+
+    var ios_string_country = generateCircles(circle_distances, 'You', 'country');
+    var ios_string_gvmt = generateCircles(circle_distances, 'You', 'government');
+
+    var political_attitudes = {
       type: 'custom-form',
       preamble: 'Please answer the below questions based on how you think and feel GENERALLY.',
       instructions: 'If you feel that answering the following questions may compromise your privacy, please feel free to choose the "prefer not to answer" option.',
@@ -425,12 +428,13 @@
       questions: [
         {type: 'checkbox',
         prompt: 'How close or distant do you feel to the COUNTRY YOU ARE CURRENTLY LIVING IN? Choose one of the 5 options below.',
-        id: 'ios-country-optout',
+        id: 'ios-country',
         options: ['Prefer not to answer'],
         is_start: true,
         group: 0},
         {type: 'multiple',
-        id: 'ios-country',
+        id: 'ios-country-specify',
+        unpadded: true,
         options: ios_string_country,
         values: [0, 1, 2, 3, 4],
         group: 0},
@@ -442,6 +446,7 @@
         group: 1},
         {type: 'multiple',
         id: 'ios-gvmt',
+        unpadded: true,
         options: ios_string_gvmt,
         values: [0, 1, 2, 3, 4],
         end_line: true,
@@ -692,16 +697,16 @@
     //
     // timeline.push(vulnerable1);
     // timeline.push(vulnerable2);
-    // timeline.push(wembs);
+    timeline.push(wembs);
 
     // timeline.push(corona_attitudes);
-    // timeline.push(general_attitudes1);
-    // timeline.push(general_attitudes2);
+    // timeline.push(science_attitudes);
+    timeline.push(political_attitudes);
 
-    // timeline.push(vertical_collectivism);
-    // timeline.push(eq);
-    // timeline.push(demographics);
-    // timeline.push(occupation);
+    timeline.push(vertical_collectivism);
+    timeline.push(eq);
+    timeline.push(demographics);
+    timeline.push(occupation);
     timeline.push(email);
 
 

@@ -70,7 +70,8 @@ jsPsych.plugins["custom-form"] = (function() {
     css += '.followup {display: inline-block; padding-left: 20%}';
     css += '.indent {margin-left: 24px;}';
     css += '.flex {display: flex;}';
-    css += '.multiple.answer {border: 1px solid #c7c7c7; padding: 5px 10px; border-radius: 5px;}';
+    css += '.multiple.answer {border: 1px solid #c7c7c7; border-radius: 5px; padding: 5px 10px;}';
+    css += '.multiple.answer.unpadded {padding: 0px;}';
     css += '.multiple.answer:hover {background-color: #e6f2ff;}';
     css += '.multiple.answer.selected {background-color: #6ab0fc; border: 1px solid #0069db;}';
     css += '.inline > .prompt {display: inline-block}';
@@ -166,7 +167,12 @@ jsPsych.plugins["custom-form"] = (function() {
       html_string += '<div class="prompt">'+prompt+'</div>';
       html_string += '<div id="'+question_id+'" class="custom-form-multiple flex" style="width:100%; flex-wrap: wrap; justify-content: space-around;">';
       var option_string = '';
-      var option_width = Math.round(100/(options.length+2));
+      var option_width;
+      if(options.length>4){
+        option_width = Math.round(100/(options.length+1));
+      } else {
+        option_width = Math.round(100/(options.length+2));
+      }
       options.forEach(function(option, i){
         var option_id = question_id+'-'+i;
         var value_string;
@@ -541,7 +547,7 @@ Inputs/interactions
     }
 
     function highlightProblems(problems){
-      $(this).scrollTop(0);
+      $("html,body").animate({scrollTop: 0}, 100);
       // reset problems
       $('.problem').each(function(i, d){
         $(d).removeClass('problem');
@@ -616,6 +622,9 @@ Helper functions
       if(question_data.force_all){
         input_string += 'required ';
       }
+      if(question_data.unpadded){
+        input_string += 'unpadded ';
+      }
       if(trial.highlight=='group'){
         if(question_data.group%2==1){
           container_string += 'highlight ';
@@ -663,12 +672,12 @@ Helper functions
     function checkEmail(value){
       value = JSON.parse(value);
       var is_email = (/@/.test(value));
-      return is_email
+      return is_email;
     }
 
     $( document ).ready(function() {
       start_time = Date.now();
-      $(this).scrollTop(0);
+      $("html,body").animate({scrollTop: 0}, 100);
     });
 
   };

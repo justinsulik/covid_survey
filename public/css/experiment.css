@@ -185,7 +185,7 @@ and (max-device-width : 480px) {
 
    .opt-out {font-size: 3vw;}
 
-   .multiple.answer {font-size: 3.5vw};
+   .multiple.answer {font-size: 3.5vw}
 
    input[type="text"].answer {
      font-size: 3vw;
