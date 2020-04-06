@@ -119,14 +119,16 @@ thead, tbody {display: block;}
 
 .prompt {
   font-size: 16px;
-  padding: 10px 0px 5px 0px;
+  padding: 3px 0px 3px 0px;
 }
 
 .start {padding-top: 18px;}
 
 .end {padding-bottom: 18px;}
 
-.form-item:not(.start) {padding-top:12px;}
+.form-item:not(.start) {padding-top:8px;}
+
+.prompt > p {margin-top: 10px; margin-bottom: 6px;}
 
 .cell.header {
   font-size: 13px;
@@ -174,9 +176,9 @@ and (max-device-width : 480px) {
      padding: 1vw 0vw 1vw 0vw;
    }
 
-   .start {padding-top: 1.5vh;}
-   .end {padding-bottom: 1.5vh;}
-   .form-item:not(.start) {padding-top:1.2vh}
+   .start {padding-top: 1.8vh;}
+   .end {padding-bottom: 1.8vh;}
+   .form-item:not(.start) {padding-top:0.8vh}
 
    .option.label {
      font-size: 3vw;

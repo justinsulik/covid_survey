@@ -62,7 +62,7 @@ jsPsych.plugins["custom-form"] = (function() {
     var slider_movement_tracker = {};
 
     var css = '<style>';
-    css += '.form-item {text-align: left}';
+    css += '.form-item {text-align: left; background-color: #f2fcff}';
     css += '.inline-contents > div:not(.reminder) {display: inline-block}';
     css += '.response {margin-left: 2vw;}';
     css += '.specify {display: inline-block;}';
@@ -495,7 +495,9 @@ Inputs/interactions
         if(answer_obj.hasClass('slider')){
           // slider doesn't have distinct name, since there aren't any suboptions to choose among
           var moved = slider_movement_tracker[id];
-          requirement_tracker[parent] = true; // for now - all sliders are automatically ok-ed
+          if(moved){
+            requirement_tracker[parent] = true; 
+          }
           responses.push({id: id, value: value, optional: optional, moved: moved});
         }
       });

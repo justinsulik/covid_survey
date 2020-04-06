@@ -63,7 +63,7 @@ app.get('/', (req, res, next) => {
     const assignment_id = req.query.assignmentId || '';
     const hit_id = req.query.hitId || '';
     // Generate anonymous code to identify this trial
-    const trial_id = helper.makeCode(2)+'5'+helper.makeCode(5)+'RtR'+helper.makeCode(4)+'m'+helper.makeCode(2);
+    const trial_id = helper.makeCode(8);
     // What browser is the participant using?
     const browser = detect(req.headers['user-agent']);
 

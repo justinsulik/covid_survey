@@ -179,7 +179,7 @@ Table
           if(column_vals[i]){
             if(column_vals[i]!='other'){
               var icon_file_string = 'img/icons/' + column_vals[i] + '.png';
-              icon_string += '<div style="margin-top: 0px"><img class="header-icon" src="'+icon_file_string+'"></div>';
+              icon_string += '<div ><img class="header-icon" src="'+icon_file_string+'"></div>';
               icon_string += '</div>';
             }
           }
@@ -283,6 +283,12 @@ Inputs/interactions
       }
     });
 
+    $('input[type="text"]').on('keydown', function(e){
+      if(e.keyCode==13){
+        this.blur();
+      }
+    });
+
 /***
 data handling + endTrial
 ***/
@@ -374,6 +380,8 @@ data handling + endTrial
       $('#add-button').off();
       $('table').off();
       $('#submit').off();
+      $('input[type="text"]').off();
+      $('input[type="checkbox"]').off();
 
       // clear screen
       display_element.innerHTML = '';
@@ -411,7 +419,6 @@ Helper functions
     }
 
     function add_first_column(row_id, row_value, row_index, type){
-      console.log(row_id, row_value, row_index, type)
       var first_col;
       var class_string = 'cell main ';
       if(row_index%2==1 && trial.highlighting=='row'){

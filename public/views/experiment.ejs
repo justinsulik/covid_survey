@@ -23,6 +23,13 @@
     </body>
     <script>
 
+    // prevent backspace from navigating backwards https://stackoverflow.com/questions/11112127/prevent-backspace-from-navigating-back-with-jquery-like-googles-homepage
+    $(document).on("keydown", function (e) {
+      if (e.which === 8 && !$(e.target).is("input:not([readonly]):not([type=radio]):not([type=checkbox]), textarea, [contentEditable], [contentEditable=true]")) {
+        e.preventDefault();
+      }
+    });
+
     /*
     Set up: define a few experiment variables
     */
@@ -180,7 +187,7 @@
     }
 
     function socialNetworkprompt(){
-      var prompt_string = 'Now, think about the actions and beliefs of most PEOPLE IN YOUR CLOSE NETWORK (> 80%) IN THE PAST 7 DAYS. Consider how this advice was implemented where THEY currently are. Please try to answer as accurately as you can. ';
+      var prompt_string = '<p>Now, think about the actions and beliefs of most PEOPLE IN YOUR CLOSE NETWORK (> 80%) IN THE PAST 7 DAYS. Consider how this advice was implemented where THEY currently are. Please try to answer as accurately as you can. ';
       if(close_network.length>0){
         prompt_string += 'Remember, the people in your close network are: ';
         close_network.forEach(function(d, i){
@@ -191,7 +198,7 @@
         })
         prompt_string += '. '
       }
-      prompt_string += '<br><br>'
+      prompt_string += '</p>'
       prompt_string += 'Most people in my close network have been following this general advice where they live'
       return prompt_string;
     }
@@ -206,8 +213,7 @@
         var compliance_cats_shuffled = jsPsych.randomization.shuffle(compliance_cats);
         var compliance_questions = [
           {type: 'slider',
-          prompt: 'First, think about YOUR OWN actions and beliefs IN THE PAST 7 DAYS. Consider how this advice was implemented where you currently are.'+
-          '<br><br>'+
+          prompt: '<p>First, think about YOUR OWN actions and beliefs IN THE PAST 7 DAYS. Consider how this advice was implemented where you currently are.</p>'+
           'I have been following this general advice where I live',
           id: 'comply-self',
           labels: advice_labels,
@@ -235,8 +241,7 @@
           }
           if(category=='country'){
             compliance_questions.push({type: 'slider',
-                prompt: 'Now, think about the actions and beliefs of most PEOPLE IN YOUR COUNTRY (> 80%) IN THE PAST 7 DAYS. Consider how this advice was implemented where THEY currently are. Please try to answer as accurately as you can.'+
-                '<br><br>'+
+                prompt: '<p>Now, think about the actions and beliefs of most PEOPLE IN YOUR COUNTRY (> 80%) IN THE PAST 7 DAYS. Consider how this advice was implemented where THEY currently are. Please try to answer as accurately as you can.</p>'+
                 'Most people in my country have been following this general advice.',
                 id: 'comply-country',
                 labels: advice_labels,
@@ -250,8 +255,7 @@
           }
           if(category=='world'){
             compliance_questions.push({type: 'slider',
-              prompt: 'Now, think about the actions and beliefs of most PEOPLE ALL AROUND THE WORLD (> 80%)  IN THE PAST 7 DAYS. Consider how this advice was implemented where THEY currently are. Please try to answer as accurately as you can.'+
-              '<br><br>'+
+              prompt: '<p>Now, think about the actions and beliefs of most PEOPLE ALL AROUND THE WORLD (> 80%)  IN THE PAST 7 DAYS. Consider how this advice was implemented where THEY currently are. Please try to answer as accurately as you can.</p>'+
               'Most people all around the world have been following this general advice.',
               id: 'comply-world',
               labels: advice_labels,
@@ -342,28 +346,23 @@
         type: 'slider',
         prompt: 'At times like this, it is essential that people work in solidarity to look after each other',
         id: 'solidarity',
-        labels: agree_labels,
-        is_start: true},
+        labels: agree_labels},
         {type: 'slider',
         prompt: 'I believe that my actions are having a positive impact',
         labels: agree_labels,
-        id: 'impact',
-        is_start: true},
+        id: 'impact'},
         {type: 'slider',
         prompt: 'Every individual is responsible for themselves if they want to avoid the adverse effects of the disease',
         labels: agree_labels,
-        id: 'responsible',
-        is_start: true},
+        id: 'responsible'},
         {type: 'slider',
         prompt: 'Things are improving due to the collective efforts made where I live',
         id: 'improving',
-        labels: agree_labels,
-        is_start: true},
+        labels: agree_labels},
         {type: 'slider',
         prompt: 'In the PAST 7 DAYS, how much have you been going out?',
-        id: 'solidarity',
-        labels: ['Much less than usual', 'About the same as usual', 'Much more than usual'],
-        is_start: true}
+        id: 'going_out',
+        labels: ['Much less than usual', 'About the same as usual', 'Much more than usual']}
       ]
     }
 
@@ -655,7 +654,8 @@
     var email = {
       type: 'custom-form',
       questions: [{
-        prompt: 'We want to learn about how people\'s attitudes around the Coronavirus change over time. If you would like to help us do that, we will send you a link to a MUCH SHORTER version of this survey in 2 weeks. Note that we will NOT use your email address for any other correspondences, and will not share it with any third parties. Your email address will be deleted from our database immediately after study completion.',
+        prompt: '<p>We want to learn about how people\'s attitudes around the Coronavirus change over time. If you would like to help us do that, we will send you a link to a MUCH SHORTER version of this survey in 2 weeks.</p>'+
+        '<p style="font-size: 0.75em">Note that we will NOT use your email address for any other correspondences, and will not share it with any third parties. Your email address will be deleted from our database immediately after study completion.</p>',
         placeholder: 'Email',
         type: 'text',
         id: 'email',
@@ -680,16 +680,16 @@
     //
     // timeline.push(vulnerable1);
     // timeline.push(vulnerable2);
-    timeline.push(wembs);
+    // timeline.push(wembs);
     //
     // timeline.push(corona_attitudes);
     // timeline.push(science_attitudes);
     // timeline.push(political_attitudes);
 
-    timeline.push(vertical_collectivism);
-    timeline.push(eq);
-    timeline.push(demographics);
-    timeline.push(occupation);
+    // timeline.push(vertical_collectivism);
+    // timeline.push(eq);
+    // timeline.push(demographics);
+    // timeline.push(occupation);
     timeline.push(email);
 
 
