@@ -158,20 +158,21 @@ Table
       column_width = Math.round(100*column_width)/100;
       var icon_string = '';
       if(trial.column_icons && i != 0){
-        icon_string += '<div style="height:50%">';
+        header_height = 40;
+        icon_string += '<div style="width:70%; margin: auto; position: relative;">';
         if(trial.column_vars){
           if(trial.column_vars[i]){
             if(trial.column_vars[i]!='other'){
               var icon_file_string = 'img/icons/' + trial.column_vars[i] + '.png';
-              icon_string += '<img class="header-icon" src="'+icon_file_string+'">';
+              icon_string += '<div style="margin-top: 0px"><img class="header-icon" src="'+icon_file_string+'"></div>';
               icon_string += '</div>';
             }
           }
         }
       }
 
-      header_string = '<div style="height:50%">'+header+'</div>';
-      acc += '<th valign="'+valign+'" class="'+class_string+'" style="width:'+column_width+'%">'+icon_string+header_string+'</th>';
+      header_string = '<div>'+header+'</div>';
+      acc += '<th valign="'+valign+'" class="'+class_string+'" style="width:'+column_width+'%">'+header_string+icon_string+'</th>';
       return acc;
     }, '');
     var header_row = '<thead style="width:100%"><tr style="width:100%">'+header_cells+'</tr></thead>';
