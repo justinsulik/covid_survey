@@ -58,10 +58,8 @@ ROUTING
 */
 
 app.get('/', (req, res, next) => {
-    // Following are MTurk-specific data
-    const worker_id = req.query.workerId || '';
-    const assignment_id = req.query.assignmentId || '';
-    const hit_id = req.query.hitId || '';
+    const lg = req.query.lg || '';
+    console.log(lg)
     // Generate anonymous code to identify this trial
     const trial_id = helper.makeCode(8);
     // What browser is the participant using?
@@ -69,9 +67,8 @@ app.get('/', (req, res, next) => {
 
     // save above trial-specific info
     tasks.save({
-        "worker_id": worker_id,
-        "hit_id": hit_id,
-        "assignment_id": assignment_id,
+        "lg": lg,
+        "phase": phase,
         "trial_id": trial_id,
         "study_name": study_name,
         "browser": browser,
@@ -90,7 +87,7 @@ app.get('/', (req, res, next) => {
     if(browserOk){
       // render the experiment script, along with some data (here, just the trial_id);
       // data must be sent as a JSON string
-      res.render('experiment.ejs', {input_data: JSON.stringify({trial_id: trial_id, phase: phase})});
+      res.render('experiment.ejs', {input_data: JSON.stringify({trial_id: trial_id, phase: phase, lg: lg})});
     } else {
       res.send('You seem to be viewing this on a mobile device. The instructions explicitly forbade this. Please just return the HIT.');
     }

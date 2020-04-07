@@ -166,14 +166,20 @@ jsPsych.plugins["custom-form"] = (function() {
 
       var html_string = '<div id="question-container-'+question_id+'" class="'+container_class_string+'">';
       html_string += '<div class="prompt">'+prompt+'</div>';
-      html_string += '<div id="'+question_id+'" class="custom-form-multiple flex" style="width:100%; flex-wrap: wrap; justify-content: space-around;">';
+      html_string += '<div id="'+question_id+'" class="custom-form-multiple flex" style="width:100%; flex-wrap: wrap; justify-content: space-evenly;">';
       var option_string = '';
       var option_width;
-      if(options.length>4){
-        option_width = Math.round(100/(options.length+1));
+      var options_num = options.length;
+
+      if(options_num>6){
+        option_width = 1.0/(0.5*options_num);
+      } else if(options_num>4){
+        option_width = 1.0/(options_num+1);
       } else {
-        option_width = Math.round(100/(options.length+2));
+        option_width = 1.0/(options_num+2);
       }
+
+      option_width = Math.round(option_width*$(window).width());
       options.forEach(function(option, i){
         var option_id = question_id+'-'+i;
         var value_string;
@@ -184,7 +190,7 @@ jsPsych.plugins["custom-form"] = (function() {
           value_string = option.replace(/ /g, '_').toLowerCase();
         }
         var option_class_string = 'multiple answer ' + class_strings.input;
-        option_string += '<div style="width: '+option_width+'%; text-align: center;" class="'+option_class_string+'" name="'+question_id+'" id="'+option_id+'" value="'+value_string+'">'+option+'</div>';
+        option_string += '<div style="width: '+option_width+'px; text-align: center;" class="'+option_class_string+'" name="'+question_id+'" id="'+option_id+'" value="'+value_string+'">'+option+'</div>';
       });
       option_string += '</div>';
 

@@ -1,9 +1,8 @@
 const mongoose = require( 'mongoose' );
 
 const taskSchema = new mongoose.Schema({
-  worker_id: String,
-  hit_id: String,
-  assignment_id: String,
+  lg: String,
+  phase: Number,
   trial_id: String,
   study_name: String,
   browser: mongoose.Schema.Types.Mixed,

@@ -37,10 +37,12 @@
     // get the data passed along by app.js
     var input_data = <%- input_data %>
     var trial_id = input_data.trial_id;
+    var language_ad = input_data.lg;
+    var language_choice;
     var phase = input_data.phase;
     var next_phase = phase+1;
     console.log('Rendering trial ', trial_id)
-    jsPsych.data.addProperties({trial_id: trial_id});
+    jsPsych.data.addProperties({trial_id: trial_id, language_ad: language_ad});
 
     var timeline = [];
     var experiment_start_time;
@@ -61,6 +63,45 @@
     var vulnerable_labels = ['Not vulnerable at all', 'As vulnerable as an average person', 'Extremely vulnerable'];
     var infected_labels = ['Definitely did not have', 'Definitely had'];
     var vertical_collectivism_labels = ['', 'Never', '', '', '', '', '', '', '', 'Always']
+
+    var language_codes = {
+      ar: {name_eng: 'Arabic', name_own: 'عربى'},
+      ba: {name_eng: 'Bangla', name_own: 'বাংলা'},
+      ch: {name_eng: 'Chinese (simplified)', name_own: '中文'}, //(简体)
+      en: {name_eng: 'English', name_own: 'English'},
+      fa: {name_eng: 'Farsi', name_own: 'فارسی'},
+      fr: {name_eng: 'French', name_own: 'Française'},
+      ge: {name_eng: 'German', name_own: 'Deutsch'},
+      hi: {name_eng: 'Hindi', name_own: 'हिन्दी'},
+      it: {name_eng: 'Italian', name_own: 'Italiana'},
+      sp: {name_eng: 'Spanish', name_own: 'Española'},
+      sw: {name_eng: 'Swedish', name_own: 'Svenska'},
+      tu: {name_eng: 'Turkish', name_own: 'Türkçe'}
+    }
+
+    var language_options = _.reduce(language_codes, function(acc, dat, key){
+      acc.push(dat.name_own);
+      return acc;
+    }, [])
+    var language_vals = Object.keys(language_codes)
+    var landing_page = {
+      type: 'custom-form',
+      questions: [{
+        prompt: 'Please choose a language to continue',
+        type: 'multiple',
+        id: 'language',
+        options: language_options,
+        values: language_vals
+      }],
+      on_finish: function(data){
+        responses = JSON.parse(data.responses);
+        responses.forEach(function(d){
+          if(d.name=='language'){
+            language_choice = d.value
+          }
+        })
+      }
+    }
 
     // Consent form
 
@@ -421,8 +462,8 @@
       return options;
     }
 
-    var ios_string_country = generateCircles(circle_distances, 'You', 'country');
-    var ios_string_gvmt = generateCircles(circle_distances, 'You', 'government');
+    var ios_string_country = generateCircles(circle_distances, 'you', 'Country');
+    var ios_string_gvmt = generateCircles(circle_distances, 'you', 'Government');
 
     var political_attitudes = {
       type: 'custom-form',
@@ -676,22 +717,23 @@
     Add trials to the timeline
     */
     //
-    // timeline.push(information);
-    // timeline.push(consent);
-    // timeline.push(participant_id);
+    timeline.push(landing_page);
+    timeline.push(information);
+    timeline.push(consent);
+    timeline.push(participant_id);
     //
     timeline.push(social_network_trial);
-    // timeline.push(close_network_if);
-    // timeline.push(close_network_followup_if);
-    // //
-    // timeline.push(compliance);
+    timeline.push(close_network_if);
+    timeline.push(close_network_followup_if);
     //
-    // timeline.push(vulnerable1);
-    // timeline.push(vulnerable2);
-    // timeline.push(wembs);
-    //
-    // timeline.push(corona_attitudes);
-    // timeline.push(science_attitudes);
+    timeline.push(compliance);
+
+    timeline.push(vulnerable1);
+    timeline.push(vulnerable2);
+    timeline.push(wembs);
+
+    timeline.push(corona_attitudes);
+    timeline.push(science_attitudes);
     timeline.push(political_attitudes);
 
     timeline.push(vertical_collectivism);
