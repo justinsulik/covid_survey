@@ -591,31 +591,37 @@
         is_followup: true,
         group: 4},
         {type: 'text',
-        prompt: 'Where are you right now?',
+        prompt: '<p>Where are you right now?</p>Country: ',
         placeholder: 'Country',
+        id: 'country_now',
         group: 5},
         {type: 'text',
-        prompt: '',
+        prompt: 'State/Province: ',
         placeholder: 'State/Province (optional)',
+        id: 'state_now',
         optional: true,
         group: 5},
         {type: 'text',
-        prompt: '',
+        prompt: 'City',
         placeholder: 'City',
+        id: 'city_now',
         group: 5},
         {type: 'text',
-        prompt: 'Where did you grow up? (if different)',
+        prompt: '<p>Where did you grow up? (if different)</p>Country: ',
         placeholder: 'Country (optional)',
         optional: true,
+        id: 'country_old',
         group: 6},
         {type: 'text',
-        prompt: '',
+        prompt: 'State/Province: ',
         placeholder: 'State/Province (optional)',
         optional: true,
+        id: 'state_old',
         group: 6},
         {type: 'text',
-        prompt: '',
+        prompt: 'City: ',
         placeholder: 'City (optional)',
+        id: 'city_old',
         optional: true,
         group: 6},
         {type: 'select',
@@ -669,22 +675,22 @@
     Add trials to the timeline
     */
     //
-    timeline.push(information);
-    timeline.push(consent);
-    timeline.push(participant_id);
-
-    timeline.push(social_network_trial);
-    timeline.push(close_network_if);
-    timeline.push(close_network_followup_if);
+    // timeline.push(information);
+    // timeline.push(consent);
+    // timeline.push(participant_id);
     //
-    timeline.push(compliance);
-
-    timeline.push(vulnerable1);
-    timeline.push(vulnerable2);
-    timeline.push(wembs);
-
-    timeline.push(corona_attitudes);
-    timeline.push(science_attitudes);
+    // timeline.push(social_network_trial);
+    // timeline.push(close_network_if);
+    // timeline.push(close_network_followup_if);
+    // //
+    // timeline.push(compliance);
+    //
+    // timeline.push(vulnerable1);
+    // timeline.push(vulnerable2);
+    // timeline.push(wembs);
+    //
+    // timeline.push(corona_attitudes);
+    // timeline.push(science_attitudes);
     timeline.push(political_attitudes);
 
     timeline.push(vertical_collectivism);
