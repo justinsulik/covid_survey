@@ -116,7 +116,7 @@
       preamble: "Please write down the first names of all the people with whom you had a conversation in the PAST 7 DAYS and <span id='column-reminder'>how you interacted with them</span>. Select all that apply.",
       instructions: "Please do not include casual contacts, such as interactions with shop workers or professionals (e.g., doctors, police, etc.).",
       opt_out: "I did NOT have any conversations other than casual contacts in the past 7 days.",
-      response_validation: 'force_column',
+      response_validation: 'force_both',
       on_finish: function(data){
         var response_data = JSON.parse(data.responses);
         var responses = response_data.responses;
@@ -440,6 +440,7 @@
         {type: 'checkbox',
         id: 'ios-country-optout',
         options: ['Prefer not to answer'],
+        optout_for: 'ios-country',
         group: 0},
         {type: 'multiple',
         id: 'ios-gvmt',
@@ -451,16 +452,16 @@
         {type: 'checkbox',
         id: 'ios-gvmt-optout',
         options: ['Prefer not to answer'],
-        is_start: true,
+        optout_for: 'ios-gvmt',
         group: 1},
         {type: 'slider',
         id: 'ideology',
         prompt: 'What is your political self-identification?',
         labels: ['Very liberal', 'Very conservative'],
-        is_start: true,
         group: 2},
         {type: 'checkbox',
         id: 'ideology-optout',
+        optout_for: 'ideology',
         columns: 1,
         options: ['Does not apply to my political views', 'Prefer not to answer'],
         values: ['NA', 'None'],
@@ -679,7 +680,7 @@
     // timeline.push(consent);
     // timeline.push(participant_id);
     //
-    // timeline.push(social_network_trial);
+    timeline.push(social_network_trial);
     // timeline.push(close_network_if);
     // timeline.push(close_network_followup_if);
     // //

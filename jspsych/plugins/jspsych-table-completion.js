@@ -340,8 +340,10 @@ data handling + endTrial
         }
         if(trial.response_validation == 'force_both' && row_ok != column_ok){
           validation.ok = false;
-          validation.problems.flag_row = true;
-          validation.problems.flag_column = true;
+          if(!column_ok){
+            validation.problems.flag_column = true;
+          }
+          validation.problems.rows.push(response_id);
         }
       });
       return validation;
@@ -353,19 +355,16 @@ data handling + endTrial
       });
       $("html,body").animate({scrollTop: 0}, 100);
       $('tbody').scrollTop(0);
-      if(trial.response_validation == 'force_column'){
-        if(validation.problems.flag_column){
-          $('#column-reminder').addClass('problem');
-        } else {
-          $('#column-reminder').removeClass('problem');
+      validation.problems.rows.forEach(function(row_id){
+        $('#row-'+row_id).addClass('problem');
+        if($('#row-'+row_id).has('input[type="text"]').length){ //.length needed to get false (if lack children), otherwise returns something truthy even if no child
+          $('#row-'+row_id).parent().addClass('problem');
         }
-        validation.problems.rows.forEach(function(row_id){
-          $('#row-'+row_id).addClass('problem');
-          if($('#row-'+row_id).has('input[type="text"]').length){ //.length needed to get false (if lack children), otherwise returns something truthy even if no child
-            $('#row-'+row_id).parent().addClass('problem');
-          }
-        });
-
+      });
+      if(validation.problems.flag_column){
+        $('#column-reminder').addClass('problem');
+      } else {
+        $('#column-reminder').removeClass('problem');
       }
     }
 
@@ -412,7 +411,6 @@ Helper functions
         } else {
           other_cols += '<td class="'+class_string+'" style="width:'+base_width+'%">'+check_box+'</td>';
         }
-
       });
       other_cols += '</tr>';
       return other_cols;
@@ -461,7 +459,6 @@ Helper functions
 
     $( document ).ready(function() {
       start_time = Date.now();
-      // $(this).scrollTop(0);
       $("html,body").animate({scrollTop: 0}, 100);
       $('tbody').scrollTop(0);
     });

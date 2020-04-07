@@ -59,6 +59,7 @@ jsPsych.plugins["custom-form"] = (function() {
     var trial_data = {};
     var start_time;
     var display_logic = {};
+    var optout_logic = {};
     var slider_movement_tracker = {};
 
     var css = '<style>';
@@ -233,6 +234,10 @@ jsPsych.plugins["custom-form"] = (function() {
         option_string += '</div>';
         display_logic[question_id].push({type: 'specify', unhide_on: question_data.specify});
       }
+      if(question_data.optout_for){
+        console.log(question_id, question_data.optout_for)
+        optout_logic[question_id] = question_data.optout_for;
+      }
       option_string += '</div>';
       html_string += option_string;
 
@@ -292,7 +297,7 @@ jsPsych.plugins["custom-form"] = (function() {
       var container_class_string = 'slider-container ' + class_strings.container;
 
       var width = Math.floor(100/(labels.length+1));
-      var html_string = '<div id="question-container-'+question_id+'" class="'+container_class_string+'" style="width: 80%; margin: auto;">';
+      var html_string = '<div id="question-container-'+question_id+'" class="'+container_class_string+'" style="margin: auto; padding: 0px 5px;">';
       html_string += '<div class="prompt">'+prompt+'</div>';
       var input_class_string = 'slider answer ' + class_strings.input;
       html_string += '<input type="range" min="1" max="100" value="50" class="'+input_class_string+'" id="'+question_id+'" style="width: 100%">';
@@ -410,6 +415,7 @@ Inputs/interactions
       var id = clicked_box.id;
       var value = clicked_box.value;
       var name = clicked_box.name;
+      // handle display logic (e.g. followups)
       display_logic[name].forEach(function(d){
         if(d.type=='specify'){
           if(value == d.unhide_on){
@@ -430,6 +436,22 @@ Inputs/interactions
           }
         }
       });
+      // handle other display logic (e.g. optouts);
+      if(optout_logic[name]){
+        var target = optout_logic[name];
+        // check if ANY optouts for the same question are clicked
+        var any_optouts_clicked = false;
+        $('#'+name+' input[type="checkbox"]').each(function(i,d){
+          if(d.checked){
+            any_optouts_clicked = true;
+          }
+        });
+        if(any_optouts_clicked){
+          $('#question-container-'+target+'>*:not(".prompt")').css({opacity: 1.0}).animate({opacity: 0}, 200).slideUp();
+        } else {
+          $('#question-container-'+target+'>*').slideDown().css({opacity: 0}).animate({opacity: 1}, 200);
+        }
+      }
     });
 
     $('#submit').click(function(e){
