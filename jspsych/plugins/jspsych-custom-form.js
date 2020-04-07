@@ -166,19 +166,21 @@ jsPsych.plugins["custom-form"] = (function() {
 
       var html_string = '<div id="question-container-'+question_id+'" class="'+container_class_string+'">';
       html_string += '<div class="prompt">'+prompt+'</div>';
-      html_string += '<div id="'+question_id+'" class="custom-form-multiple flex" style="width:100%; flex-wrap: wrap; justify-content: space-evenly;">';
       var option_string = '';
       var option_width;
+      var option_rows = 1;
       var options_num = options.length;
-
+      var wrap_string = '';
       if(options_num>6){
         option_width = 1.0/(0.5*options_num);
+        wrap_string = 'flex-wrap: wrap;';
       } else if(options_num>4){
         option_width = 1.0/(options_num+1);
       } else {
         option_width = 1.0/(options_num+2);
       }
 
+      html_string += '<div id="'+question_id+'" class="custom-form-multiple flex" style="width:100%; '+wrap_string+' justify-content: space-evenly;">';
       option_width = Math.round(option_width*$(window).width());
       options.forEach(function(option, i){
         var option_id = question_id+'-'+i;
@@ -241,7 +243,6 @@ jsPsych.plugins["custom-form"] = (function() {
         display_logic[question_id].push({type: 'specify', unhide_on: question_data.specify});
       }
       if(question_data.optout_for){
-        console.log(question_id, question_data.optout_for)
         optout_logic[question_id] = question_data.optout_for;
       }
       option_string += '</div>';
@@ -337,7 +338,7 @@ jsPsych.plugins["custom-form"] = (function() {
 Inputs/interactions
 ***/
 
-    $('.slider').on('click', function(e){
+    $('.slider').on('click touchend', function(e){
       var name = this.id;
       var value = this.value;
       slider_movement_tracker[name] = true;
@@ -384,10 +385,6 @@ Inputs/interactions
         this.blur();
       }
     });
-
-    function evaluateCriterion(value, criterion){
-
-    }
 
     $('.multiple.answer').on('click', function(e){
       var option_id = this.id;

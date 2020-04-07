@@ -65,17 +65,17 @@
     var vertical_collectivism_labels = ['', 'Never', '', '', '', '', '', '', '', 'Always']
 
     var language_codes = {
-      ar: {name_eng: 'Arabic', name_own: 'عربى'},
+      ar: {name_eng: 'Arabic', name_own: 'عَرَبِيّ‎'},
       ba: {name_eng: 'Bangla', name_own: 'বাংলা'},
       ch: {name_eng: 'Chinese (simplified)', name_own: '中文'}, //(简体)
       en: {name_eng: 'English', name_own: 'English'},
       fa: {name_eng: 'Farsi', name_own: 'فارسی'},
-      fr: {name_eng: 'French', name_own: 'Française'},
+      fr: {name_eng: 'French', name_own: 'français'},
       ge: {name_eng: 'German', name_own: 'Deutsch'},
       hi: {name_eng: 'Hindi', name_own: 'हिन्दी'},
-      it: {name_eng: 'Italian', name_own: 'Italiana'},
-      sp: {name_eng: 'Spanish', name_own: 'Española'},
-      sw: {name_eng: 'Swedish', name_own: 'Svenska'},
+      it: {name_eng: 'Italian', name_own: 'italiano'},
+      sp: {name_eng: 'Spanish', name_own: 'español'},
+      sw: {name_eng: 'Swedish', name_own: 'svenska'},
       tu: {name_eng: 'Turkish', name_own: 'Türkçe'}
     }
 
@@ -83,6 +83,7 @@
       acc.push(dat.name_own);
       return acc;
     }, [])
+
     var language_vals = Object.keys(language_codes)
     var landing_page = {
       type: 'custom-form',
@@ -717,23 +718,23 @@
     Add trials to the timeline
     */
     //
-    timeline.push(landing_page);
-    timeline.push(information);
-    timeline.push(consent);
-    timeline.push(participant_id);
+    // timeline.push(landing_page);
+    // timeline.push(information);
+    // timeline.push(consent);
+    // timeline.push(participant_id);
+    // //
+    // timeline.push(social_network_trial);
+    // timeline.push(close_network_if);
+    // timeline.push(close_network_followup_if);
+    // //
+    // timeline.push(compliance);
     //
-    timeline.push(social_network_trial);
-    timeline.push(close_network_if);
-    timeline.push(close_network_followup_if);
+    // timeline.push(vulnerable1);
+    // timeline.push(vulnerable2);
+    // timeline.push(wembs);
     //
-    timeline.push(compliance);
-
-    timeline.push(vulnerable1);
-    timeline.push(vulnerable2);
-    timeline.push(wembs);
-
-    timeline.push(corona_attitudes);
-    timeline.push(science_attitudes);
+    // timeline.push(corona_attitudes);
+    // timeline.push(science_attitudes);
     timeline.push(political_attitudes);
 
     timeline.push(vertical_collectivism);
@@ -741,7 +742,6 @@
     timeline.push(demographics);
     timeline.push(occupation);
     timeline.push(email);
-
 
     /*
     Have jsPsych display the experiment timeline
