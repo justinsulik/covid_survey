@@ -15,6 +15,11 @@ jsPsych.plugins["table-completion"] = (function() {
   plugin.info = {
     name: "table-completion",
     parameters: {
+      id: {
+        type: jsPsych.plugins.parameterType.STRING, // BOOL, STRING, INT, FLOAT, FUNCTION, KEYCODE, SELECT, HTML_STRING, IMAGE, AUDIO, VIDEO, OBJECT, COMPLEX
+        default: '',
+        description: "task identifier"
+      },
       add_new: {
         type: jsPsych.plugins.parameterType.BOOL, // BOOL, STRING, INT, FLOAT, FUNCTION, KEYCODE, SELECT, HTML_STRING, IMAGE, AUDIO, VIDEO, OBJECT, COMPLEX
         default: false,
@@ -84,7 +89,10 @@ jsPsych.plugins["table-completion"] = (function() {
   plugin.trial = function(display_element, trial) {
 
     // data saving
-    var trial_data = {own_rows: [], responses: []};
+    var trial_data = {own_rows: [],
+        responses: [],
+        id: trial.id,
+        single: trial.select_one};
     var start_time;
     var dependencies = {};
     var column_number = trial.column_headers.length;

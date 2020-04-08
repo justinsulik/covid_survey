@@ -119,27 +119,27 @@
 
     // instructions
 
-    var researchers = 'Dr Bahar Tunçgenç (University of Nottingham), Prof. Ophelia Deroy (Ludwig Maximillian University of Munich), Dr Guillaume Dezecache (University of Clermont Auvergne), Dr Marwa El Zein (University College London), Dr Yi Zhao (Indiana University)<br>'
-
-    var consent = {
-      type: 'custom-form',
-      preamble: 'SOCIAL TIES AND DISTANCING IN THE FACE OF THE COVID-19 PANDEMIC',
-      instructions: 'ETHICS APPROVAL NUMBER: F1248R<br>'+
-      'RESEARCHERS: '+researchers+
-      'CONTACT DETAILS: Dr. Bahar Tunçgenç at bahar.tuncgenc@nottingham.ac.uk',
-      questions: [
-        {type: 'checkbox',
-        prompt: 'By clicking the button below, I indicate that the study has been explained to me to my satisfaction, and I agree to take part. I understand that I am free to withdraw at any time simply by clicking out of my browser window:',
-        id: 'consent',
-        columns: 1,
-        force_all: true,
-        options: ['I give permission for my data from this study to be shared with other researchers provided that my anonymity is completely protected.',
-                  'I understand that the survey platform offers services that are compliant with the General Data Protection Regulation (GDPR) and Health Insurance Portability and Accountability Act (HIPAA). While every reasonable effort has been taken to preserve my confidentiality, due to the online nature of this study, there may be a potential risk of intrusion by outside agents, such as through hacking or data storage in server logs beyond the timeframe of this research project.',
-                 ],
-        values: [0, 1]}
-      ],
-      submit: 'TAKE ME TO THE SURVEY',
-    }
+    // var researchers = 'Dr Bahar Tunçgenç (University of Nottingham), Prof. Ophelia Deroy (Ludwig Maximillian University of Munich), Dr Guillaume Dezecache (University of Clermont Auvergne), Dr Marwa El Zein (University College London), Dr Yi Zhao (Indiana University)<br>'
+    //
+    // var consent = {
+    //   type: 'custom-form',
+    //   preamble: 'SOCIAL TIES AND DISTANCING IN THE FACE OF THE COVID-19 PANDEMIC',
+    //   instructions: 'ETHICS APPROVAL NUMBER: F1248R<br>'+
+    //   'RESEARCHERS: '+researchers+
+    //   'CONTACT DETAILS: Dr. Bahar Tunçgenç at bahar.tuncgenc@nottingham.ac.uk',
+    //   questions: [
+    //     {type: 'checkbox',
+    //     prompt: 'By clicking the button below, I indicate that the study has been explained to me to my satisfaction, and I agree to take part. I understand that I am free to withdraw at any time simply by clicking out of my browser window:',
+    //     id: 'consent',
+    //     columns: 1,
+    //     force_all: true,
+    //     options: ['I give permission for my data from this study to be shared with other researchers provided that my anonymity is completely protected.',
+    //               'I understand that the survey platform offers services that are compliant with the General Data Protection Regulation (GDPR) and Health Insurance Portability and Accountability Act (HIPAA). While every reasonable effort has been taken to preserve my confidentiality, due to the online nature of this study, there may be a potential risk of intrusion by outside agents, such as through hacking or data storage in server logs beyond the timeframe of this research project.',
+    //              ],
+    //     values: [0, 1]}
+    //   ],
+    //   submit: 'TAKE ME TO THE SURVEY'
+    // }
 
     var participant_id = {
       type: 'instructions',
@@ -152,6 +152,7 @@
     var social_network_trial = {
       type: 'table-completion',
       add_new: true,
+      id: 'social_network',
       column_headers: ['First names. Add new rows with "+"', 'face to face', 'video chat', 'phone', 'email', 'text message', 'other'],
       column_vals: ['names', 'face', 'video', 'phone', 'email', 'text', 'other'],
       column_icons: true,
@@ -173,6 +174,7 @@
     var close_network_trial = {
       type: 'table-completion',
       add_new: false,
+      id: 'close_network',
       column_headers: ['Name', 'I would turn to this person for comfort/advice', 'I would NOT turn to this person for comfort/advice'],
       column_vals: ['name', 'yes', 'no'],
       column_icons: false,
@@ -208,6 +210,7 @@
     var close_network_followup = {
       type: 'table-completion',
       add_new: false,
+      id: 'close_network_followup',
       column_headers: ['Name', 'Lives in the same household as me', 'Lives in the same country as me'],
       column_vals: ['names', 'household', 'country'],
       column_icons: false,
@@ -374,6 +377,7 @@
 
     var wembs = {
       type: 'table-completion',
+      id: 'wembs',
       preamble: 'Please tell us how you\'ve been feeling and thinking OVER THE LAST WEEK. <span id="column-reminder" class="">Please answer all items.</span>',
       response_validation: 'force_column',
       column_headers: wembs_labels,
@@ -528,6 +532,7 @@
     var vertical_collectivism = {
       type: 'table-completion',
       highlighting: 'row',
+      id: 'vertical_collectivism',
       preamble: 'Please answer the below questions based on how you think and feel GENERALLY. <span id="column-reminder" class="">Please answer all items.</span>',
       response_validation: 'force_column',
       column_headers: vertical_collectivism_labels,
@@ -557,6 +562,7 @@
 
     var eq = {
       type: 'table-completion',
+      id: 'eq',
       highlighting: 'row',
       row_values: eq_rows,
       column_headers: agree_likert,
@@ -720,7 +726,7 @@
     timeline.push(information);
     timeline.push(consent);
     timeline.push(participant_id);
-    //
+
     timeline.push(social_network_trial);
     timeline.push(close_network_if);
     timeline.push(close_network_followup_if);

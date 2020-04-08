@@ -12,7 +12,7 @@ exports.connect = function(uri){
   // if connected, stop here
   if (state.db) return done();
   // otherwise, connect to db
-  mongoose.connect(uri);
+  mongoose.connect(uri, {retryWrites: false},);
   const db = mongoose.connection;
   db.on('error', console.error.bind(console, 'connection error:'));
   db.once('connected', function callback () {
