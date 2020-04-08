@@ -13,7 +13,7 @@ const express = require('express'),
 /*
 INSTANTIATE THE APP
 */
-const study_name = 'test';
+const study_name = 'english_trial';
 const phase = 1;
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -21,7 +21,7 @@ const PORT = process.env.PORT || 5000;
 /*
 DATABASE SETUP
 */
-// db.connect(process.env.MONGODB_URI);
+db.connect(process.env.MONGODB_URI);
 
 /*
 SET MIDDLEWARE/LIBRARIES/PARSING
@@ -46,13 +46,13 @@ app.get('/', (req, res, next) => {
     // // What browser is the participant using?
     const browser = detect(req.headers['user-agent']);
     //
-    // tasks.save({
-    //     "lg": lg,
-    //     "phase": phase,
-    //     "trial_id": trial_id,
-    //     "study_name": study_name,
-    //     "browser": browser,
-    // });
+    tasks.save({
+        "lg": lg,
+        "phase": phase,
+        "trial_id": trial_id,
+        "study_name": study_name,
+        "browser": browser,
+    });
     //
     let mobile = false;
     if (browser) {
