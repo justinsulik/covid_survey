@@ -304,7 +304,7 @@ jsPsych.plugins["custom-form"] = (function() {
       var container_class_string = 'slider-container ' + class_strings.container;
 
       var width = Math.floor(100/(labels.length+1));
-      var html_string = '<div id="question-container-'+question_id+'" class="'+container_class_string+'" style="margin: auto; padding: 0px 5px;">';
+      var html_string = '<div id="question-container-'+question_id+'" class="'+container_class_string+'" style="margin: auto;">';
       html_string += '<div class="prompt">'+prompt+'</div>';
       var input_class_string = 'slider answer ' + class_strings.input;
       html_string += '<input type="range" min="1" max="100" value="50" class="'+input_class_string+'" id="'+question_id+'" style="width: 100%">';
