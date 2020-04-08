@@ -1,18 +1,5 @@
 /*jshint esversion: 6 */
 
-/*
-morning-gorge-91524
-*/
-
-/*
-Todo:
-- get ip; look up country; display appropriate language
-- hide demo questions on subsequent visit
-- check demo saving all (e.g. select)
-- clear all listeners after each trial
-- stringify responses
-*/
-
 const express = require('express'),
   url = require('url'),
   body_parser = require('body-parser'),
@@ -34,13 +21,10 @@ const PORT = process.env.PORT || 5000;
 /*
 DATABASE SETUP
 */
-db.connect(process.env.MONGODB_URI);
+// db.connect(process.env.MONGODB_URI);
 
 /*
 SET MIDDLEWARE/LIBRARIES/PARSING
-- Basically, just tells the app how to handle certain info,
-  Where to look for certain files,
-  Or what file types to expect
 */
 app.use(express.static(__dirname + '/public'));
 app.use(body_parser.json());
@@ -53,29 +37,23 @@ app.set('views', __dirname + '/public/views');
 
 /*
 ROUTING
-- Tells the app what to do if requests are made (e.g. someone tries to visit the app URL),
-  or if the experiment script makes a request to save data
 */
 
 app.get('/', (req, res, next) => {
     const lg = req.query.lg || '';
-    console.log(lg)
     // Generate anonymous code to identify this trial
     const trial_id = helper.makeCode(8);
-    // What browser is the participant using?
+    // // What browser is the participant using?
     const browser = detect(req.headers['user-agent']);
-
-    // save above trial-specific info
-    tasks.save({
-        "lg": lg,
-        "phase": phase,
-        "trial_id": trial_id,
-        "study_name": study_name,
-        "browser": browser,
-    });
-
-    // Check device not mobile
-    let browserOk = true;
+    //
+    // tasks.save({
+    //     "lg": lg,
+    //     "phase": phase,
+    //     "trial_id": trial_id,
+    //     "study_name": study_name,
+    //     "browser": browser,
+    // });
+    //
     let mobile = false;
     if (browser) {
       console.log(trial_id, 'Detected browser...', browser);
@@ -84,13 +62,7 @@ app.get('/', (req, res, next) => {
       }
     }
 
-    if(browserOk){
-      // render the experiment script, along with some data (here, just the trial_id);
-      // data must be sent as a JSON string
-      res.render('experiment.ejs', {input_data: JSON.stringify({trial_id: trial_id, phase: phase, lg: lg})});
-    } else {
-      res.send('You seem to be viewing this on a mobile device. The instructions explicitly forbade this. Please just return the HIT.');
-    }
+    res.render('experiment.ejs', {input_data: JSON.stringify({trial_id: trial_id, phase: phase, lg: lg})});
 
 });
 
@@ -116,7 +88,7 @@ app.post('/data', (req, res, next) => {
 Render the final screen, with completionCode and debrief
 */
 app.get('/finish', (req, res) => {
-  let code = req.query.token;
+  let code = req.query.token || '';
   if(code.length==0){
     // If, for whatever reason, the code has gone missing, generate a new one so that the participant can get paid
     code = helper.makeCode(10) + 'SZs';

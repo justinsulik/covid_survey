@@ -48,9 +48,7 @@
     var experiment_start_time;
     var data_not_processed = true;
     var dataUrl = '/data?trial_id=' + trial_id;
-    // var social_network = [{row_name: 'flabs', id:0}, {row_name: 'meep', id:1}];
     var social_network = [];
-    // var close_network = [{row_name: 'flabs', id:0}, {row_name: 'meep', id:1}];
     var close_network = [];
 
     // labels
@@ -119,13 +117,13 @@
 
     // instructions
 
-    var researchers = 'Dr Bahar Tunçgenç (University of Nottingham), Prof. Ophelia Deroy (Ludwig Maximillian University of Munich), Dr Guillaume Dezecache (University of Clermont Auvergne), Dr Marwa El Zein (University College London), Dr Yi Zhao (Indiana University)<br>'
+    var researchers = 'RESEARCHERS: Dr Bahar Tunçgenç (University of Nottingham), Prof. Ophelia Deroy (Ludwig Maximillian University of Munich), Dr Guillaume Dezecache (University of Clermont Auvergne), Dr Marwa El Zein (University College London), Dr Yi Zhao (Indiana University)<br>'
 
     var consent = {
       type: 'custom-form',
       preamble: 'SOCIAL TIES AND DISTANCING IN THE FACE OF THE COVID-19 PANDEMIC',
       instructions: 'ETHICS APPROVAL NUMBER: F1248R<br>'+
-      'RESEARCHERS: '+researchers+
+      researchers+
       'CONTACT DETAILS: Dr. Bahar Tunçgenç at bahar.tuncgenc@nottingham.ac.uk',
       questions: [
         {type: 'checkbox',
@@ -139,7 +137,7 @@
         values: [0, 1]}
       ],
       submit: 'TAKE ME TO THE SURVEY'
-    }
+    };
 
     var participant_id = {
       type: 'instructions',
@@ -147,7 +145,7 @@
       'You may wish to make a note of this if, for example, you wish to ask us to discard your data.'],
       show_clickable_nav: true,
       button_label_next: 'Continue'
-    }
+    };
 
     var social_network_trial = {
       type: 'table-completion',
@@ -169,7 +167,7 @@
           }
         })
       }
-    }
+    };
 
     var close_network_trial = {
       type: 'table-completion',
@@ -192,9 +190,8 @@
             close_network.push({id: id, row_name: responses[id].name});
           }
         })
-        console.log('--->', close_network)
       }
-    }
+    };
 
     var close_network_if = {
       timeline: [close_network_trial],
@@ -205,7 +202,7 @@
           return false;
         }
       }
-    }
+    };
 
     var close_network_followup = {
       type: 'table-completion',
@@ -218,8 +215,8 @@
       dependencies: 'household>country',
       row_values: function(){
         return close_network;
-      },
-    }
+      }
+    };
 
     var close_network_followup_if = {
       timeline: [close_network_followup],
@@ -230,7 +227,7 @@
           return false;
         }
       }
-    }
+    };
 
     function socialNetworkprompt(){
       var prompt_string = '<p>Now, think about the actions and beliefs of most PEOPLE IN YOUR CLOSE NETWORK (> 80%) IN THE PAST 7 DAYS. Consider how this advice was implemented where THEY currently are. Please try to answer as accurately as you can. ';
@@ -247,7 +244,7 @@
       prompt_string += '</p>'
       prompt_string += 'Most people in my close network have been following this general advice where they live'
       return prompt_string;
-    }
+    };
 
     var compliance = {
       type: 'custom-form',
@@ -315,8 +312,8 @@
           }
         })
         return compliance_questions;
-      },
-    }
+      }
+    };
 
     var vulnerable1 = {
       type: 'custom-form',
@@ -335,7 +332,7 @@
         id: 'vulnerable-outside',
         labels: vulnerable_labels},
       ]
-    }
+    };
 
     var vulnerable2 = {
       type: 'custom-form',
@@ -354,19 +351,19 @@
         id: 'infected-outside',
         labels: infected_labels},
       ]
-    }
+    };
 
-    var wembs_items = ['I’ve been feeling optimistic about the future.',
-    'I’ve been feeling useful.',
-    'I’ve been feeling relaxed.',
-    'I’ve been dealing with problems well.',
-    'I’ve been thinking clearly.',
-    'I’ve been feeling close to other people.',
-    'I’ve been able to make up my own mind about things.',
-    'I’ve been feeling depressed.',
-    'I’ve been feeling anxious.',
-    'I’ve been feeling angry.',
-    'I’ve been feeling lonely.']
+    var wembs_items = ['I\'ve been feeling optimistic about the future.',
+    'I\'ve been feeling useful.',
+    'I\'ve been feeling relaxed.',
+    'I\'ve been dealing with problems well.',
+    'I\'ve been thinking clearly.',
+    'I\'ve been feeling close to other people.',
+    'I\'ve been able to make up my own mind about things.',
+    'I\'ve been feeling depressed.',
+    'I\'ve been feeling anxious.',
+    'I\'ve been feeling angry.',
+    'I\'ve been feeling lonely.']
 
     var wembs_questions = _.map(wembs_items, function(d,i){
       return {
@@ -411,7 +408,7 @@
         id: 'going_out',
         labels: ['Much less than usual', 'About the same as usual', 'Much more than usual']}
       ]
-    }
+    };
 
     var science_attitudes = {
       type: 'custom-form',
@@ -431,7 +428,7 @@
         id: 'cred_sci_3',
         labels: agree_labels},
       ]
-    }
+    };
 
     var circle_distances = [1.1, 0.83, 0.63, 0.43, 0];
     var ios_size;
@@ -465,7 +462,7 @@
         '</svg></div>')
       })
       return options;
-    }
+    };
 
     var ios_string_country = generateCircles(circle_distances, 'you', 'Country');
     var ios_string_gvmt = generateCircles(circle_distances, 'you', 'Government');
@@ -513,7 +510,7 @@
         values: ['NA', 'None'],
         group: 2}
       ]
-    }
+    };
 
     // create items from array forEach
     var wembs_items = ['I would sacrifice an activity that I enjoy very much if my family did not approve of it',
@@ -527,7 +524,7 @@
 
     var wembs_rows = _.map(wembs_items, function(d,i){
       return {id: 'vert_conf_'+i, row_name: d}
-    })
+    });
 
     var vertical_collectivism = {
       type: 'table-completion',
@@ -538,7 +535,7 @@
       column_headers: vertical_collectivism_labels,
       select_one: true,
       row_values: wembs_rows
-    }
+    };
 
     var eq_items = ['I am good at predicting how someone will feel.',
     'I am quick to spot when someone in a group is feeling awkward or uncomfortable.',
@@ -549,7 +546,7 @@
     'I find it hard to know what to do in a social situation.',
     'Friendships and relationships are just too difficult, so I tend not to bother with them.',
     'I often find it difficult to judge if something is rude or polite.',
-    'I don’t tend to find social situations confusing.',
+    'I don\'t tend to find social situations confusing.',
     'I really enjoy caring for other people.',
     'If I say something that someone else is offended by, I think that that\'s their problem, not mine.',
     'Seeing people cry doesn\'t really upset me.',
@@ -558,7 +555,7 @@
 
     var eq_rows = _.map(eq_items, function(d, i){
       return {id: 'eq_'+i, row_name: d}
-    })
+    });
 
     var eq = {
       type: 'table-completion',
@@ -570,7 +567,7 @@
       response_validation: 'force_column',
       column_vals: ['', 0, 1, 2, 3],
       preamble: 'How strongly do you agree or disagree with the following statements? There are no right or wrong answers, or trick questions. <span id="column-reminder" class="">Please answer all items.</span>'
-    }
+    };
 
     var demographics = {
       type: 'custom-form',
@@ -594,7 +591,7 @@
         {type: 'select',
         prompt: 'Education:',
         id: 'education',
-        options: ['No schooling completed', 'Primary education (age: 5-10)', 'Secondary education (age: 11-17)', 'University undergraduate degree/  professional equivalent', 'Postgraduate degree (Master’s/Doctorate)'],
+        options: ['No schooling completed', 'Primary education (age: 5-10)', 'Secondary education (age: 11-17)', 'University undergraduate degree/  professional equivalent', 'Postgraduate degree (Master\'s/Doctorate)'],
         values: [0, 1, 2, 3, 4],
         group: 2},
         {type: 'multiple',
@@ -699,11 +696,11 @@
         group: 7,
         is_followup: true}
       ]
-    }
+    };
 
     var occupation = {
       type: 'occupation'
-    }
+    };
 
     var email = {
       type: 'custom-form',
@@ -716,7 +713,7 @@
         optional: true,
         email: true,
       }]
-    } // try separate instructions before/after "note"
+    };
 
     /*
     Add trials to the timeline

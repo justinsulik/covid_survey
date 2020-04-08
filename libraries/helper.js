@@ -50,7 +50,7 @@ function save(data, dataUrl, trial_id){
 }
 
 function finish(completionCode){
-    console.log('    Rerouting to finish page...')
+    console.log('    Rerouting to finish page...');
     window.location.href = "/finish?token="+completionCode;
 }
 
