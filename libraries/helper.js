@@ -3,6 +3,8 @@ Custom functions written for CVBE how-to session 03.03.2020
 For help, contact justin.sulik@gmail.com
 */
 
+var waiting = {}
+
 function prepareData(experiment_start_time){
   console.log('    Preparing data...');
   var data = {};
@@ -19,6 +21,10 @@ function prepareData(experiment_start_time){
 
 function save(data, dataUrl, trial_id){
   console.log('    About to post survey output data...', data);
+  if(!waiting[trial_id]){
+    waiting[trial_id] = 1
+  }
+  console.log (trial_id, 'waiting', waiting)
   var save_attempts = 0;
   var save_timeout = 1000;
   var max_attempts = 5;
@@ -30,20 +36,24 @@ function save(data, dataUrl, trial_id){
      contentType: "application/json",
      timeout: save_timeout,
      success: function(request, status, error){
+       delete waiting[trial_id]
+       console.log(trial_id, 'success, deleting waiting', waiting)
        finish(trial_id);
      },
      error: function(request, status){
        $('#jspsych-content').html("Please wait a few seconds while we save your responses...");
        console.log('    Error posting data...', request, status);
-       if(save_attempts < max_attempts){
-         save_attempts += 1;
+       if(waiting[trial_id] < max_attempts){
+         waiting[trial_id] += 1;
          save_timeout += 500;
          console.log("Trying again, attempt ", save_attempts);
          setTimeout(function () {
             save();
           }, save_timeout);
        } else {
-         finish(trialId+'sZs');
+         delete waiting[trial_id]
+         console.log(trial_id, 'skipping, deleting waiting', waiting);
+         finish(trial_id+'sZs');
        }
      }
    });
