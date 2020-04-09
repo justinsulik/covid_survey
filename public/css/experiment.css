@@ -122,13 +122,13 @@ thead, tbody {display: block;}
   padding: 3px 0px 3px 0px;
 }
 
-.start {padding-top: 18px;}
+.start {padding-top: 10px;}
 
-.end {padding-bottom: 18px;}
+.end {padding-bottom: 35px;}
 
-.form-item:not(.start) {padding-top:8px;}
+.form-item:not(.start) {padding-top:6px;}
 
-.prompt > p {margin-top: 10px; margin-bottom: 6px;}
+.prompt > p {margin-top: 10px; margin-bottom: 5px;}
 
 .cell.header {
   font-size: 13px;
@@ -173,11 +173,16 @@ and (max-device-width : 480px) {
    .prompt {
      font-size: 4vw;
      padding: 1vw 0vw 1vw 0vw;
+     line-height: 1.2em;
+   }
+   .prompt p:last-child {
+     padding-top: 2vh;
    }
 
-   .start {padding-top: 1.8vh;}
-   .end {padding-bottom: 1.8vh;}
+   .start {padding-top: 1.5vh;}
+   .end {padding-bottom: 5vh;}
    .form-item:not(.start) {padding-top:0.8vh}
+
 
    .option.label {
      font-size: 3vw;

@@ -95,7 +95,8 @@ jsPsych.plugins["custom-form"] = (function() {
     trial.questions.forEach(function(question, q_index){
       var question_string;
       // add appropriate padding
-      if(question.group){
+      if(question.group || question.group==0){
+
         if(question.group > group){
           group = question.group;
           question.start = true;

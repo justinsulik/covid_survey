@@ -62,11 +62,16 @@
     var infected_labels = ['Definitely did not have', 'Definitely had'];
     var vertical_collectivism_labels = ['', 'Never', '', '', '', '', '', '', '', 'Always']
 
+
+    var en_dict = {
+
+    }
+
     var language_codes = {
       ar: {name_eng: 'Arabic', name_own: 'عَرَبِيّ‎'},
       ba: {name_eng: 'Bangla', name_own: 'বাংলা'},
       ch: {name_eng: 'Chinese (simplified)', name_own: '中文'}, //(简体)
-      en: {name_eng: 'English', name_own: 'English'},
+      en: {name_eng: 'English', name_own: 'English', en_dict},
       fa: {name_eng: 'Farsi', name_own: 'فارسی'},
       fr: {name_eng: 'French', name_own: 'Français'},
       ge: {name_eng: 'German', name_own: 'Deutsch'},
@@ -242,7 +247,7 @@
         prompt_string += '. '
       }
       prompt_string += '</p>'
-      prompt_string += 'Most people in my close network have been following this general advice where they live'
+      prompt_string += '<p>Most people in my close network have been following this general advice where they live</p>'
       return prompt_string;
     };
 
@@ -257,13 +262,12 @@
         var compliance_questions = [
           {type: 'slider',
           prompt: '<p>First, think about YOUR OWN actions and beliefs IN THE PAST 7 DAYS. Consider how this advice was implemented where you currently are.</p>'+
-          'I have been following this general advice where I live',
+          '<p>I have been following this general advice where I live</p>',
           id: 'comply-self',
           labels: advice_labels,
-          is_start: true,
           group: 0},
           {type: 'slider',
-          prompt: 'I think that it is wrong not to follow this general advice',
+          prompt: '<p>I think that it is wrong not to follow this general advice</p>',
           id: 'ethics-self',
           labels: morality_labels,
           group: 0},
@@ -274,10 +278,9 @@
                 prompt: social_network_prompt,
                 id: 'comply-social',
                 labels: advice_labels,
-                is_start: true,
                 group: i+1})
             compliance_questions.push({type: 'slider',
-                prompt: 'Most people in my close network think that it is wrong not to follow this general advice',
+                prompt: '<p>Most people in my close network think that it is wrong not to follow this general advice</p>',
                 id: 'ethics-social',
                 labels: morality_labels,
                 group: i+1})
@@ -285,13 +288,12 @@
           if(category=='country'){
             compliance_questions.push({type: 'slider',
                 prompt: '<p>Now, think about the actions and beliefs of most PEOPLE IN YOUR COUNTRY (> 80%) IN THE PAST 7 DAYS. Consider how this advice was implemented where THEY currently are. Please try to answer as accurately as you can.</p>'+
-                'Most people in my country have been following this general advice.',
+                '<p>Most people in my country have been following this general advice.</p>',
                 id: 'comply-country',
                 labels: advice_labels,
-                is_start: true,
                 group: i+1})
             compliance_questions.push({type: 'slider',
-              prompt: 'Most people in my country think that it is wrong not to follow this general advice.',
+              prompt: '<p>Most people in my country think that it is wrong not to follow this general advice.</p>',
               id: 'ethics-country',
               labels: morality_labels,
               group: i+1})
@@ -299,13 +301,12 @@
           if(category=='world'){
             compliance_questions.push({type: 'slider',
               prompt: '<p>Now, think about the actions and beliefs of most PEOPLE ALL AROUND THE WORLD (> 80%)  IN THE PAST 7 DAYS. Consider how this advice was implemented where THEY currently are. Please try to answer as accurately as you can.</p>'+
-              'Most people all around the world have been following this general advice.',
+              '<p>Most people all around the world have been following this general advice.</p>',
               id: 'comply-world',
               labels: advice_labels,
-              is_start: true,
               group: i+1})
             compliance_questions.push({type: 'slider',
-              prompt: 'Most people all around the world think that it is wrong not to follow this general advice.',
+              prompt: '<p>Most people all around the world think that it is wrong not to follow this general advice.</p>',
               id: 'ethics-world',
               labels: morality_labels,
               group: i+1})
@@ -719,7 +720,7 @@
     Add trials to the timeline
     */
 
-    // timeline.push(landing_page);
+    // // timeline.push(landing_page);
     timeline.push(information);
     timeline.push(consent);
     timeline.push(participant_id);
@@ -727,7 +728,7 @@
     timeline.push(social_network_trial);
     timeline.push(close_network_if);
     timeline.push(close_network_followup_if);
-    //
+
     timeline.push(compliance);
 
     timeline.push(vulnerable1);
