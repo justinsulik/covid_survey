@@ -20,12 +20,21 @@ function prepareData(experiment_start_time){
   return dataJSON;
 }
 
+<<<<<<< HEAD
 function save(dataJSON, dataUrl, trial_id){
   console.log('    About to post survey output data...', dataJSON);
+=======
+function save(data, dataUrl, trial_id){
+  console.log('    About to post survey output data...', data);
+>>>>>>> d1271536b27fbeff2841e7273f4d1b2d9377e5e7
   if(!waiting[trial_id]){
     waiting[trial_id] = 1
   }
   console.log (trial_id, 'waiting', waiting)
+<<<<<<< HEAD
+=======
+  var save_attempts = 0;
+>>>>>>> d1271536b27fbeff2841e7273f4d1b2d9377e5e7
   var save_timeout = 1000;
   var max_attempts = 5;
   $.ajax({
