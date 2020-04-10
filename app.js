@@ -1,5 +1,9 @@
 /*jshint esversion: 6 */
 
+/*
+test: evening-reaches-46143
+*/
+
 const express = require('express'),
   url = require('url'),
   body_parser = require('body-parser'),
@@ -36,24 +40,28 @@ app.set('view engine', 'ejs');
 app.set('views', __dirname + '/public/views');
 
 /*
+lg data
+*/
+let lg_data = require('./lg/lg_dict.json');
+
+
+/*
 ROUTING
 */
 
 app.get('/', (req, res, next) => {
-    const lg = req.query.lg || '';
     // Generate anonymous code to identify this trial
     const trial_id = helper.makeCode(8);
     // // What browser is the participant using?
     const browser = detect(req.headers['user-agent']);
-    //
+
     tasks.save({
-        "lg": lg,
         "phase": phase,
         "trial_id": trial_id,
         "study_name": study_name,
         "browser": browser,
     });
-    //
+
     let mobile = false;
     if (browser) {
       console.log(trial_id, 'Detected browser...', browser);
@@ -61,8 +69,16 @@ app.get('/', (req, res, next) => {
         mobile = true;
       }
     }
+    res.render('lgpage.ejs', {input_data: JSON.stringify({trial_id: trial_id})});
+});
 
-    res.render('experiment.ejs', {input_data: JSON.stringify({trial_id: trial_id, phase: phase, lg: lg})});
+
+app.get('/study', (req, res, next) => {
+    const lg = req.query.lg || 'en';
+    const trial_id = req.query.tid || helper.makeCode(8);
+    const lg_dict = lg_data[lg];
+
+    res.render('experiment.ejs', {input_data: JSON.stringify({trial_id: trial_id, phase: phase, lg: lg, lg_dict: lg_dict})});
 
 });
 
@@ -89,11 +105,12 @@ Render the final screen, with completionCode and debrief
 */
 app.get('/finish', (req, res) => {
   let code = req.query.token || '';
+  let lg = req.query.lg || 'en';
   if(code.length==0){
     // If, for whatever reason, the code has gone missing, generate a new one so that the participant can get paid
     code = helper.makeCode(10) + 'SZs';
   }
-  res.render('finish.ejs', {completionCode: code, phase: phase});
+  res.render(lg+'_finish.ejs', {completionCode: code, phase: phase});
 });
 
 /*

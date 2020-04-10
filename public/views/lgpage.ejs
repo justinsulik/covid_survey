@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Survey</title>
+        <script language="javascript" src="libraries/jquery-3.4.1.min.js"></script>
+        <script language="javascript" src="libraries/lodash.js"></script>
+        <script language="javascript" src="libraries/helper.js"></script>
+        <script language="javascript" src="jspsych/jspsych.js"></script>
+        <script language="javascript" src="jspsych/plugins/jspsych-custom-form.js"></script>
+        <link href="jspsych/css/jspsych.css" rel="stylesheet" type="text/css"></link>
+        <link href="css/experiment.css" rel="stylesheet" type="text/css"></link>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    </head>
+    <body>
+    </body>
+    <script>
+
+
+    // get the data passed along by app.js
+    var input_data = <%- input_data %>
+    var trial_id = input_data.trial_id || helper.makeCode(8);
+    console.log(trial_id)
+    jsPsych.data.addProperties({trial_id: trial_id});
+
+    var timeline = [];
+
+    var language_codes = {
+      // ar: {name_eng: 'Arabic', name_own: 'عَرَبِيّ‎'},
+      // ba: {name_eng: 'Bangla', name_own: 'বাংলা'},
+      // ch: {name_eng: 'Chinese (simplified)', name_own: '中文'}, //(简体)
+      en: {name_eng: 'English', name_own: 'English'},
+      // fa: {name_eng: 'Farsi', name_own: 'فارسی'},
+      // fr: {name_eng: 'French', name_own: 'Français'},
+      // ge: {name_eng: 'German', name_own: 'Deutsch'},
+      // hi: {name_eng: 'Hindi', name_own: 'हिन्दी'},
+      // it: {name_eng: 'Italian', name_own: 'Italiano'},
+      // sp: {name_eng: 'Spanish', name_own: 'Español'},
+      // sw: {name_eng: 'Swedish', name_own: 'Svenska'},
+      tu: {name_eng: 'Turkish', name_own: 'Türkçe'}
+    }
+
+    var language_options = _.reduce(language_codes, function(acc, dat, key){
+      acc.push(dat.name_own);
+      return acc;
+    }, [])
+
+    var language_vals = Object.keys(language_codes)
+    var landing_page = {
+      type: 'custom-form',
+      preamble: 'Please choose a language to continue',
+      questions: [{
+        type: 'multiple',
+        id: 'language',
+        options: language_options,
+        values: language_vals
+      }],
+      on_finish: function(data){
+        responses = JSON.parse(data.responses);
+        responses.forEach(function(d){
+          if(d.name=='language'){
+            language_choice = d.value
+          }
+        })
+      }
+    }
+
+    timeline.push(landing_page);
+
+    jsPsych.init({
+        preload_images: [],
+        default_iti: 500,
+        show_progress_bar: true,
+        experiment_width: 800,
+        timeline: timeline,
+        on_finish: function(){
+          window.location.href = "/study?tid="+trial_id+"&lg="+language_choice;
+        }
+    });
+
+    </script>
+</html>
