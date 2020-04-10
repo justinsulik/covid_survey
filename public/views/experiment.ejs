@@ -62,51 +62,6 @@
     var infected_labels = ['Definitely did not have', 'Definitely had'];
     var vertical_collectivism_labels = ['', 'Never', '', '', '', '', '', '', '', 'Always']
 
-
-    var en_dict = {
-
-    }
-
-    var language_codes = {
-      ar: {name_eng: 'Arabic', name_own: 'عَرَبِيّ‎'},
-      ba: {name_eng: 'Bangla', name_own: 'বাংলা'},
-      ch: {name_eng: 'Chinese (simplified)', name_own: '中文'}, //(简体)
-      en: {name_eng: 'English', name_own: 'English', en_dict},
-      fa: {name_eng: 'Farsi', name_own: 'فارسی'},
-      fr: {name_eng: 'French', name_own: 'Français'},
-      ge: {name_eng: 'German', name_own: 'Deutsch'},
-      hi: {name_eng: 'Hindi', name_own: 'हिन्दी'},
-      it: {name_eng: 'Italian', name_own: 'Italiano'},
-      sp: {name_eng: 'Spanish', name_own: 'Español'},
-      sw: {name_eng: 'Swedish', name_own: 'Svenska'},
-      tu: {name_eng: 'Turkish', name_own: 'Türkçe'}
-    }
-
-    var language_options = _.reduce(language_codes, function(acc, dat, key){
-      acc.push(dat.name_own);
-      return acc;
-    }, [])
-
-    var language_vals = Object.keys(language_codes)
-    var landing_page = {
-      type: 'custom-form',
-      questions: [{
-        prompt: 'Please choose a language to continue',
-        type: 'multiple',
-        id: 'language',
-        options: language_options,
-        values: language_vals
-      }],
-      on_finish: function(data){
-        responses = JSON.parse(data.responses);
-        responses.forEach(function(d){
-          if(d.name=='language'){
-            language_choice = d.value
-          }
-        })
-      }
-    }
-
     // Consent form
 
     var information = {
@@ -716,11 +671,18 @@
       }]
     };
 
+    var warning = {
+      type: 'instructions',
+      pages: ['On some browsers, the message on the FOLLOWING screen may hang. '+
+      'Please ignore it if it does! '+
+      'Press NEXT to finish the experiment.'],
+      show_clickable_nav: true
+    }
+
     /*
     Add trials to the timeline
     */
 
-    // // timeline.push(landing_page);
     timeline.push(information);
     timeline.push(consent);
     timeline.push(participant_id);
@@ -744,6 +706,7 @@
     timeline.push(demographics);
     timeline.push(occupation);
     timeline.push(email);
+    timeline.push(warning);
 
     /*
     Have jsPsych display the experiment timeline
