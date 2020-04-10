@@ -55,7 +55,6 @@
 
     // labels
 
-<<<<<<< HEAD
     var agree_labels = lg_dict['10.2'];
     var agree_likert = _.reduce(lg_dict['14.1'], function(acc, d){
       acc.push(d)
@@ -76,54 +75,6 @@
         return lg_dict['13.0'][1]
       } else {
         return ''
-=======
-    var agree_labels = ['Completely disagree', 'Completely agree'];
-    var agree_likert = [' ', 'Strongly disagree', 'Slightly disagree', 'Slightly agree', 'Strongly agree']
-    var morality_labels = ['Not following general advice is completely ok', 'Not following general advice is completely wrong'];
-    var advice_labels = ['Not been following the advice at all', 'Been following the advice exactly', 'Been doing more than what is advised']
-    var wembs_labels = ['', 'None of the time', 'Rarely', 'Some of the time', 'Often', 'All of the time'];
-    var vulnerable_labels = ['Not vulnerable at all', 'As vulnerable as an average person', 'Extremely vulnerable'];
-    var infected_labels = ['Definitely did not have', 'Definitely had'];
-    var vertical_collectivism_labels = ['', 'Never', '', '', '', '', '', '', '', 'Always']
-
-    var language_codes = {
-      ar: {name_eng: 'Arabic', name_own: 'عَرَبِيّ‎'},
-      ba: {name_eng: 'Bangla', name_own: 'বাংলা'},
-      ch: {name_eng: 'Chinese (simplified)', name_own: '中文'}, //(简体)
-      en: {name_eng: 'English', name_own: 'English'},
-      fa: {name_eng: 'Farsi', name_own: 'فارسی'},
-      fr: {name_eng: 'French', name_own: 'Français'},
-      ge: {name_eng: 'German', name_own: 'Deutsch'},
-      hi: {name_eng: 'Hindi', name_own: 'हिन्दी'},
-      it: {name_eng: 'Italian', name_own: 'Italiano'},
-      sp: {name_eng: 'Spanish', name_own: 'Español'},
-      sw: {name_eng: 'Swedish', name_own: 'Svenska'},
-      tu: {name_eng: 'Turkish', name_own: 'Türkçe'}
-    }
-
-    var language_options = _.reduce(language_codes, function(acc, dat, key){
-      acc.push(dat.name_own);
-      return acc;
-    }, [])
-
-    var language_vals = Object.keys(language_codes)
-    var landing_page = {
-      type: 'custom-form',
-      questions: [{
-        prompt: 'Please choose a language to continue',
-        type: 'multiple',
-        id: 'language',
-        options: language_options,
-        values: language_vals
-      }],
-      on_finish: function(data){
-        responses = JSON.parse(data.responses);
-        responses.forEach(function(d){
-          if(d.name=='language'){
-            language_choice = d.value
-          }
-        })
->>>>>>> parent of 835dfac... changed spacing somewhat
       }
     });
 
@@ -266,15 +217,7 @@
         prompt_string += '. '
       }
       prompt_string += '</p>'
-<<<<<<< HEAD
-<<<<<<< HEAD
       prompt_string += '<p>'+lg_dict['6.7']+'</p>'
-=======
-      prompt_string += 'Most people in my close network have been following this general advice where they live'
->>>>>>> parent of 835dfac... changed spacing somewhat
-=======
-      prompt_string += 'Most people in my close network have been following this general advice where they live'
->>>>>>> parent of 835dfac... changed spacing somewhat
       return prompt_string;
     };
 
@@ -289,30 +232,14 @@
         var compliance_cats_shuffled = jsPsych.randomization.shuffle(compliance_cats);
         var compliance_questions = [
           {type: 'slider',
-<<<<<<< HEAD
           prompt: '<p>'+lg_dict['6.1']+'</p>'+
           '<p>'+lg_dict['6.2']+'</p>',
-=======
-          prompt: '<p>First, think about YOUR OWN actions and beliefs IN THE PAST 7 DAYS. Consider how this advice was implemented where you currently are.</p>'+
-          'I have been following this general advice where I live',
-<<<<<<< HEAD
->>>>>>> parent of 835dfac... changed spacing somewhat
-=======
->>>>>>> parent of 835dfac... changed spacing somewhat
           id: 'comply-self',
           labels: advice_labels,
           is_start: true,
           group: 0},
           {type: 'slider',
-<<<<<<< HEAD
-<<<<<<< HEAD
           prompt: '<p>'+lg_dict['6.4']+'</p>',
-=======
-          prompt: 'I think that it is wrong not to follow this general advice',
->>>>>>> parent of 835dfac... changed spacing somewhat
-=======
-          prompt: 'I think that it is wrong not to follow this general advice',
->>>>>>> parent of 835dfac... changed spacing somewhat
           id: 'ethics-self',
           labels: morality_labels,
           group: 0},
@@ -326,75 +253,35 @@
                 is_start: true,
                 group: i+1})
             compliance_questions.push({type: 'slider',
-<<<<<<< HEAD
-<<<<<<< HEAD
                 prompt: '<p>'+lg_dict['6.8']+'</p>',
-=======
-                prompt: 'Most people in my close network think that it is wrong not to follow this general advice',
->>>>>>> parent of 835dfac... changed spacing somewhat
-=======
-                prompt: 'Most people in my close network think that it is wrong not to follow this general advice',
->>>>>>> parent of 835dfac... changed spacing somewhat
                 id: 'ethics-social',
                 labels: morality_labels,
                 group: i+1})
           }
           if(category=='country'){
             compliance_questions.push({type: 'slider',
-<<<<<<< HEAD
                 prompt: '<p>'+lg_dict['6.9']+'</p>'+
                 '<p>'+lg_dict['6.10']+'</p>',
-=======
-                prompt: '<p>Now, think about the actions and beliefs of most PEOPLE IN YOUR COUNTRY (> 80%) IN THE PAST 7 DAYS. Consider how this advice was implemented where THEY currently are. Please try to answer as accurately as you can.</p>'+
-                'Most people in my country have been following this general advice.',
-<<<<<<< HEAD
->>>>>>> parent of 835dfac... changed spacing somewhat
-=======
->>>>>>> parent of 835dfac... changed spacing somewhat
                 id: 'comply-country',
                 labels: advice_labels,
                 is_start: true,
                 group: i+1})
             compliance_questions.push({type: 'slider',
-<<<<<<< HEAD
-<<<<<<< HEAD
-              prompt: '<p>'+lg_dict['6.11']+'</p>',
-=======
-              prompt: 'Most people in my country think that it is wrong not to follow this general advice.',
->>>>>>> parent of 835dfac... changed spacing somewhat
-=======
-              prompt: 'Most people in my country think that it is wrong not to follow this general advice.',
->>>>>>> parent of 835dfac... changed spacing somewhat
+            prompt: '<p>'+lg_dict['6.11']+'</p>',
               id: 'ethics-country',
               labels: morality_labels,
               group: i+1})
           }
           if(category=='world'){
             compliance_questions.push({type: 'slider',
-<<<<<<< HEAD
               prompt: '<p>'+lg_dict['6.12']+'</p>'+
               '<p>'+lg_dict['6.13']+'</p>',
-=======
-              prompt: '<p>Now, think about the actions and beliefs of most PEOPLE ALL AROUND THE WORLD (> 80%)  IN THE PAST 7 DAYS. Consider how this advice was implemented where THEY currently are. Please try to answer as accurately as you can.</p>'+
-              'Most people all around the world have been following this general advice.',
-<<<<<<< HEAD
->>>>>>> parent of 835dfac... changed spacing somewhat
-=======
->>>>>>> parent of 835dfac... changed spacing somewhat
               id: 'comply-world',
               labels: advice_labels,
               is_start: true,
               group: i+1})
             compliance_questions.push({type: 'slider',
-<<<<<<< HEAD
-<<<<<<< HEAD
               prompt: '<p>'+lg_dict['6.14']+'</p>',
-=======
-              prompt: 'Most people all around the world think that it is wrong not to follow this general advice.',
->>>>>>> parent of 835dfac... changed spacing somewhat
-=======
-              prompt: 'Most people all around the world think that it is wrong not to follow this general advice.',
->>>>>>> parent of 835dfac... changed spacing somewhat
               id: 'ethics-world',
               labels: morality_labels,
               group: i+1})
@@ -785,15 +672,7 @@
     Add trials to the timeline
     */
 
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
-    // timeline.push(landing_page);
->>>>>>> parent of 835dfac... changed spacing somewhat
-=======
-    // timeline.push(landing_page);
->>>>>>> parent of 835dfac... changed spacing somewhat
-    timeline.push(information);
+    // timeline.push(information);
     timeline.push(consent);
     timeline.push(participant_id);
 
