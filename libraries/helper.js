@@ -45,7 +45,6 @@ function save(data, dataUrl, trial_id){
        console.log('    Error posting data...', request, status);
        if(waiting[trial_id] < max_attempts){
          waiting[trial_id] += 1;
-         save_timeout += 500;
          console.log("Trying again, attempt ", save_attempts);
          setTimeout(function () {
             save();
