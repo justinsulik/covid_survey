@@ -211,6 +211,7 @@
     function socialNetworkprompt(){
       var prompt_string = '<p>'+lg_dict['6.6'];
       if(close_network.length>0){
+        promt_string += ''
         close_network.forEach(function(d, i){
           if(i>0){
             prompt_string += ', '
@@ -669,6 +670,9 @@
     var occupation = {
       type: 'occupation',
       dict: lg_dict,
+      preamble: lg_dict['16.0'],
+      instructions: lg_dict['16.1'],
+      submit: lg_dict['0.0']
     };
 
     var email = {

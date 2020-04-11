@@ -27,6 +27,11 @@ jsPsych.plugins["occupation"] = (function() {
         default: 'none',
         description: "If 'force', force responses; if 'invite', just alert asking for responses; otherwise no checking."
       },
+      submit: {
+        type: jsPsych.plugins.parameterType.STRING,
+        default: 'Submit',
+        description: "text for submit button"
+      },
       dict: {
         type: jsPsych.plugins.parameterType.OBJECT,
         default: {},
@@ -120,7 +125,7 @@ jsPsych.plugins["occupation"] = (function() {
 
 
     var submit = '<div>'+
-                  '<br><button type="button" id="submit">Submit</button>'+
+                  '<br><button type="button" id="submit">'+trial.submit+'</button>'+
                   '</div>';
 
     html += occupation;
