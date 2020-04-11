@@ -41,7 +41,8 @@ function save(dataJSON, dataUrl, trial_id, lg){
        finish(trial_id, lg);
      },
      error: function(request, status){
-       $('#jspsych-content').html("Please wait a few seconds while we save your responses...");
+       $('#jspsych-content').html("<p>Please wait a few seconds while we save your responses...</p>"+
+      "<p>If you are not automatically redirected to the debriefing in a few seconds, please click <a href='/finish?token="+trial_id+"&lg="+lg+"'>here</a>.</p>");
        console.log(trial_id, 'Error posting data...', request, status);
        if(waiting[trial_id] < max_attempts){
          waiting[trial_id] += 1;
