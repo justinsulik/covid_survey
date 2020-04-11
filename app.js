@@ -14,22 +14,13 @@ const express = require('express'),
   responses = require(__dirname+'/controllers/responses'),
   helper = require(__dirname+'/libraries/helper.js');
 
-/*
-INSTANTIATE THE APP
-*/
 const study_name = 'lg_trial';
 const phase = 1;
 const app = express();
 const PORT = process.env.PORT || 5000;
 
-/*
-DATABASE SETUP
-*/
 db.connect(process.env.MONGODB_URI);
 
-/*
-SET MIDDLEWARE/LIBRARIES/PARSING
-*/
 app.use(express.static(__dirname + '/public'));
 app.use(body_parser.json());
 app.use('/jspsych', express.static(__dirname + "/jspsych"));
@@ -39,15 +30,7 @@ app.engine('ejs', ejs.renderFile);
 app.set('view engine', 'ejs');
 app.set('views', __dirname + '/public/views');
 
-/*
-lg data
-*/
 let lg_data = require('./lg/lg_dict.json');
-
-
-/*
-ROUTING
-*/
 
 app.get('/', (req, res, next) => {
     // Generate anonymous code to identify this trial
@@ -82,12 +65,6 @@ app.get('/study', (req, res, next) => {
 
 });
 
-/*
-SAVE TRIAL DATA
-- This will obviously only work once you've provisioned the database and uncommented the db.connect() function above
-- Include printouts here to check that it's arriving properly
-*/
-
 app.post('/data', (req, res, next) => {
   const data = req.body;
   const trial_id = req.query.trial_id || 'none';
@@ -100,9 +77,6 @@ app.post('/data', (req, res, next) => {
   .then(res.status(200).end());
 });
 
-/*
-Render the final screen, with completionCode and debrief
-*/
 app.get('/finish', (req, res) => {
   let code = req.query.token || '';
   let lg = req.query.lg || 'en';
@@ -110,12 +84,10 @@ app.get('/finish', (req, res) => {
     // If, for whatever reason, the code has gone missing, generate a new one so that the participant can get paid
     code = helper.makeCode(10) + 'SZs';
   }
+  console.log('finishing', code, lg)
   res.render(lg+'_finish.ejs', {completionCode: code, phase: phase});
 });
 
-/*
-START THE SERVER
-*/
 var server = app.listen(PORT, function(){
     console.log("Listening on port %d", server.address().port);
 });

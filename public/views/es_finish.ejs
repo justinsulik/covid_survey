@@ -1,17 +1,18 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head><title>Completed</title>
-    <style>body {margin-left: 50px; margin-top: 80px; width: 800px}</style>
-  </head>
-  <body>
+ <head><title>Completed</title>
+   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+ </head>
+ <body style="margin: 30px">
     <div style="position:relative;height:100px"><img src="img/UoN_Primary_Logo_RGB.png" style="width:200px;position:absolute;right:10px"></div>
     <p> Estimado/a Participante,</p>
-    <p>Muchas gracias por completar esta encuesta. Ha completado la Fase          <% =phase%> del estudio. Le enviaremos un correo electrónico recordatorio en 2 semanas con el enlace a la nueva encuesta para la siguiente parte del estudio. La encuesta de seguimiento será MUCHO MÁS CORTA que la primera.</p>
+    <p>Muchas gracias por completar esta encuesta. Ha completado la Fase <%= phase%> del estudio. Le enviaremos un correo electrónico recordatorio en 2 semanas con el enlace a la nueva encuesta para la siguiente parte del estudio. La encuesta de seguimiento será MUCHO MÁS CORTA que la primera.</p>
     <p> Para conocer los efectos a largo plazo de la enfermedad por coronavirus (COVID-19) en la vida cotidiana de las personas, su participación en las próximas fases del estudio es muy importante para nosotros.</p>
     <p> Esta investigación es realizada por un grupo internacional de investigadores. Puede contactar al equipo de estudio en:<a href="mailto:bahar.tuncgenc@nottingham.ac.uk">bahar.tuncgenc@nottingham.ac.uk</a>. La participación es completamente voluntaria, y usted es libre de retirarse en cualquier momento sin previo aviso. Si desea retirar sus respuestas de un punto (s) de tiempo anterior, envíenos un correo electrónico con su ID de inicio de sesión dentro de las 2 semanas de completar esa encuesta.</p>
-    <p><b> Su ID de inicio de sesión es <%= completionCode %>.</b></p>	
+    <p><b> Su ID de inicio de sesión es <%= completionCode %>.</b></p>
     <p> Si necesita asistencia sobre la enfermedad por coronavirus y / o cualquier problema de salud mental, consulte los consejos de la Organización Mundial de la Salud <a href="https://www.who.int/health-topics/coronavirus#tab=tab_1" target="_blank">Coronavirus</a> y <a href="https://www.who.int/docs/default-source/coronaviruse/mental-health-considerations.pdf?sfvrsn=6d3578af_2" target="_blank">mental health</a>, y a las autoridades sanitarias de su país.</p>
     <p> Si tiene alguna queja sobre el estudio, comuníquese con: Stephen Jackson (Presidente del Comité de Ética), <a href="mailto:stephen.jackson@nottingham.ac.uk">stephen.jackson@nottingham.ac.uk</a>.</p>
     <p>¡GRACIAS!</p>
+    <img style="width:320px" src="img/thankyou/thankyou_en.png"></img>
   </body>
 </html>

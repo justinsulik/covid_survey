@@ -1,17 +1,19 @@
 <!DOCTYPE html>
 <html lang="en">
   <head><title>Completed</title>
-    <style>body {margin-left: 50px; margin-top: 80px; width: 800px}</style>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
   </head>
-  <body>
-    <div style="position:relative;height:100px"><img src="img/UoN_Primary_Logo_RGB.png" style="width:200px;position:absolute;right:10px"></div>
+  <body style="margin: 30px">
+   <div style="position:relative;height:100px"><img src="img/UoN_Primary_Logo_RGB.png" style="width:200px;position:absolute;right:10px"></div>
     <p>Cher participant,</p>
-    <p>Merci beaucoup d'avoir répondu à cette enquête. Vous avez maintenant terminé la phase <% = phase%> de l'étude. Nous vous enverrons un e-mail de rappel dans 2 semaines avec le lien vers la nouvelle enquête pour la prochaine partie de l'étude. L'enquête de suivi sera BEAUCOUP PLUS COURTE que la première.</p>
+    <p>Merci beaucoup d'avoir répondu à cette enquête. Vous avez maintenant terminé la phase <%= phase%> de l'étude. Nous vous enverrons un e-mail de rappel dans 2 semaines avec le lien vers la nouvelle enquête pour la prochaine partie de l'étude. L'enquête de suivi sera BEAUCOUP PLUS COURTE que la première.</p>
     <p>Pour en savoir plus sur les effets à long terme de la maladie du coronavirus (COVID-19) sur la vie quotidienne des gens, votre participation aux prochaines phases de l'étude est très importante pour nous.</p>
     <p>Cette recherche est menée par un groupe international de chercheurs. Vous pouvez contacter l'équipe d'étude au:<a href="mailto:bahar.tuncgenc@nottingham.ac.uk">bahar.tuncgenc@nottingham.ac.uk</a>. La participation est entièrement volontaire et vous êtes libre de vous retirer à tout moment sans donner de raison. Si vous souhaitez retirer vos réponses d'un ou de plusieurs points antérieurs, veuillez nous envoyer un e-mail avec votre identifiant dans les 2 semaines suivant la fin de cette enquête..</p>
     <p><b>Votre identifiant de connexion est<%= completionCode %>.</b></p>
     <p> Si vous avez besoin d'aide concernant la maladie du coronavirus et/ou tout autre problème psychique, veuillez vous référer aux conseils de l'Organisation Mondiale de la Santé sur<a href="https://www.who.int/health-topics/coronavirus#tab=tab_1" target="_blank">Coronavirus</a> et <a href="https://www.who.int/docs/default-source/coronaviruse/mental-health-considerations.pdf?sfvrsn=6d3578af_2" target="_blank">mental health</a>, et les autorités sanitaires de votre pays. </p>
     <p> Si vous avez des plaintes concernant l'étude, veuillez contacter: Stephen Jackson (président du comité d'éthique), <a href="mailto:stephen.jackson@nottingham.ac.uk">stephen.jackson@nottingham.ac.uk</a>.</p>
     <p>MERCI!</p>
+    <img style="width:320px" src="img/thankyou/thankyou_en.png"></img>
+
   </body>
 </html>
