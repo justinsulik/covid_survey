@@ -16,19 +16,19 @@ function prepareData(experiment_start_time){
                               });
   data.responses = jsPsych.data.get().json();
   data.trial_id = trial_id;
-  return data;
+  dataJSON = JSON.stringify(data);
+
+  return dataJSON;
 }
 
-function save(data, dataUrl, trial_id){
-  console.log('    About to post survey output data...', data);
+function save(dataJSON, dataUrl, trial_id, lg){
+  console.log('    About to post survey output data...', dataJSON);
   if(!waiting[trial_id]){
-    waiting[trial_id] = 1
+    waiting[trial_id] = 1;
   }
-  console.log (trial_id, 'waiting', waiting)
-  var save_attempts = 0;
+  console.log (trial_id, 'waiting', waiting);
   var save_timeout = 1000;
   var max_attempts = 5;
-  dataJSON = JSON.stringify(data);
   $.ajax({
      type: 'POST',
      url: dataUrl,
@@ -36,9 +36,9 @@ function save(data, dataUrl, trial_id){
      contentType: "application/json",
      timeout: save_timeout,
      success: function(request, status, error){
-       delete waiting[trial_id]
-       console.log(trial_id, 'success, deleting waiting', waiting)
-       finish(trial_id);
+       delete waiting[trial_id];
+       console.log(trial_id, 'success, deleting waiting', waiting);
+       finish(trial_id, lg);
      },
      error: function(request, status){
        $('#jspsych-content').html("Please wait a few seconds while we save your responses...");
@@ -48,20 +48,20 @@ function save(data, dataUrl, trial_id){
          save_timeout += 500;
          console.log("Trying again, attempt ", save_attempts);
          setTimeout(function () {
-            save();
+            save(dataJSON, dataUrl, trial_id, lg);
           }, save_timeout);
        } else {
-         delete waiting[trial_id]
+         delete waiting[trial_id];
          console.log(trial_id, 'skipping, deleting waiting', waiting);
-         finish(trial_id+'sZs');
+         finish(trial_id, lg);
        }
      }
    });
 }
 
-function finish(completionCode){
+function finish(completionCode, lg){
     console.log('    Rerouting to finish page...');
-    window.location.href = "/finish?token="+completionCode;
+    window.location.href = "/finish?token="+completionCode+'&lg='+lg;
 }
 
 function makeCode(len){
