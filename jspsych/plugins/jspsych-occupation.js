@@ -26,6 +26,11 @@ jsPsych.plugins["occupation"] = (function() {
         type: jsPsych.plugins.parameterType.STRING,
         default: 'none',
         description: "If 'force', force responses; if 'invite', just alert asking for responses; otherwise no checking."
+      },
+      dict: {
+        type: jsPsych.plugins.parameterType.OBJECT,
+        default: {},
+        description: "language dictionary."
       }
     }
   };
@@ -34,6 +39,7 @@ jsPsych.plugins["occupation"] = (function() {
 
     // data saving
     var trial_data = {};
+    var lg_dict = trial.dict;
 
     var css = '<style>';
     css += '.options.container {text-align: left}';
@@ -54,60 +60,52 @@ jsPsych.plugins["occupation"] = (function() {
       html += '<p class="instructions">'+trial.instructions+'</p>';
     }
 
-    var occupations = {
-      'Never had an occupation ': ['Never had an occupation'],
-      'Manager': [],
-      'Professional': ['Science and engineering professional', 'Health professional',
-        'Teaching professional', 'Business and administration professional',
-        'Information and communications technology professional',
-        'Legal professional', 'Journalist, reporter', 'Creative or performing artist',
-        'Politician', 'Other social or cultural professional'],
-      'Technician or associate': ['Science or engineering associate',
-        'Health associate', 'Business or administration associate', 'Information or communications technician',
-        'Legal, social or cultural associate'],
-      'Clerical support worker': [],
-      'Service or sales worker': ['Travel attendant', 'Cook', 'Waiter', 'Other personal services worker',
-        'Sales worker', 'Personal care worker', 'Police', 'Security guard', 'Firefighter'],
-      'Skilled agricultural, forestry or fishery worker': [],
-      'Craft and related trades worker (e.g., building, electronics, metal etc.)':
-        ['Food processing worker', 'Other craft and related trades worker'],
-      'Plant or machine operator, assembler': [],
-      'Elementary occupation': ['Cleaner, helper', 'Labourer in manufacturing and transport',
-        'Food preparation assistant', 'Package deliverer', 'Other elementary worker'],
-      'Armed forces': [],
-      'Self-employed': [],
-      'Other': []
+    occupations = {
+      '16.2': null,
+      '16.3': null,
+      '16.4': '16.5',
+      '16.6': '16.7',
+      '16.8': null,
+      '16.9': '16.10',
+      '16.11': null,
+      '16.12': '16.13',
+      '16.14': null,
+      '16.15': '16.16',
+      '16.17': null,
+      '16.18': null,
+      '16.19': null
     };
 
-    function shortName(long_string){
-      var matches = long_string.match(/[a-zA-Z]+/);
-      var first_word = matches[0].toLowerCase();
-      return first_word;
-    }
-
-    var occupations_string = _.reduce(occupations, function(acc, options, heading){
+    var occupations_string = _.reduce(occupations, function(acc, options_code, heading_code){
+      var heading_code_dotless = heading_code.replace('.', '_');
+      var options;
+      var options_code_dotless;
+      if(options_code){
+        options = lg_dict[options_code];
+        options_code_dotless = options_code.replace('.', '_');
+      } else {
+        options = [];
+      }
       // build html string for the occupations in the above list
-      var short_heading = shortName(heading);
-      var option_heading = '<div class="option-heading-container"><div id="occupation-heading-'+short_heading+'" class="option-heading">'+heading+'</div></div>';
+      var option_heading = '<div class="option-heading-container"><div id="occupation-heading-'+heading_code_dotless+'" class="option-heading">'+lg_dict[heading_code]+'</div></div>';
       var option_string;
-      var subfield_string = '<div id="occupation-option-container-'+short_heading+'" class="options container collapse">';
-      if(short_heading=='other'){
+      var subfield_string = '<div id="occupation-option-container-'+heading_code_dotless+'" class="options container collapse">';
+      if(heading_code=='16.19'){ // other
         var other_input_string = '<div class="indent">'+
-        '<input type="text" name="occupation-text" class="answer text inline" placeholder="Please specify" size="25"></div>';
+        '<input type="text" name="occupation-text" class="answer text inline" placeholder="'+lg_dict['0.3']+'" size="25"></div>';
         subfield_string += other_input_string;
       } else {
         if(options.length==0){
           // if no sub-fields, the top-level field must be selectable
           option_string = '<div class="indent">'+
-          '<input type="checkbox" id="occupation-'+short_heading+'" class="answer check" name="occupation" value="'+short_heading+'">'+
-          '<label for="occupation-'+short_heading+'" class="option label"> '+heading+'</label></div>';
+          '<input type="checkbox" id="occupation-'+heading_code_dotless+'" class="answer check" name="occupation" value="'+heading_code_dotless+'">'+
+          '<label for="occupation-'+heading_code_dotless+'" class="option label"> '+lg_dict[heading_code]+'</label></div>';
           subfield_string += option_string;
         } else {
-          options.forEach(function(option, i){
-            short_option = shortName(option);
+          options.forEach(function(option, option_index){
             option_string = '<div class="indent inline">'+
-            '<input type="checkbox" id="occupation-'+short_heading+'-'+short_option+'" name="occupation" class="answer check" value="'+short_option+'">'+
-            '<label for="occupation-'+short_heading+'-'+short_option+'" class="option label"> '+option+'</label></div>';
+            '<input type="checkbox" id="occupation-'+heading_code_dotless+'-'+option_index+'" name="occupation" class="answer check" value="'+heading_code_dotless+'-'+option_index+'">'+
+            '<label for="occupation-'+heading_code_dotless+'-'+option_index+'" class="option label"> '+option+'</label></div>';
             subfield_string += option_string;
           });
         }
@@ -131,7 +129,7 @@ jsPsych.plugins["occupation"] = (function() {
 
     $('.option-heading').on('click', function(e){
       var heading_id = e.target.id;
-      var heading_name = heading_id.match('occupation-heading-([a-z]+)')[1];
+      var heading_name = heading_id.match('occupation-heading-(.+)')[1];
       var target_div = $('#occupation-option-container-'+heading_name);
       if(target_div.hasClass('collapse')){
         target_div.slideDown(400).removeClass('collapse');
@@ -144,11 +142,11 @@ jsPsych.plugins["occupation"] = (function() {
     $('input[type=checkbox]').on('change', function(e){
       var checked = this.checked;
       var option_id = e.target.id;
-      var parent_name = option_id.match('occupation-([a-z]+)')[1];
-      if(parent_name == 'never'){
+      var parent_name = option_id.match('occupation-([0-9_]+)')[1];
+      if(parent_name == '16_2'){
         $('input[type=checkbox]').each(function(i,d){
-          var other_parent = d.id.match('occupation-([a-z]+)')[1];
-          if(d.value != 'never' && other_parent != parent){
+          var other_parent = d.id.match('occupation-([0-9_]+)')[1];
+          if(d.value != '16_2' && other_parent != parent){
             if(checked){
               $('#occupation-heading-'+other_parent).addClass('disabled');
               $(d).attr("disabled", true);
@@ -193,7 +191,8 @@ jsPsych.plugins["occupation"] = (function() {
         var div_obj = $(div);
         var name = div_obj.attr('name');
         if(div_obj.is(':checked')){
-          var parent_class = div_obj.attr('id').match('occupation-([a-z]+)')[1];
+          var target_id = div_obj.attr('id');
+          var parent_class = target_id.match('occupation-([0-9_]+)')[1];
           if(!parent_class){
             parent_class = 'unknown';
           }
