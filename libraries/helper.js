@@ -42,11 +42,11 @@ function save(dataJSON, dataUrl, trial_id, lg){
      },
      error: function(request, status){
        $('#jspsych-content').html("Please wait a few seconds while we save your responses...");
-       console.log('    Error posting data...', request, status);
+       console.log(trial_id, 'Error posting data...', request, status);
        if(waiting[trial_id] < max_attempts){
          waiting[trial_id] += 1;
          save_timeout += 500;
-         console.log("Trying again, attempt ", save_attempts);
+         console.log(trial_id, "Trying again, attempt ", waiting[trial_id]);
          setTimeout(function () {
             save(dataJSON, dataUrl, trial_id, lg);
           }, save_timeout);
