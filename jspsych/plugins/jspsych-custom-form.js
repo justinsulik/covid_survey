@@ -36,6 +36,16 @@ jsPsych.plugins["custom-form"] = (function() {
         default: 'Continue',
         description: "Text for 'submit' button"
       },
+      select_start: {
+        type: jsPsych.plugins.parameterType.STRING,
+        default: 'select an option',
+        description: "Text for 'submit' button"
+      },
+      specify_text: {
+        type: jsPsych.plugins.parameterType.STRING,
+        default: 'Please specify',
+        description: "Text for specify reminder"
+      },
     }
   };
 
@@ -238,8 +248,8 @@ jsPsych.plugins["custom-form"] = (function() {
 
       if(question_data.specify){
         option_string += '<div id="'+question_id+'-specify" class="response optional hidden">';
-        option_string += '<input type="text" name="'+question_id+'-specify" class="answer text specify optional" placeholder="Please specify">';
-        option_string += '<div id="'+question_id+'-specify-reminder" class="reminder">Please specify</div>';
+        option_string += '<input type="text" name="'+question_id+'-specify" class="answer text specify optional" placeholder="'+trial.specify_text+'">';
+        option_string += '<div id="'+question_id+'-specify-reminder" class="reminder">'+trial.specify_text+'</div>';
         option_string += '</div>';
         display_logic[question_id].push({type: 'specify', unhide_on: question_data.specify});
       }
@@ -268,7 +278,7 @@ jsPsych.plugins["custom-form"] = (function() {
       var html_string = '<div id="question-container-'+question_id+'" class="'+container_class_string+'">';
       html_string += '<div class="prompt">'+prompt+'</div>';
       html_string += '<select id="'+question_id+'" class="'+input_class_string+'">';
-      var option_string = '<option disabled selected value> -- select an option -- </option>';
+      var option_string = '<option disabled selected value> -- '+trial.select_start+' -- </option>';
       options.forEach(function(option,i){
         var option_id = question_id+'-'+i;
         var value_string;
@@ -285,8 +295,8 @@ jsPsych.plugins["custom-form"] = (function() {
 
       if(question_data.specify){
         html_string += '<div id="'+question_id+'-specify" class="response hidden inline">';
-        html_string += '<input type="text" name="'+question_id+'-specify" id="'+question_id+'-'+question_data.specify+'" class="specify answer text optional" placeholder="Please specify">';
-        html_string += '<div id="'+question_id+'-specify-reminder" class="reminder">Please specify</div>';
+        html_string += '<input type="text" name="'+question_id+'-specify" id="'+question_id+'-'+question_data.specify+'" class="specify answer text optional" placeholder="'+trial.specify_text+'">';
+        html_string += '<div id="'+question_id+'-specify-reminder" class="reminder">'+trial.specify_text+'</div>';
         html_string += '</div>';
         display_logic[question_id].push({type: 'specify', unhide_on: question_data.specify});
       }

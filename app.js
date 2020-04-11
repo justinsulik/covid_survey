@@ -17,7 +17,7 @@ const express = require('express'),
 /*
 INSTANTIATE THE APP
 */
-const study_name = 'english_trial';
+const study_name = 'lg_trial';
 const phase = 1;
 const app = express();
 const PORT = process.env.PORT || 5000;

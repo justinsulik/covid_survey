@@ -90,7 +90,7 @@
         experiment_start_time = Date.now();
         return true;
       },
-      cont_btn: 'submit'
+      cont_btn: lg_dict['0.0']
     }
 
     // instructions
@@ -100,6 +100,8 @@
       submit: lg_dict['0.0'],
       preamble: lg_dict['1.0'],
       instructions: lg_dict['1.1']+'<br>'+lg_dict['1.2'],
+      select_start: lg_dict['0.2'],
+      specify_text: lg_dict['0.3'],
       questions: [
         {type: 'checkbox',
         prompt: lg_dict['1.3'],
@@ -116,7 +118,8 @@
       type: 'instructions',
       pages: [lg_dict['2.0'] +'</b><br>' + trial_id +'</b><br>'+lg_dict['2.1']],
       show_clickable_nav: true,
-      button_label_next: lg_dict['0.0']
+      button_label_next: lg_dict['0.0'],
+      button_label_previous: '',
     };
 
     var social_network_trial = {
@@ -224,7 +227,9 @@
     var compliance = {
       type: 'custom-form',
       submit: lg_dict['0.0'],
+      select_start: lg_dict['0.2'],
       preamble: lg_dict['6.0'],
+      specify_text: lg_dict['0.3'],
       highlight: 'group',
       questions: function(){
         var social_network_prompt = socialNetworkprompt()
@@ -294,7 +299,9 @@
     var vulnerable1 = {
       type: 'custom-form',
       submit: lg_dict['0.0'],
+      select_start: lg_dict['0.2'],
       preamble: lg_dict['7.0'],
+      specify_text: lg_dict['0.3'],
       questions: [
         {type: 'slider',
         prompt: lg_dict['7.1'],
@@ -315,6 +322,8 @@
       type: 'custom-form',
       submit: lg_dict['0.0'],
       preamble: lg_dict['8.0'],
+      select_start: lg_dict['0.2'],
+      specify_text: lg_dict['0.3'],
       questions: [
         {type: 'slider',
         prompt: lg_dict['7.1'],
@@ -354,6 +363,8 @@
       type: 'custom-form',
       submit: lg_dict['0.0'],
       preamble: lg_dict['10.0'],
+      select_start: lg_dict['0.2'],
+      specify_text: lg_dict['0.3'],
       questions: [{
         type: 'slider',
         prompt: lg_dict['10.1'],
@@ -382,6 +393,8 @@
       type: 'custom-form',
       submit: lg_dict['0.0'],
       preamble: lg_dict['11.0'],
+      select_start: lg_dict['0.2'],
+      specify_text: lg_dict['0.3'],
       questions: [
         {type: 'slider',
         prompt: lg_dict['11.1'],
@@ -441,6 +454,8 @@
       submit: lg_dict['0.0'],
       preamble: lg_dict['11.0'],
       instructions: lg_dict['12.0'],
+      select_start: lg_dict['0.2'],
+      specify_text: lg_dict['0.3'],
       highlight: 'group',
       questions: [
         {type: 'multiple',
@@ -476,7 +491,7 @@
         id: 'ideology-optout',
         optout_for: 'ideology',
         columns: 1,
-        options: [lg_dict['12.8']],
+        options: lg_dict['12.8'],
         values: ['NA', 'None'],
         group: 2}
       ]
@@ -522,6 +537,8 @@
       type: 'custom-form',
       submit: lg_dict['0.0'],
       preamble: lg_dict['15.0'],
+      select_start: lg_dict['0.2'],
+      specify_text: lg_dict['0.3'],
       highlight: 'group',
       questions: [
         {type: 'text',
@@ -656,6 +673,8 @@
     var email = {
       type: 'custom-form',
       submit: lg_dict['0.0'],
+      select_start: lg_dict['0.2'],
+      specify_text: lg_dict['0.3'],
       questions: [{
         prompt: '<p>'+lg_dict['17.0']+'</p>',
         // '<p style="font-size: 0.75em">'++'</p>',
@@ -673,21 +692,21 @@
     */
 
     // timeline.push(information);
-    timeline.push(consent);
-    timeline.push(participant_id);
-
-    timeline.push(social_network_trial);
-    timeline.push(close_network_if);
-    timeline.push(close_network_followup_if);
+    // timeline.push(consent);
+    // timeline.push(participant_id);
     //
-    timeline.push(compliance);
-
-    timeline.push(vulnerable1);
-    timeline.push(vulnerable2);
+    // timeline.push(social_network_trial);
+    // timeline.push(close_network_if);
+    // timeline.push(close_network_followup_if);
+    // //
+    // timeline.push(compliance);
+    //
+    // timeline.push(vulnerable1);
+    // timeline.push(vulnerable2);
     timeline.push(wembs);
-
-    timeline.push(corona_attitudes);
-    timeline.push(science_attitudes);
+    //
+    // timeline.push(corona_attitudes);
+    // timeline.push(science_attitudes);
     timeline.push(political_attitudes);
 
     timeline.push(vertical_collectivism);

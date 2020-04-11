@@ -83,6 +83,11 @@ jsPsych.plugins["table-completion"] = (function() {
         default: false,
         description: "If true, only one choice per row; otherwise as many as apply."
       },
+      submit: {
+        type: jsPsych.plugins.parameterType.STRING,
+        default: 'Continue',
+        description: "text for continue button"
+      },
     }
   };
 
@@ -221,7 +226,7 @@ Table
     table += '</table>';
 
     var submit = '<div>'+
-                  '<br><button type="button" id="submit">Continue</button>'+
+                  '<br><button type="button" id="submit">'+trial.submit+'</button>'+
                   '</div>';
 
     display_element.innerHTML = css+html+table+submit;
