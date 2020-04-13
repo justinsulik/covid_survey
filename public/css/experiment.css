@@ -5,7 +5,7 @@
   width: 800px;
 }
 
-.jspsych-survey-multi-choice-text {text-align: left !important;}
+/* .jspsych-survey-multi-choice-text {text-align: left !important;} */
 
 select {
   font-size: 14px;
