@@ -33,7 +33,7 @@ function save(dataJSON, dataUrl, trial_id, lg){
      url: dataUrl,
      data: dataJSON,
      contentType: "application/json",
-     timeout: save_timeout,
+     timeout: 3000,
      success: function(request, status, error){
        delete waiting[trial_id];
        console.log(trial_id, 'success, deleting waiting', waiting);
