@@ -3,7 +3,8 @@ Custom functions written for CVBE how-to session 03.03.2020
 For help, contact justin.sulik@gmail.com
 */
 
-var waiting = {};
+var save_attempts = 0;
+var save_timeout = 1500;
 
 function prepareData(experiment_start_time){
   console.log('    Preparing data...');
@@ -22,11 +23,7 @@ function prepareData(experiment_start_time){
 
 function save(dataJSON, dataUrl, trial_id, lg){
   console.log('    About to post survey output data...', dataJSON);
-  if(!waiting[trial_id]){
-    waiting[trial_id] = 1;
-  }
-  console.log (trial_id, 'waiting', waiting);
-  var save_timeout = 1000;
+  console.log (trial_id, 'waiting');
   var max_attempts = 5;
   $.ajax({
      type: 'POST',
@@ -35,24 +32,22 @@ function save(dataJSON, dataUrl, trial_id, lg){
      contentType: "application/json",
      timeout: 3000,
      success: function(request, status, error){
-       delete waiting[trial_id];
-       console.log(trial_id, 'success, deleting waiting', waiting);
+       console.log(trial_id, 'success, deleting waiting');
        finish(trial_id, lg);
      },
      error: function(request, status){
        $('#jspsych-content').html("<p>Please wait a few seconds while we save your responses...</p>"+
       "<p>If you are not automatically redirected to the debriefing in a few seconds, please click <a href='/finish?token="+trial_id+"&lg="+lg+"'>here</a>.</p>");
        console.log(trial_id, 'Error posting data...', request, status);
-       if(waiting[trial_id] < max_attempts){
-         waiting[trial_id] += 1;
+       if(save_attempts < max_attempts){
+         save_attempts += 1;
          save_timeout += 500;
-         console.log(trial_id, "Trying again, attempt ", waiting[trial_id]);
+         console.log(trial_id, "Trying again, attempt ", save_attempts);
          setTimeout(function () {
             save(dataJSON, dataUrl, trial_id, lg);
           }, save_timeout);
        } else {
-         delete waiting[trial_id];
-         console.log(trial_id, 'skipping, deleting waiting', waiting);
+         console.log(trial_id, 'too many attempts');
          finish(trial_id, lg);
        }
      }
