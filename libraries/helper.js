@@ -3,7 +3,7 @@ Custom functions written for CVBE how-to session 03.03.2020
 For help, contact justin.sulik@gmail.com
 */
 
-var waiting = {}
+var waiting = {};
 
 function prepareData(experiment_start_time){
   console.log('    Preparing data...');
