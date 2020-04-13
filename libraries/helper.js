@@ -26,7 +26,7 @@ function save(dataJSON, dataUrl, trial_id, lg){
     waiting[trial_id] = 1;
   }
   console.log (trial_id, 'waiting', waiting);
-  var save_timeout = 1000;
+  var save_timeout = 3000;
   var max_attempts = 5;
   $.ajax({
      type: 'POST',
