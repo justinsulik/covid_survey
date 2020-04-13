@@ -182,6 +182,7 @@ jsPsych.plugins["occupation"] = (function() {
 
     $('#submit').click(function(e){
       var responses = getResponses();
+      console.log(responses)
       var validated = validateResponses(responses);
       if(validated){
         endTrial(responses);
@@ -228,6 +229,7 @@ jsPsych.plugins["occupation"] = (function() {
       var end_time = Date.now();
       var rt = end_time - start_time;
       trial_data.rt = rt;
+      trial_data.responses = responses;
       // kill any remaining setTimeout handlers
       jsPsych.pluginAPI.clearAllTimeouts();
       // clear screen
