@@ -69,7 +69,8 @@
       return acc
     }, ['']);
     var morality_labels = lg_dict['6.5'];
-    var advice_labels = lg_dict['6.3'];
+    var advice_labels_others = lg_dict['6.16'];
+    var advice_labels_self = lg_dict['6.3'];
     var wembs_labels = _.reduce(lg_dict['9.1'], function(acc, d){
       acc.push(d)
       return acc
@@ -249,7 +250,7 @@
           prompt: '<p>'+lg_dict['6.1']+'</p>'+
           '<p>'+lg_dict['6.2']+'</p>',
           id: 'comply-self',
-          labels: advice_labels,
+          labels: advice_labels_self,
           is_start: true,
           group: 0},
           {type: 'slider',
@@ -263,7 +264,7 @@
             compliance_questions.push({type: 'slider',
                 prompt: social_network_prompt,
                 id: 'comply-social',
-                labels: advice_labels,
+                labels: advice_labels_others,
                 is_start: true,
                 group: i+1})
             compliance_questions.push({type: 'slider',
@@ -277,7 +278,7 @@
                 prompt: '<p>'+lg_dict['6.9']+'</p>'+
                 '<p>'+lg_dict['6.10']+'</p>',
                 id: 'comply-country',
-                labels: advice_labels,
+                labels: advice_labels_others,
                 is_start: true,
                 group: i+1})
             compliance_questions.push({type: 'slider',
@@ -291,7 +292,7 @@
               prompt: '<p>'+lg_dict['6.12']+'</p>'+
               '<p>'+lg_dict['6.13']+'</p>',
               id: 'comply-world',
-              labels: advice_labels,
+              labels: advice_labels_others,
               is_start: true,
               group: i+1})
             compliance_questions.push({type: 'slider',
