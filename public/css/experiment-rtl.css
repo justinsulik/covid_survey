@@ -62,7 +62,7 @@ h2 {text-align: right;}
 .options.container {text-align: right}
 .option-heading-container {text-align: right}
 
-.scrollable > p
+.scrollable > p {text-align: right}
 
 /* Smartphones (portrait and landscape) ----------- */
 @media only screen
