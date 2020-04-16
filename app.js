@@ -22,7 +22,8 @@ const PORT = process.env.PORT || 5000;
 db.connect(process.env.MONGODB_URI);
 
 app.use(express.static(__dirname + '/public'));
-app.use(body_parser.json());
+app.use(body_parser.json({ limit: '50mb' }));
+app.use(body_parser.urlencoded({ limit: '50mb', extended: true, parameterLimit: 500000 }));
 app.use('/jspsych', express.static(__dirname + "/jspsych"));
 app.use('/libraries', express.static(__dirname + "/libraries"));
 app.use('/helper', express.static(__dirname + "/helper"));
