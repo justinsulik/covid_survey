@@ -41,9 +41,13 @@
     var lg = input_data.lg;
     console.log(trial_id, lg, lg_dict)
 
-    if(lg=='fa'){
-      $('body').addClass('farsi');
+    if(['fa', 'ar'].indexOf(lg)!=-1){
+      $('head').append('<link href="css/experiment-rtl.css" rel="stylesheet" type="text/css"></link>');
+      $('html').attr('dir', 'rtl');
+    } else {
+      $('head').append('<link href="css/experiment.css" rel="stylesheet" type="text/css"></link>');
     }
+    $('head').attr('lg', lg)
 
     var phase = input_data.phase;
     var next_phase = phase+1;
@@ -430,6 +434,7 @@
     console.log($(window).width())
     function generateCircles(distances, label1, label2){
       var width = ios_size;
+      console.log(ios_size, $(window).width(), )
       var height = ios_size;
       var base_1 = width/3;
       var base_2 = 2*width/3;
@@ -441,12 +446,17 @@
         var position_2 = base_2 - base_distance*(1-distance)/2
         var text_1_y = 5;
         var text_2_y = height-2*(ios_font);
-        options.push('<div style="height:'+height+'px; width:'+width+'px"><svg>'+
-        '<text x="'+position_1+'", y="'+text_1_y+'" dominant-baseline="hanging" text-anchor="middle" fill="blue" font-size="'+ios_font+'">'+label1+'</text>'+
-        '<text x="'+position_2+'", y="'+text_2_y+'" dominant-baseline="hanging" text-anchor="middle" fill="red" font-size="'+ios_font+'">'+label2+'</text>'+
-        '<circle cx="'+position_1+'" cy="'+height/2+'" r="'+base_distance*circle_ratio+'" fill="blue" fill-opacity="0.4"/>'+
-        '<circle cx="'+position_2+'" cy="'+height/2+'" r="'+base_distance*(1-circle_ratio)+'" fill="red" fill-opacity="0.4"/>'+
-        '</svg></div>')
+        var img_string = '<div style="height:'+height+'px; width:'+width+'px;" dir="ltr">';
+        img_string += '<svg style="display:block;margin:auto;">';
+        img_string += '<text x="'+position_1+'", y="'+text_1_y+'" dominant-baseline="hanging" text-anchor="middle" fill="blue" font-size="'+ios_font+'">'+label1+'</text>';
+        img_string += '<text x="'+position_2+'", y="'+text_2_y+'" dominant-baseline="hanging" text-anchor="middle" fill="red" font-size="'+ios_font+'">'+label2+'</text>';
+        img_string += '<circle cx="'+position_1+'" cy="'+height/2+'" r="'+base_distance*circle_ratio+'" fill="blue" fill-opacity="0.4"/>';
+        img_string += '<circle cx="'+position_2+'" cy="'+height/2+'" r="'+base_distance*(1-circle_ratio)+'" fill="red" fill-opacity="0.4"/>';
+        if(['fa', 'ar'].indexOf(lg)!=-1){
+          img_string += '</g>';
+        }
+        img_string += '</svg></div>';
+        options.push(img_string)
       })
       return options;
     };
@@ -731,7 +741,6 @@
     timeline.push(demographics);
     timeline.push(occupation);
     timeline.push(email);
-    timeline.push(warning);
 
     /*
     Have jsPsych display the experiment timeline

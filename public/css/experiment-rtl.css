@@ -1,0 +1,86 @@
+/* You can add your own styling here
+ */
+
+
+h2 {text-align: right;}
+
+.left {text-align: right;}
+
+.indent {margin-right: 24px;}
+
+.response {
+  display: inline-block;
+  margin-right: 10px;
+}
+
+.specify {
+  margin-right: 10px;
+}
+
+.external-html {
+  text-align: right;
+}
+
+.logo {
+  width: 250px;
+  position: absolute;
+  right: 10px;
+}
+
+.preamble {
+  margin: 30px auto 20px auto;
+  font-weight: bold;
+  text-align: right;
+}
+
+.instructions {
+  font-size: 14px;
+  text-align: right;
+}
+
+
+.form-item {
+  text-align: right;
+}
+
+.followup {
+   padding-right: 20%
+}
+
+.slider.label.first {
+  text-align: right;
+}
+
+.slider.label.middle {
+  text-align: center;
+}
+
+.slider.label.last {
+  text-align: left;
+}
+
+.options.container {text-align: right}
+.option-heading-container {text-align: right}
+
+.scrollable > p {text-align: right}
+
+/* Smartphones (portrait and landscape) ----------- */
+@media only screen
+and (min-device-width : 320px)
+and (max-device-width : 480px) {
+
+}
+
+/* Smartphones (landscape) ----------- */
+@media only screen
+and (min-width : 321px) {
+/* Styles */
+
+}
+
+/* Smartphones (portrait) ----------- */
+@media only screen
+and (max-width : 320px) {
+/* Styles */
+
+}

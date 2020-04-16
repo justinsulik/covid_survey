@@ -73,22 +73,19 @@ jsPsych.plugins["custom-form"] = (function() {
     var slider_movement_tracker = {};
 
     var css = '<style>';
-    css += '.form-item {text-align: left; background-color: #f2fcff}';
+    css += '.form-item {background-color: #f2fcff}';
     css += '.inline-contents > div:not(.reminder) {display: inline-block}';
-    css += '.response {margin-left: 2vw;}';
     css += '.specify {display: inline-block;}';
     css += '.highlight {background-color: #daedf2}';
-    css += '.followup {display: inline-block; padding-left: 20%}';
-    css += '.indent {margin-left: 24px;}';
+    css += '.followup {display: inline-block;}';
     css += '.flex {display: flex;}';
     css += '.multiple.answer {border: 1px solid #c7c7c7; border-radius: 5px; padding: 5px 10px;}';
     css += '.multiple.answer.unpadded {padding: 0px;}';
     css += '.multiple.answer:hover {background-color: #e6f2ff;}';
     css += '.multiple.answer.selected {background-color: #6ab0fc; border: 1px solid #0069db;}';
     css += '.inline > .prompt {display: inline-block}';
-    css += '.reminder {display: none; font-size: 16px; padding-left: 5px}';
-    css += '.reminder.problem {display: inline-block; font-size: 16px; padding-left: 5px}';
-    css += '.label {font-size: 12px; line-height: 1.1em;}';
+    css += '.reminder {display: none; font-size: 16px; padding-inline-start: 5px}';
+    css += '.reminder.problem {display: inline-block; font-size: 16px; padding-inline-start: 5px}';
     css += '.hidden {display: none;}';
     css += '.problem {color: red;}';
     css += '</style>';
@@ -323,13 +320,16 @@ jsPsych.plugins["custom-form"] = (function() {
       var label_string = '<div class="label-container" style="display: flex; width: 100%; justify-content: space-between; align-items: flex-start">';
       labels.forEach(function(label, i){
         var style_string = 'width: '+width+'%;';
+        var label_class_string = 'slider label ';
         if(i==0){
-          style_string += 'text-align: left;';
+          label_class_string += 'first ';
         }
-        if(i==labels.length-1){
-          style_string += 'text-align: right;';
+        else if(i==labels.length-1){
+          label_class_string += 'last ';
+        } else {
+          label_class_string += 'middle ';
         }
-        label_string += '<div class="label slider" style="'+style_string+'">'+label+'</div>';
+        label_string += '<div style="'+style_string+'" class="'+label_class_string+'">'+label+'</div>';
       });
       label_string += '</div>';
 

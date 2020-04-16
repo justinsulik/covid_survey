@@ -47,8 +47,6 @@ jsPsych.plugins["occupation"] = (function() {
     var lg_dict = trial.dict;
 
     var css = '<style>';
-    css += '.options.container {text-align: left}';
-    css += '.option-heading-container {text-align: left}';
     css += '.disabled {color: grey;}';
     css += '.disabled~label {color: grey;}';
     css += '.option-heading-container {display: flex;justify-content: flex-start;}';
