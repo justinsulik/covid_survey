@@ -58,7 +58,10 @@ app.get('/', (req, res, next) => {
 
 
 app.get('/study', (req, res, next) => {
-    const lg = req.query.lg || 'en';
+    let lg = req.query.lg || 'en';
+    if(lg=='ch'){
+      lg = 'zh';
+    }
     const trial_id = req.query.tid || helper.makeCode(8);
     const lg_dict = lg_data[lg];
 
