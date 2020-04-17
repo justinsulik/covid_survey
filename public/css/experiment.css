@@ -1,6 +1,7 @@
 /* You can add your own styling here
  */
 
+
 #jspsych-content {
   width: 800px;
 }
@@ -119,7 +120,7 @@ thead, tbody {display: block;}
 
 .prompt {
   font-size: 16px;
-  padding: 3px 0px 3px 0px;
+  padding: 3px 10px 3px 10px;
 }
 
 .start {padding-top: 10px;}
@@ -139,6 +140,29 @@ thead, tbody {display: block;}
   line-height: 1.1em;
 }
 
+.form-item {
+  text-align: left
+}
+
+.followup {
+   padding-left: 20%
+}
+
+.slider.label.first {
+  text-align: left;
+}
+
+.slider.label.middle {
+  text-align: center;
+}
+
+.slider.label.last {
+  text-align: right;
+}
+
+.options.container {text-align: left}
+.option-heading-container {text-align: left}
+
 /* Smartphones (portrait and landscape) ----------- */
 @media only screen
 and (min-device-width : 320px)
@@ -147,6 +171,10 @@ and (max-device-width : 480px) {
   #jspsych-content {
     width: 90vw;
     line-height: 1.5em;
+  }
+
+  .scrollable {
+    height: 60vh;
   }
 
    .external-html {
@@ -172,7 +200,7 @@ and (max-device-width : 480px) {
 
    .prompt {
      font-size: 4vw;
-     padding: 1vw 0vw 1vw 0vw;
+     padding: 1vw 3vw 1vw 3vw;
      line-height: 1.2em;
    }
    .prompt p:last-child {
@@ -182,7 +210,6 @@ and (max-device-width : 480px) {
    .start {padding-top: 1.5vh;}
    .end {padding-bottom: 5vh;}
    .form-item:not(.start) {padding-top:0.8vh}
-
 
    .option.label {
      font-size: 3vw;

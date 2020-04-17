@@ -136,7 +136,7 @@ jsPsych.plugins["table-completion"] = (function() {
       html += '<div class="instructions">'+trial.instructions+'</div>';
     }
     if(trial.opt_out){
-      html += '<div class="opt-out"><input id="optout" type="checkbox" value="optout"/><label for="optout">'+trial.opt_out+'</label></div>';
+      html += '<div class="opt-out"><input id="optout" type="checkbox" value="optout"/><label for="optout">'+trial.opt_out+'</label></div></div>';
     }
     if(trial.dependencies.length>0){
       var reg = /([a-zA-Z0-9_]+)>([a-zA-Z0-9_]+)/;
