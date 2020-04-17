@@ -84,6 +84,9 @@ app.post('/data', (req, res, next) => {
 app.get('/finish', (req, res) => {
   let code = req.query.token || '';
   let lg = req.query.lg || 'en';
+  if(lg=='ch'){
+    lg = 'zh'
+  }
   if(code.length==0){
     // If, for whatever reason, the code has gone missing, generate a new one so that the participant can get paid
     code = helper.makeCode(10) + 'SZs';
