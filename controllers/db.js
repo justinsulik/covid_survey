@@ -1,33 +1,33 @@
-/*
-Connect to database
-*/
+// https://www.terlici.com/2015/04/03/mongodb-node-express.html
 
-const mongoose = require('mongoose');
+let MongoClient = require('mongodb').MongoClient;
 
 var state = {
   db: null,
 };
 
-exports.connect = function(uri){
-  // if connected, stop here
+exports.connect = function(uri, done){
   if (state.db) return done();
-  // otherwise, connect to db
-  mongoose.connect(uri, {retryWrites: false});
-  const db = mongoose.connection;
-  db.on('error', console.error.bind(console, 'connection error:'));
-  db.once('connected', function callback () {
-    console.log('Connected to db...');
-    state.db = db;
-  });
+  MongoClient.connect(uri,
+    {retryWrites: false},
+    function(err, client) {
+     if (err) return done(err);
+     state.db = client.db('heroku_4rhg8w0n');
+     console.log("connected to db...");
+     done();
+   });
 };
 
 exports.get = function() {
   return state.db;
 };
 
-exports.close = function() {
+exports.close = function(done) {
   if (state.db) {
-    state.db.disconnect();
-    console.log('Connection to db closed...');
+    state.db.close(function(err, result) {
+      state.db = null;
+      state.mode = null;
+      done(err);
+    });
   }
 };

@@ -1,2 +1,2 @@
 web: node app.js
-webRestart: nodemon app.js
+worker: node worker.js

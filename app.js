@@ -10,7 +10,7 @@ const express = require('express'),
   ejs = require('ejs'),
   detect = require('browser-detect'),
   Queue = require('bull'),
-  db = require(__dirname+'/controllers/db'),
+  // db = require(__dirname+'/controllers/db'),
   tasks = require(__dirname+'/controllers/tasks'),
   responses = require(__dirname+'/controllers/responses'),
   helper = require(__dirname+'/libraries/helper.js');
@@ -21,7 +21,8 @@ const app = express();
 const PORT = process.env.PORT || 5000;
 const REDIS_URL = process.env.REDIS_URL || 'redis://127.0.0.1:6379';
 
-db.connect(process.env.MONGODB_URI);
+// db.connect(process.env.MONGODB_URI);
+const responsesQueue = new Queue('responses', REDIS_URL);
 
 app.use(express.static(__dirname + '/public'));
 app.use(body_parser.json({ limit: '50mb' }));
@@ -74,13 +75,11 @@ app.get('/study', (req, res, next) => {
 app.post('/data', (req, res, next) => {
   const data = req.body;
   const trial_id = req.query.trial_id || 'none';
-  console.log(trial_id, 'Preparing to save trial data...');
-  responses.save({
-    trial_id: trial_id,
-    study_name: study_name,
-    trial_data: data,
-  })
-  .then(res.status(200).end());
+  console.log(trial_id, 'Adding survey data to queue...');
+  responsesQueue.add(data)
+  .then(result => {
+    res.status(200).end();
+  });
 });
 
 app.get('/finish', (req, res) => {
