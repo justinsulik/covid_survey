@@ -7,12 +7,19 @@ var state = {
 };
 
 exports.connect = function(uri, done){
+  var reg = uri.match(/(heroku_[a-z0-9]+)/);
+  var db_key;
+  if(reg){
+    db_key = reg[0];
+  } else {
+    db_key = 'heroku_nj9mk217';
+  }
   if (state.db) return done();
   MongoClient.connect(uri,
     {retryWrites: false},
     function(err, client) {
      if (err) return done(err);
-     state.db = client.db('heroku_3wl4lj7q');
+     state.db = client.db(db_key);
      console.log("connected to db...");
      done();
    });

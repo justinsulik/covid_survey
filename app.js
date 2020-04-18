@@ -10,9 +10,6 @@ const express = require('express'),
   ejs = require('ejs'),
   detect = require('browser-detect'),
   Queue = require('bull'),
-  // db = require(__dirname+'/controllers/db'),
-  // tasks = require(__dirname+'/controllers/tasks'),
-  responses = require(__dirname+'/controllers/responses'),
   helper = require(__dirname+'/libraries/helper.js');
 
 const study_name = 'lg_trial';
@@ -21,7 +18,6 @@ const app = express();
 const PORT = process.env.PORT || 5000;
 const REDIS_URL = process.env.REDIS_URL || 'redis://127.0.0.1:6379';
 
-// db.connect(process.env.MONGODB_URI);
 const responsesQueue = new Queue('responses', REDIS_URL);
 const tasksQueue = new Queue('tasks', REDIS_URL);
 
