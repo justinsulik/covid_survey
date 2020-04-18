@@ -448,7 +448,7 @@
         var text_1_y = 5;
         var text_2_y = height-2*(ios_font);
         var img_string = '<div style="height:'+height+'px; width:'+width+'px;" dir="ltr">';
-        img_string += '<svg style="display:block;margin:auto;">';
+        img_string += '<svg style="display:block;margin:auto;width:'+width+'px; height: '+height+'px">';
         img_string += '<text x="'+position_1+'", y="'+text_1_y+'" dominant-baseline="hanging" text-anchor="middle" fill="blue" font-size="'+ios_font+'">'+label1+'</text>';
         img_string += '<text x="'+position_2+'", y="'+text_2_y+'" dominant-baseline="hanging" text-anchor="middle" fill="red" font-size="'+ios_font+'">'+label2+'</text>';
         img_string += '<circle cx="'+position_1+'" cy="'+height/2+'" r="'+base_distance*circle_ratio+'" fill="blue" fill-opacity="0.4"/>';
