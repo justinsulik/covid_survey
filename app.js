@@ -82,7 +82,7 @@ app.post('/data', (req, res, next) => {
 });
 
 app.get('/finish', (req, res) => {
-  let code = req.query.token || '';
+  let code = req.query.tid || '';
   let lg = req.query.lg || 'en';
   if(lg=='ch'){
     lg = 'zh'
