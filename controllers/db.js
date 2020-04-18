@@ -12,7 +12,7 @@ exports.connect = function(uri, done){
     {retryWrites: false},
     function(err, client) {
      if (err) return done(err);
-     state.db = client.db('heroku_nj9mk217');
+     state.db = client.db('heroku_3wl4lj7q');
      console.log("connected to db...");
      done();
    });

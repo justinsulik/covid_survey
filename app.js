@@ -23,6 +23,7 @@ const REDIS_URL = process.env.REDIS_URL || 'redis://127.0.0.1:6379';
 
 // db.connect(process.env.MONGODB_URI);
 const responsesQueue = new Queue('responses', REDIS_URL);
+const tasksQueue = new Queue('tasks', REDIS_URL);
 
 app.use(express.static(__dirname + '/public'));
 app.use(body_parser.json({ limit: '50mb' }));
@@ -41,13 +42,17 @@ app.get('/', (req, res, next) => {
     const trial_id = helper.makeCode(8);
     // // What browser is the participant using?
     const browser = detect(req.headers['user-agent']);
+    const date = new Date();
 
-    // tasks.save({
-    //     "phase": phase,
-    //     "trial_id": trial_id,
-    //     "study_name": study_name,
-    //     "browser": browser,
-    // });
+    var task_data = {
+        "phase": phase,
+        "trial_id": trial_id,
+        "study_name": study_name,
+        "browser": browser,
+        "start_time": date,
+    };
+
+    tasksQueue.add(task_data);
 
     let mobile = false;
     if (browser) {
@@ -67,7 +72,7 @@ app.get('/study', (req, res, next) => {
     }
     const trial_id = req.query.tid || helper.makeCode(8);
     const lg_dict = lg_data[lg];
-    console.log('rendering study in ', lg, 'for ', trial_id)
+    console.log('rendering study in ', lg, 'for ', trial_id);
     res.render('experiment.ejs', {input_data: JSON.stringify({trial_id: trial_id, phase: phase, lg: lg, lg_dict: lg_dict})});
 
 });

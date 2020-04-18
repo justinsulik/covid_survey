@@ -1,7 +1,8 @@
 let throng = require('throng'),
     Queue = require("bull"),
     db = require('./controllers/db'),
-    responses = require(__dirname+'/controllers/responses');
+    responses = require(__dirname+'/controllers/responses'),
+    tasks = require(__dirname+'/controllers/tasks');
 
 // LOCAL ENV VARIABLES
 let MONGO = process.env.MONGODB_URI;
@@ -22,6 +23,7 @@ function start() {
 
   // Connect to the named work queues
   let responsesQueue = new Queue('responses', REDIS_URL);
+  let tasksQueue = new Queue('tasks', REDIS_URL);
 
   // Connect to DB
   db.connect(MONGO, function(err) {
@@ -31,6 +33,20 @@ function start() {
       process.exit(1);
 
     } else {
+
+      // save task data
+      tasksQueue.process(maxJobsPerWorker, (job) => {
+        console.log('Task job received', job.id);
+        return tasks.save(job.data);
+      });
+
+      tasksQueue.on('error', (error) => {
+        console.log('---> task queue error!', error);
+      });
+
+      tasksQueue.on('completed', (job, result) => {
+        console.log('    completed task job ', job.id);
+      });
 
       // save survey data
       responsesQueue.process(maxJobsPerWorker, (job) => {

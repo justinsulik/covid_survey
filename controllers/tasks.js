@@ -1,10 +1,20 @@
 //https://www.terlici.com/2015/04/03/mongodb-node-express.html
 
-const express = require('express'),
-    mongoose = require( 'mongoose'),
-    Task = require('./../models/task');
+const db = require('./db');
 
-exports.save = function (sessionData) {
-  console.log('Saving session data...');
-  Task.create(sessionData);
+exports.save = function (data) {
+  console.log('    Saving task data in db...');
+
+  return new Promise((resolve, reject) => {
+    var collection = db.get().collection('tasks');
+    collection.insertOne(data, function(err, r) {
+      if(err){
+        console.log('    ---> error saving ', err, data);
+        reject(err);
+      } else {
+        console.log('    ...saved ');
+        resolve(r);
+      }
+    });
+  });
 };
