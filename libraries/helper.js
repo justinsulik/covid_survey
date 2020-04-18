@@ -17,6 +17,7 @@ function prepareData(experiment_start_time){
                               });
   data.responses = jsPsych.data.get().json();
   data.trial_id = trial_id;
+  data.finish_time = Date();
   dataJSON = JSON.stringify(data);
   return dataJSON;
 }

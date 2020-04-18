@@ -91,13 +91,13 @@ app.get('/finish', (req, res) => {
   let code = req.query.tid || '';
   let lg = req.query.lg || 'en';
   if(lg=='ch'){
-    lg = 'zh'
+    lg = 'zh';
   }
   if(code.length==0){
     // If, for whatever reason, the code has gone missing, generate a new one so that the participant can get paid
     code = helper.makeCode(10) + 'SZs';
   }
-  console.log('finishing', code, lg)
+  console.log('finishing', code, lg);
   res.render(lg+'_finish.ejs', {completionCode: code, phase: phase});
 });
 
