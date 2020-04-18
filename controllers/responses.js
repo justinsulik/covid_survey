@@ -1,20 +1,19 @@
 //https://www.terlici.com/2015/04/03/mongodb-node-express.html
 
-const express = require('express'),
-    mongoose = require( 'mongoose'),
-    Response = require('./../models/response');
+const db = require('./db');
 
 exports.save = function (data) {
-  var stage = 'Saving trial data in db...';
+  console.log('    Saving survey data in db...');
+
   return new Promise((resolve, reject) => {
-    console.log(data.trial_id, stage);
-    Response.create(data, (err, result) => {
-      if (err){
-        err.trial_id = data.trial_id;
+    var collection = db.get().collection('responses');
+    collection.insertOne(data, function(err, r) {
+      if(err){
+        console.log('    ---> error saving ', err, data);
         reject(err);
       } else {
-        console.log(data.trial_id, 'Data saved!');
-        resolve(data);
+        console.log('    ...saved ');
+        resolve(r);
       }
     });
   });

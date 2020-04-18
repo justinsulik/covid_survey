@@ -11,7 +11,7 @@ const express = require('express'),
   detect = require('browser-detect'),
   Queue = require('bull'),
   // db = require(__dirname+'/controllers/db'),
-  tasks = require(__dirname+'/controllers/tasks'),
+  // tasks = require(__dirname+'/controllers/tasks'),
   responses = require(__dirname+'/controllers/responses'),
   helper = require(__dirname+'/libraries/helper.js');
 
@@ -42,12 +42,12 @@ app.get('/', (req, res, next) => {
     // // What browser is the participant using?
     const browser = detect(req.headers['user-agent']);
 
-    tasks.save({
-        "phase": phase,
-        "trial_id": trial_id,
-        "study_name": study_name,
-        "browser": browser,
-    });
+    // tasks.save({
+    //     "phase": phase,
+    //     "trial_id": trial_id,
+    //     "study_name": study_name,
+    //     "browser": browser,
+    // });
 
     let mobile = false;
     if (browser) {
@@ -67,7 +67,7 @@ app.get('/study', (req, res, next) => {
     }
     const trial_id = req.query.tid || helper.makeCode(8);
     const lg_dict = lg_data[lg];
-
+    console.log('rendering study in ', lg, 'for ', trial_id)
     res.render('experiment.ejs', {input_data: JSON.stringify({trial_id: trial_id, phase: phase, lg: lg, lg_dict: lg_dict})});
 
 });
