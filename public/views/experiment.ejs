@@ -432,10 +432,8 @@
       ios_size = 120;
       ios_font = 14;
     }
-    console.log($(window).width())
     function generateCircles(distances, label1, label2){
       var width = ios_size;
-      console.log(ios_size, $(window).width(), )
       var height = ios_size;
       var base_1 = width/3;
       var base_2 = 2*width/3;
@@ -742,6 +740,45 @@
     timeline.push(demographics);
     timeline.push(occupation);
     timeline.push(email);
+
+    // $(window).on('popstate', function (e) {
+    //   // console.log('back')
+    //   alert('pop')
+    //   var state = e.originalEvent.state;
+    //   if (state !== null) {
+    //       //load content with ajax
+    //   }
+    // });
+    // $(window).on('popstate', function(event) {
+    //   var goBack = confirm("If you go back, you will loose ALL previous responses. Do you want to go back?");
+    //   if (!goBack) {
+    //       history.back()
+    //   } else {
+    //       history.pushState(null, null, null);
+    //   }
+    // });
+
+    // if (window.performance && window.performance.navigation.type == window.performance.navigation.TYPE_BACK_FORWARD) {
+    //   alert('hello world');
+    // }
+    //
+    // if (performance.navigation.type == 1) {
+    //     alert("Back button clicked");
+    // }
+    //
+    if (window.history && history.pushState) {
+        addEventListener('load', function() {
+            history.pushState(null, null, null); // creates new history entry with same URL
+            addEventListener('popstate', function() {
+                var goBack = confirm("If you go back, you will loose ALL previous responses. Do you really want to go back?");
+                if (goBack) {
+                    history.back()
+                } else {
+                    history.pushState(null, null, null);
+                }
+            });
+        });
+    }
 
     /*
     Have jsPsych display the experiment timeline
