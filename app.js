@@ -68,8 +68,18 @@ app.get('/study', (req, res, next) => {
     }
     const trial_id = req.query.tid || helper.makeCode(8);
     const lg_dict = lg_data[lg];
+
+    const browser = detect(req.headers['user-agent']);
+    let mobile = false;
+    if (browser) {
+      console.log(trial_id, 'Detected browser...', browser);
+      if (browser.mobile==true){
+        mobile = true;
+      }
+    }
+
     console.log('rendering study in ', lg, 'for ', trial_id);
-    res.render('experiment.ejs', {input_data: JSON.stringify({trial_id: trial_id, phase: phase, lg: lg, lg_dict: lg_dict})});
+    res.render('experiment.ejs', {input_data: JSON.stringify({trial_id: trial_id, phase: phase, lg: lg, lg_dict: lg_dict, mobile: mobile})});
 
 });
 

@@ -58,6 +58,11 @@
     console.log('Rendering trial ', trial_id)
     jsPsych.data.addProperties({trial_id: trial_id, lg: lg});
 
+    var mobile = input_data.mobile;
+    if( /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) ) {
+       mobile = true;
+    }
+
     var timeline = [];
     var experiment_start_time;
     var data_not_processed = true;

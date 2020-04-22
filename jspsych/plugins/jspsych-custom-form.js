@@ -49,7 +49,7 @@ jsPsych.plugins["custom-form"] = (function() {
       mobile: {
         type: jsPsych.plugins.parameterType.BOOL,
         default: false,
-        description: "Is device mobile"
+        description: "Is device mobile?"
       }
     }
   };
@@ -542,7 +542,7 @@ Inputs/interactions
         if(answer_obj.hasClass('slider')){
           // slider doesn't have distinct name, since there aren't any suboptions to choose among
           var moved = slider_movement_tracker[id];
-          if(moved || (trial.mobile || value != 50)){
+          if(moved || trial.mobile){
             requirement_tracker[parent] = true;
           }
           responses.push({id: id, value: value, optional: optional, moved: moved});
