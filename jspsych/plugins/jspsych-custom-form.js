@@ -46,6 +46,11 @@ jsPsych.plugins["custom-form"] = (function() {
         default: 'Please specify',
         description: "Text for specify reminder"
       },
+      mobile: {
+        type: jsPsych.plugins.parameterType.BOOL,
+        default: false,
+        description: "Is device mobile"
+      }
     }
   };
 
@@ -537,7 +542,7 @@ Inputs/interactions
         if(answer_obj.hasClass('slider')){
           // slider doesn't have distinct name, since there aren't any suboptions to choose among
           var moved = slider_movement_tracker[id];
-          if(moved || value != 50){
+          if(moved || (trial.mobile || value != 50)){
             requirement_tracker[parent] = true;
           }
           responses.push({id: id, value: value, optional: optional, moved: moved});

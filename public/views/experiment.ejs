@@ -48,6 +48,10 @@
       $('head').append('<link href="css/experiment.css" rel="stylesheet" type="text/css"></link>');
     }
     $('head').attr('lg', lg)
+    var mobile = false;
+    if( /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) ) {
+       mobile = true;
+    }
 
     var phase = input_data.phase;
     var next_phase = phase+1;
@@ -108,6 +112,7 @@
       type: 'custom-form',
       submit: lg_dict['0.0'],
       preamble: lg_dict['1.0'],
+      mobile: mobile,
       instructions: lg_dict['1.1']+'<br>'+lg_dict['1.2'],
       select_start: lg_dict['0.2'],
       specify_text: lg_dict['0.3'],
@@ -236,6 +241,7 @@
 
     var compliance = {
       type: 'custom-form',
+      mobile: mobile,
       submit: lg_dict['0.0'],
       select_start: lg_dict['0.2'],
       preamble: lg_dict['6.0'],
@@ -308,6 +314,7 @@
 
     var vulnerable1 = {
       type: 'custom-form',
+      mobile: mobile,
       submit: lg_dict['0.0'],
       select_start: lg_dict['0.2'],
       preamble: lg_dict['7.0'],
@@ -330,6 +337,7 @@
 
     var vulnerable2 = {
       type: 'custom-form',
+      mobile: mobile,
       submit: lg_dict['0.0'],
       preamble: lg_dict['8.0'],
       select_start: lg_dict['0.2'],
@@ -371,6 +379,7 @@
 
     var corona_attitudes = {
       type: 'custom-form',
+      mobile: mobile,
       submit: lg_dict['0.0'],
       preamble: lg_dict['10.0'],
       select_start: lg_dict['0.2'],
@@ -401,6 +410,7 @@
 
     var science_attitudes = {
       type: 'custom-form',
+      mobile: mobile,
       submit: lg_dict['0.0'],
       preamble: lg_dict['11.0'],
       select_start: lg_dict['0.2'],
@@ -465,6 +475,7 @@
 
     var political_attitudes = {
       type: 'custom-form',
+      mobile: mobile,
       submit: lg_dict['0.0'],
       preamble: lg_dict['11.0'],
       instructions: lg_dict['12.0'],
@@ -549,6 +560,7 @@
 
     var demographics = {
       type: 'custom-form',
+      mobile: mobile,
       submit: lg_dict['0.0'],
       preamble: lg_dict['15.0'],
       select_start: lg_dict['0.2'],
@@ -690,6 +702,7 @@
 
     var email = {
       type: 'custom-form',
+      mobile: mobile,
       submit: lg_dict['0.0'],
       select_start: lg_dict['0.2'],
       specify_text: lg_dict['0.3'],
@@ -770,7 +783,7 @@
         addEventListener('load', function() {
             history.pushState(null, null, null); // creates new history entry with same URL
             addEventListener('popstate', function() {
-                var goBack = confirm("If you go back, you will loose ALL previous responses. Do you really want to go back?");
+                var goBack = confirm("If you go back, you will loose ALL previous responses. Do you really want to go back to the start?");
                 if (goBack) {
                     history.back()
                 } else {
