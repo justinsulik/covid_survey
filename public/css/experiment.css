@@ -101,10 +101,40 @@ thead, tbody {display: block;}
 }
 
 .scrollable {
-  height: 400px;
+  height: 100px;
   border: solid 1px grey;
   overflow: scroll;
   margin-bottom: 5px;
+  position: relative;
+  transition-property: height;
+  transition-duration: 1.5s;
+  line-height: 1.1em;
+}
+
+#more-fadeout {
+    position: absolute;
+    bottom: 0;
+    height: 3em;
+    width: 100%;
+    background: linear-gradient( rgba(255, 255, 255, 0), rgba(255, 255, 255, 1) );
+}
+
+#more-button-container {
+  position:absolute;
+  bottom:0;
+  left:0;
+  right:0;
+  text-align:center;
+}
+
+#more-button {
+  background-color:white;
+  padding-left:.5em;
+  padding-right:.5em;
+  border: 1px solid #009bbd;
+  border-radius: 2px;
+  color: #009bbd;
+  cursor: pointer;
 }
 
 .preamble {
@@ -173,10 +203,6 @@ and (max-device-width : 480px) {
     line-height: 1.5em;
   }
 
-  .scrollable {
-    height: 60vh;
-  }
-
    .external-html {
      font-size: 3vw;
      line-height: 1.5em;
@@ -189,7 +215,7 @@ and (max-device-width : 480px) {
    #information-header {height: 10vh;}
 
    .scrollable {
-     height: 60vh;
+     height: 25vh;
      margin-bottom: 1vh;
    }
 
