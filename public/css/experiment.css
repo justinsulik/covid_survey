@@ -101,7 +101,7 @@ thead, tbody {display: block;}
 }
 
 .scrollable {
-  height: 100px;
+  height: 95px;
   border: solid 1px grey;
   overflow: scroll;
   margin-bottom: 5px;
