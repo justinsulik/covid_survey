@@ -101,7 +101,7 @@ thead, tbody {display: block;}
 }
 
 .scrollable {
-  height: 95px;
+  height: 100px;
   border: solid 1px grey;
   overflow: scroll;
   margin-bottom: 5px;
@@ -203,10 +203,6 @@ and (max-device-width : 480px) {
     line-height: 1.5em;
   }
 
-  .scrollable {
-    height: 60vh;
-  }
-
    .external-html {
      font-size: 3vw;
      line-height: 1.5em;
@@ -219,7 +215,7 @@ and (max-device-width : 480px) {
    #information-header {height: 10vh;}
 
    .scrollable {
-     height: 60vh;
+     height: 25vh;
      margin-bottom: 1vh;
    }
 
