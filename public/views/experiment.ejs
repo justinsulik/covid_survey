@@ -50,6 +50,10 @@
       $('head').append('<link href="css/experiment.css" rel="stylesheet" type="text/css"></link>');
     }
     $('head').attr('lg', lg)
+    var mobile = false;
+    if( /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) ) {
+       mobile = true;
+    }
 
     var phase = input_data.phase;
     var next_phase = phase+1;
@@ -115,7 +119,12 @@
       mobile: mobile,
       submit: lg_dict['0.0'],
       preamble: lg_dict['1.0'],
+<<<<<<< HEAD
       instructions: lg_dict['1.1']+'<br>'+lg_dict['1.2']+'<br>'+lg_dict['1.6'],
+=======
+      mobile: mobile,
+      instructions: lg_dict['1.1']+'<br>'+lg_dict['1.2'],
+>>>>>>> d1746a0875bafb3f6d8038b2c219789ed2ac68ee
       select_start: lg_dict['0.2'],
       specify_text: lg_dict['0.3'],
       questions: [
@@ -860,6 +869,45 @@
     timeline.push(occupation);
     if(phase==1){
       timeline.push(email);
+    }
+
+    // $(window).on('popstate', function (e) {
+    //   // console.log('back')
+    //   alert('pop')
+    //   var state = e.originalEvent.state;
+    //   if (state !== null) {
+    //       //load content with ajax
+    //   }
+    // });
+    // $(window).on('popstate', function(event) {
+    //   var goBack = confirm("If you go back, you will loose ALL previous responses. Do you want to go back?");
+    //   if (!goBack) {
+    //       history.back()
+    //   } else {
+    //       history.pushState(null, null, null);
+    //   }
+    // });
+
+    // if (window.performance && window.performance.navigation.type == window.performance.navigation.TYPE_BACK_FORWARD) {
+    //   alert('hello world');
+    // }
+    //
+    // if (performance.navigation.type == 1) {
+    //     alert("Back button clicked");
+    // }
+    //
+    if (window.history && history.pushState) {
+        addEventListener('load', function() {
+            history.pushState(null, null, null); // creates new history entry with same URL
+            addEventListener('popstate', function() {
+                var goBack = confirm("If you go back, you will loose ALL previous responses. Do you really want to go back to the start?");
+                if (goBack) {
+                    history.back()
+                } else {
+                    history.pushState(null, null, null);
+                }
+            });
+        });
     }
 
     /*
