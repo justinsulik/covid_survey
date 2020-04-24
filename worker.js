@@ -2,6 +2,7 @@ let throng = require('throng'),
     Queue = require("bull"),
     db = require('./controllers/db'),
     responses = require(__dirname+'/controllers/responses'),
+    unsubscribe = require(__dirname+'/controllers/unsubscribe'),
     tasks = require(__dirname+'/controllers/tasks');
 
 // LOCAL ENV VARIABLES
