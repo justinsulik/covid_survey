@@ -24,6 +24,7 @@ function start() {
   // Connect to the named work queues
   let responsesQueue = new Queue('responses', REDIS_URL);
   let tasksQueue = new Queue('tasks', REDIS_URL);
+  let unsubscribeQueue = new Queue('unsubscribe', REDIS_URL);
 
   // Connect to DB
   db.connect(MONGO, function(err) {
@@ -60,6 +61,12 @@ function start() {
 
       responsesQueue.on('completed', (job, result) => {
         console.log('    completed survey job ', job.id);
+      });
+
+      // unsubscribe
+      unsubscribeQueue.process(maxJobsPerWorker, (job) => {
+        console.log('Unsubscribe job received', job.id);
+        return unsubscribe.save(job.data);
       });
 
     }

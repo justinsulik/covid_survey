@@ -20,6 +20,7 @@ const REDIS_URL = process.env.REDIS_URL || 'redis://127.0.0.1:6379';
 
 const responsesQueue = new Queue('responses', REDIS_URL);
 const tasksQueue = new Queue('tasks', REDIS_URL);
+const unsubscribeQueue = new Queue('unsubscribe', REDIS_URL);
 
 app.use(express.static(__dirname + '/public'));
 app.use(body_parser.json({ limit: '50mb' }));
@@ -105,6 +106,16 @@ app.get('/finish', (req, res) => {
   }
   console.log('finishing', code, lg);
   res.render(lg+'_finish.ejs', {completionCode: code, phase: phase});
+});
+
+app.get('/unsubscribe', (req, res, next) => {
+  const code = req.query.tid || 'none';
+  const data = {code: code};
+  console.log('Adding unsubscribe to queue...', code);
+  unsubscribeQueue.add(data)
+  .then(result => {
+    res.status(200).render('unsubscribe.ejs');
+  });
 });
 
 var server = app.listen(PORT, function(){
