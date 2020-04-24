@@ -55,12 +55,6 @@
        mobile = true;
     }
 
-    var phase = input_data.phase;
-    var next_phase = phase+1;
-    var mobile = input_data.mobile;
-    if( /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) ) {
-       mobile = true;
-    }
     jsPsych.data.addProperties({trial_id: trial_id, lg: lg, mobile: mobile, phase: phase});
 
 
