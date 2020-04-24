@@ -13,7 +13,6 @@ const express = require('express'),
   helper = require(__dirname+'/libraries/helper.js');
 
 const study_name = 'lg_trial';
-const phase = 1;
 const app = express();
 const PORT = process.env.PORT || 5000;
 const REDIS_URL = process.env.REDIS_URL || 'redis://127.0.0.1:6379';
@@ -35,9 +34,8 @@ app.set('views', __dirname + '/public/views');
 let lg_data = require('./lg/lg_dict.json');
 
 app.get('/', (req, res, next) => {
-    // Generate anonymous code to identify this trial
-    const trial_id = helper.makeCode(8);
-    // // What browser is the participant using?
+    const trial_id = req.query.tid || helper.makeCode(8);
+    const phase = req.query.phase || 1;
     const browser = detect(req.headers['user-agent']);
     const date = new Date();
 
@@ -48,17 +46,9 @@ app.get('/', (req, res, next) => {
         "browser": browser,
         "start_time": date,
     };
-
     tasksQueue.add(task_data);
 
-    let mobile = false;
-    if (browser) {
-      console.log(trial_id, 'Detected browser...', browser);
-      if (browser.mobile==true){
-        mobile = true;
-      }
-    }
-    res.render('lgpage.ejs', {input_data: JSON.stringify({trial_id: trial_id})});
+    res.render('lgpage.ejs', {input_data: JSON.stringify({trial_id: trial_id, phase: phase})});
 });
 
 
@@ -68,6 +58,7 @@ app.get('/study', (req, res, next) => {
       lg = 'zh';
     }
     const trial_id = req.query.tid || helper.makeCode(8);
+    const phase = req.query.phase || 1;
     const lg_dict = lg_data[lg];
 
     const browser = detect(req.headers['user-agent']);
@@ -79,8 +70,12 @@ app.get('/study', (req, res, next) => {
       }
     }
 
-    console.log('rendering study in ', lg, 'for ', trial_id);
-    res.render('experiment.ejs', {input_data: JSON.stringify({trial_id: trial_id, phase: phase, lg: lg, lg_dict: lg_dict, mobile: mobile})});
+    console.log('Rendering study in', lg, 'for', trial_id, 'in phase', phase);
+    res.render('experiment.ejs', {input_data: JSON.stringify({trial_id: trial_id,
+      phase: phase,
+      lg: lg, lg_dict:
+      lg_dict,
+      mobile: mobile})});
 
 });
 
