@@ -92,6 +92,7 @@ app.post('/data', (req, res, next) => {
 app.get('/finish', (req, res) => {
   let code = req.query.tid || '';
   let lg = req.query.lg || 'en';
+  let phase = req.query.phase || 1;
   if(lg=='ch'){
     lg = 'zh';
   }
