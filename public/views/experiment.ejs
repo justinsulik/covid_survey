@@ -787,7 +787,12 @@
         id: 'household-elderly',
         options: numericOptions(11, true),
         group: 3,
-        is_followup: true}
+        is_followup: true},
+        {type: 'slider',
+        prompt: lg_dict['10.6'],
+        id: 'going_out',
+        labels: lg_dict['10.7'],
+        group: 4}
       ]
     };
 
@@ -850,7 +855,9 @@
       timeline.push(political_attitudes);
 
       timeline.push(vertical_collectivism);
-      timeline.push(eq);
+      if(lg!='hi'){
+        timeline.push(eq);
+      }
     }
     if(phase==1){
       timeline.push(demographics1);
