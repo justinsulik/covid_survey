@@ -22,7 +22,7 @@ function prepareData(experiment_start_time){
   return dataJSON;
 }
 
-function save(dataJSON, dataUrl, trial_id, lg){
+function save(dataJSON, dataUrl, trial_id, lg, phase){
   console.log('    About to post survey output data...', dataJSON);
   console.log (trial_id, 'waiting');
   var max_attempts = 5;
@@ -34,7 +34,7 @@ function save(dataJSON, dataUrl, trial_id, lg){
      timeout: 3000,
      success: function(request, status, error){
        console.log(trial_id, 'success, deleting waiting');
-       finish(trial_id, lg);
+       finish(trial_id, lg, phase);
      },
      error: function(request, status){
        $('#jspsych-content').html("<p>Please wait a few seconds while we save your responses...</p>"+
@@ -45,19 +45,19 @@ function save(dataJSON, dataUrl, trial_id, lg){
          save_timeout += 500;
          console.log(trial_id, "Trying again, attempt ", save_attempts);
          setTimeout(function () {
-            save(dataJSON, dataUrl, trial_id, lg);
+            save(dataJSON, dataUrl, trial_id, lg, phase);
           }, save_timeout);
        } else {
          console.log(trial_id, 'too many attempts');
-         finish(trial_id, lg);
+         finish(trial_id, lg, phase);
        }
      }
    });
 }
 
-function finish(completionCode, lg){
+function finish(completionCode, lg, phase){
     console.log('    Rerouting to finish page...');
-    window.location.href = "/finish?tid="+completionCode+'&lg='+lg;
+    window.location.href = "/finish?tid="+completionCode+'&lg='+lg+'&phase='+phase;
 }
 
 function makeCode(len){
