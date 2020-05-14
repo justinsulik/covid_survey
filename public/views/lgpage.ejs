@@ -52,7 +52,8 @@
         type: 'multiple',
         id: 'language',
         options: language_options,
-        values: language_vals
+        values: language_vals,
+        disable: {'English': 'Data collection completed'}
       }],
       on_finish: function(data){
         responses = JSON.parse(data.responses);

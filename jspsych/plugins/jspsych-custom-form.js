@@ -88,11 +88,13 @@ jsPsych.plugins["custom-form"] = (function() {
     css += '.multiple.answer.unpadded {padding: 0px;}';
     css += '.multiple.answer:hover {background-color: #e6f2ff;}';
     css += '.multiple.answer.selected {background-color: #6ab0fc; border: 1px solid #0069db;}';
+    css += '.multiple.answer.disabled {background-color: #DFDFDF; border: 1px solid #939393;}';
     css += '.inline > .prompt {display: inline-block}';
     css += '.reminder {display: none; font-size: 16px; padding-inline-start: 5px}';
     css += '.reminder.problem {display: inline-block; font-size: 16px; padding-inline-start: 5px}';
     css += '.hidden {display: none;}';
     css += '.problem {color: red;}';
+    css += '#submit.disabled {background-color: #DFDFDF; border: 1px solid #939393;}';
     css += '</style>';
 
     var html = '';
@@ -174,6 +176,7 @@ jsPsych.plugins["custom-form"] = (function() {
       var prompt = question_data.prompt || '';
       var options = question_data.options || [];
       var values = parseValues(question_data);
+      var disabled = question_data.disable || {};
       var class_strings = embellishClassString(question_data, q_index);
       var container_class_string = 'multiple-container ' + class_strings.container;
 
@@ -196,6 +199,7 @@ jsPsych.plugins["custom-form"] = (function() {
       html_string += '<div id="'+question_id+'" class="custom-form-multiple flex" style="width:100%; '+wrap_string+' justify-content: space-evenly;">';
       option_width = Math.round(option_width*$(window).width());
       options.forEach(function(option, i){
+
         var option_id = question_id+'-'+i;
         var value_string;
         if(values.length>0 && values[i]){
@@ -205,7 +209,12 @@ jsPsych.plugins["custom-form"] = (function() {
           value_string = option.replace(/ /g, '_').toLowerCase();
         }
         var option_class_string = 'multiple answer ' + class_strings.input;
-        option_string += '<div style="width: '+option_width+'px; text-align: center;" class="'+option_class_string+'" name="'+question_id+'" id="'+option_id+'" value="'+value_string+'">'+option+'</div>';
+        var option_text = option;
+        if(disabled[option]){
+          option_class_string += 'disabled';
+          option_text += '<span style="font-size:0.8em"> (data collection completed - no more responses required)</span>';
+        }
+        option_string += '<div style="width: '+option_width+'px; text-align: center;" class="'+option_class_string+'" name="'+question_id+'" id="'+option_id+'" value="'+value_string+'">'+option_text+'</div>';
       });
       option_string += '</div>';
 
@@ -415,6 +424,12 @@ Inputs/interactions
           current_option.removeClass('selected');
         }
       });
+      // handle disabled options
+      if($(this).hasClass('disabled')){
+        $('#submit').addClass('disabled');
+      } else {
+        $('#submit').removeClass('disabled');
+      }
       display_logic[name].forEach(function(d){
         // console.log(value, name)
         if(d.type=='followup'){
@@ -474,12 +489,14 @@ Inputs/interactions
     });
 
     $('#submit').click(function(e){
-      var response_data = getResponses();
-      var validated = validateResponses(response_data);
-      if(validated.ok){
-        endTrial(response_data.responses);
-      } else {
-        highlightProblems(validated.problems);
+      if(!$(this).hasClass('disabled')){
+        var response_data = getResponses();
+        var validated = validateResponses(response_data);
+        if(validated.ok){
+          endTrial(response_data.responses);
+        } else {
+          highlightProblems(validated.problems);
+        }
       }
     });
 
