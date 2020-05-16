@@ -18,8 +18,8 @@
 
     // get the data passed along by app.js
     var input_data = <%- input_data %>
-    var trial_id = input_data.trial_id || helper.makeCode(8);
-    var phase = input_data.phase || 1;
+    var trial_id = input_data.trial_id || helper.makeCode(12);
+    var phase = input_data.phase || 2;
     jsPsych.data.addProperties({trial_id: trial_id, phase: phase});
 
     var timeline = [];
@@ -53,7 +53,7 @@
         id: 'language',
         options: language_options,
         values: language_vals,
-        disable: {'English': 'Data collection completed'}
+        // disable: {'English': 'Data collection completed'}
       }],
       on_finish: function(data){
         responses = JSON.parse(data.responses);
