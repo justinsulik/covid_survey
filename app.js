@@ -36,6 +36,10 @@ let lg_data = require('./lg/lg_dict.json');
 app.get('/', (req, res, next) => {
     const trial_id = req.query.tid || helper.makeCode(8);
     const phase = req.query.phase || 1;
+    let is_new = true;
+    if(phase>1){
+      is_new = false;
+    }
     const browser = detect(req.headers['user-agent']);
     const date = new Date();
 
@@ -47,27 +51,12 @@ app.get('/', (req, res, next) => {
         "start_time": date,
     };
     tasksQueue.add(task_data);
-
-    res.render('lgpage.ejs', {input_data: JSON.stringify({trial_id: trial_id, phase: phase})});
+    if(is_new){
+      res.render('lgpage.ejs', {input_data: JSON.stringify({trial_id: trial_id, phase: phase})});
+    } else {
+      res.render('return.ejs', {input_data: JSON.stringify({trial_id: trial_id, phase: phase})});
+    }
 });
-
-app.get('/return', (req, res, next) => {
-    const trial_id = req.query.tid || helper.makeCode(12);
-    const phase = req.query.phase || 2;
-    const browser = detect(req.headers['user-agent']);
-    const date = new Date();
-
-    var task_data = {
-        "phase": phase,
-        "trial_id": trial_id,
-        "study_name": study_name,
-        "browser": browser,
-        "start_time": date,
-    };
-    tasksQueue.add(task_data);
-    res.render('return.ejs', {input_data: JSON.stringify({trial_id: trial_id, phase: phase})});
-});
-
 
 app.get('/study', (req, res, next) => {
     let lg = req.query.lg || 'en';
