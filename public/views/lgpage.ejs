@@ -53,7 +53,13 @@
         id: 'language',
         options: language_options,
         values: language_vals,
-        disable: {'English': 'Data collection completed'}
+        disable: {
+          'English': 'Data collection completed',
+          'Türkçe': 'veri toplama tamamlandı',
+          'Deutsch': 'Datenerfassung abgeschlossen',
+          'Français': 'Collecte de données terminée',
+          '中文': '数据收集已完成'
+        }
       }],
       on_finish: function(data){
         responses = JSON.parse(data.responses);
