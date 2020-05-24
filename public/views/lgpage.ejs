@@ -44,6 +44,9 @@
       return acc;
     }, [])
 
+    var arabic_disable = 'انتهى جمع البيانات';
+    var arabic_name = 'عربي';
+
     var language_vals = Object.keys(language_codes)
     var landing_page = {
       type: 'custom-form',
@@ -62,6 +65,8 @@
           'Svenska': 'datainsamlingen slutförd',
           'Italiano': 'raccolta dati completata',
           'Español': 'recopilación de datos completada',
+          arabic_name: arabic_disable,
+          'বাংলা': 'তথ্য সংগ্রহ সমাপ্ত হয়েছে',
         }
       }],
       on_finish: function(data){
