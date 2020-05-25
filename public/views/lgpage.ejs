@@ -44,8 +44,25 @@
       return acc;
     }, [])
 
+    var disable = {
+      'English': 'Data collection completed',
+      'Türkçe': 'veri toplama tamamlandı',
+      'Deutsch': 'Datenerfassung abgeschlossen',
+      'Français': 'Collecte de données terminée',
+      '中文': '数据收集已完成',
+      'Svenska': 'datainsamlingen slutförd',
+      'Italiano': 'raccolta dati completata',
+      'Español': 'recopilación de datos completada',
+      arabic_name: arabic_disable,
+      'বাংলা': 'তথ্য সংগ্রহ সমাপ্ত হয়েছে',
+    }
     var arabic_disable = 'انتهى جمع البيانات';
     var arabic_name = 'عربي';
+    var farsi_name = 'فارسی';
+    var farsi_disable = 'جمع‌آوری اطلاعات کامل شده است';
+    disable[arabic_name] = arabic_disable;
+    disable[farsi_name] = farsi_disable;
+
 
     var language_vals = Object.keys(language_codes)
     var landing_page = {
@@ -56,18 +73,7 @@
         id: 'language',
         options: language_options,
         values: language_vals,
-        disable: {
-          'English': 'Data collection completed',
-          'Türkçe': 'veri toplama tamamlandı',
-          'Deutsch': 'Datenerfassung abgeschlossen',
-          'Français': 'Collecte de données terminée',
-          '中文': '数据收集已完成',
-          'Svenska': 'datainsamlingen slutförd',
-          'Italiano': 'raccolta dati completata',
-          'Español': 'recopilación de datos completada',
-          arabic_name: arabic_disable,
-          'বাংলা': 'তথ্য সংগ্রহ সমাপ্ত হয়েছে',
-        }
+        disable: disable
       }],
       on_finish: function(data){
         responses = JSON.parse(data.responses);

@@ -210,6 +210,7 @@ jsPsych.plugins["custom-form"] = (function() {
         }
         var option_class_string = 'multiple answer ' + class_strings.input;
         var option_text = option;
+        console.log(option, disabled)
         if(disabled[option]){
           option_class_string += 'disabled';
           option_text += '<span style="font-size:0.8em"> ('+disabled[option]+')</span>';
