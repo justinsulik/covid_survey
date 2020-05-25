@@ -210,10 +210,15 @@ jsPsych.plugins["custom-form"] = (function() {
         }
         var option_class_string = 'multiple answer ' + class_strings.input;
         var option_text = option;
-        console.log(option, disabled)
+        console.log(option, disabled);
         if(disabled[option]){
           option_class_string += 'disabled';
-          option_text += '<span style="font-size:0.8em"> ('+disabled[option]+')</span>';
+          if(option == 'عربي' || option == 'فارسی'){
+            option_text = '<span style="font-size:0.8em"> ('+disabled[option]+')</span>' + option_text;
+          } else {
+            option_text += '<span style="font-size:0.8em"> ('+disabled[option]+')</span>';
+          }
+
         }
         option_string += '<div style="width: '+option_width+'px; text-align: center;" class="'+option_class_string+'" name="'+question_id+'" id="'+option_id+'" value="'+value_string+'">'+option_text+'</div>';
       });
