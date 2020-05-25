@@ -214,7 +214,7 @@ jsPsych.plugins["custom-form"] = (function() {
         if(disabled[option]){
           option_class_string += 'disabled';
           if(option == 'عربي' || option == 'فارسی'){
-            option_text = '<span style="font-size:0.8em"> ('+disabled[option]+')</span>' + option_text;
+            option_text += '<br><span style="font-size:0.8em"> ('+disabled[option]+')</span>';
           } else {
             option_text += '<span style="font-size:0.8em"> ('+disabled[option]+')</span>';
           }
