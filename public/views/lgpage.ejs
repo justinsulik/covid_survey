@@ -1,102 +1,12 @@
 <!DOCTYPE html>
-<html>
-    <head>
-        <title>Survey</title>
-        <script language="javascript" src="libraries/jquery-3.4.1.min.js"></script>
-        <script language="javascript" src="libraries/lodash.js"></script>
-        <script language="javascript" src="libraries/helper.js"></script>
-        <script language="javascript" src="jspsych/jspsych.js"></script>
-        <script language="javascript" src="jspsych/plugins/jspsych-custom-form.js"></script>
-        <link href="jspsych/css/jspsych.css" rel="stylesheet" type="text/css"></link>
-        <link href="css/experiment.css" rel="stylesheet" type="text/css"></link>
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    </head>
-    <body>
-    </body>
-    <script>
-
-
-    // get the data passed along by app.js
-    var input_data = <%- input_data %>
-    var trial_id = input_data.trial_id || helper.makeCode(8);
-    var phase = input_data.phase || 1;
-    jsPsych.data.addProperties({trial_id: trial_id, phase: phase});
-
-    var timeline = [];
-
-    var language_codes = {
-      ar: {name_eng: 'Arabic', name_own: 'عربي'},
-      bn: {name_eng: 'Bangla', name_own: 'বাংলা'},
-      zh: {name_eng: 'Chinese (simplified)', name_own: '中文'}, //(简体)
-      en: {name_eng: 'English', name_own: 'English'},
-      fa: {name_eng: 'Farsi', name_own: 'فارسی'},
-      fr: {name_eng: 'French', name_own: 'Français'},
-      de: {name_eng: 'German', name_own: 'Deutsch'},
-      hi: {name_eng: 'Hindi', name_own: 'हिन्दी'},
-      it: {name_eng: 'Italian', name_own: 'Italiano'},
-      es: {name_eng: 'Spanish', name_own: 'Español'},
-      sv: {name_eng: 'Swedish', name_own: 'Svenska'},
-      tr: {name_eng: 'Turkish', name_own: 'Türkçe'}
-    }
-
-    var language_options = _.reduce(language_codes, function(acc, dat, key){
-      acc.push(dat.name_own);
-      return acc;
-    }, [])
-
-    var disable = {
-      'English': 'Data collection completed',
-      'Türkçe': 'veri toplama tamamlandı',
-      'Deutsch': 'Datenerfassung abgeschlossen',
-      'Français': 'Collecte de données terminée',
-      '中文': '数据收集已完成',
-      'Svenska': 'datainsamlingen slutförd',
-      'Italiano': 'raccolta dati completata',
-      'Español': 'recopilación de datos completada',
-      arabic_name: arabic_disable,
-      'বাংলা': 'তথ্য সংগ্রহ সমাপ্ত হয়েছে',
-    }
-    var arabic_disable = 'انتهى جمع البيانات';
-    var arabic_name = 'عربي';
-    var farsi_name = 'فارسی';
-    var farsi_disable = 'جمع‌آوری اطلاعات کامل شده است';
-    disable[arabic_name] = arabic_disable;
-    disable[farsi_name] = farsi_disable;
-
-
-    var language_vals = Object.keys(language_codes)
-    var landing_page = {
-      type: 'custom-form',
-      preamble: 'Please choose a language to continue',
-      questions: [{
-        type: 'multiple',
-        id: 'language',
-        options: language_options,
-        values: language_vals,
-        disable: disable
-      }],
-      on_finish: function(data){
-        responses = JSON.parse(data.responses);
-        responses.forEach(function(d){
-          if(d.name=='language'){
-            language_choice = d.value
-          }
-        })
-      }
-    }
-
-    timeline.push(landing_page);
-
-    jsPsych.init({
-        preload_images: [],
-        default_iti: 500,
-        show_progress_bar: true,
-        experiment_width: 800,
-        timeline: timeline,
-        on_finish: function(){
-          window.location.href = "/study?tid="+trial_id+"&phase="+phase+"&lg="+language_choice;
-        }
-    });
-
-    </script>
-</html>
+ <html lang="en">
+   <head><title>Distancing study</title>
+     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+   </head>
+   <body style="margin: 30px">
+    <div style="position:relative;height:100px"><img src="img/UoN_Primary_Logo_RGB.png" style="width:200px;position:absolute;right:10px"></div>
+    <p>Thank you very much for your interest in the distancing study. Data collection for the first phase of this study has been completed, so we are not recruiting any <b>new</b> participants.</p>
+    <p>If you are a <b>returning</b> participant and have received a link to participate in subsequent phases, please use that link to access the survey.</p>
+    <p>For any questions about the study, you can contact Bahar Tuncgenc at <a href="mailto:bahar.tuncgenc@nottingham.ac.uk">bahar.tuncgenc@nottingham.ac.uk</a>.</p>
+   </body>
+ </html>
