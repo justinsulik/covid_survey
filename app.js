@@ -58,6 +58,12 @@ app.get('/', (req, res, next) => {
     }
 });
 
+app.get('/demo', (req, res, next) => {
+    const trial_id = 'demo';
+    const phase = 1;
+    res.render('lg_demo.ejs', {input_data: JSON.stringify({trial_id: trial_id, phase: phase})});
+});
+
 app.get('/study', (req, res, next) => {
     let lg = req.query.lg || 'en';
     if(lg=='ch'){
