@@ -1,1 +1,1 @@
-Survey code (in JS+jsPSych) for the study described at [https://osf.io/cmyxr/](https://osf.io/cmyxr/).
+Survey code (in JS+jsPsych) for the study described at [https://osf.io/ke5yn/](https://osf.io/ke5yn/).
